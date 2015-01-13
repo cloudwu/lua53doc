@@ -1,13 +1,27 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
 <HEAD>
-<TITLE>Lua 5.3 参考手册 - 目录</TITLE>
+<TITLE>Lua 5.3 readme</TITLE>
 <LINK REL="stylesheet" TYPE="text/css" HREF="lua.css">
 <META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8">
 <STYLE TYPE="text/css">
-ul {
-	list-style-type: none ;
-	list-style-position: outside ;
+blockquote, .display {
+	border: solid #a0a0a0 2px ;
+	padding: 1em ;
+	margin: 0px ;
+	border-radius: 8px ;
+}
+
+.display {
+	word-spacing: 0.25em ;
+}
+
+dl.display dd {
+	padding-bottom: 0.2em ;
+}
+
+tt, kbd, code {
+	font-size: 12pt ;
 }
 </STYLE>
 </HEAD>
@@ -16,604 +30,316 @@ ul {
 
 <HR>
 <H1>
-<A HREF="http://www.lua.org/"><IMG SRC="logo.gif" ALT="" BORDER=0></A>
-Lua 5.3 参考手册
+<A HREF="http://www.lua.org/"><IMG SRC="logo.gif" ALT="Lua" BORDER=0></A>
+Lua 5.3.0 欢迎你
 </H1>
 
 <P>
-这份参考手册是对 Lua 语言的官方定义。
-关于 Lua 编程的方方面面，则放在
-<A HREF="http://www.lua.org/pil/">Programming in Lua</A>
-这本书中。
-
-<P>
-<A HREF="manual.html">开始</A>
+<A HREF="#about">关于</A>
 &middot;
-<A HREF="#contents">目录</A>
+<A HREF="#install">安装</A>
 &middot;
-<A HREF="#index">索引</A>
+<A HREF="#changes">变更</A>
+&middot;
+<A HREF="#license">许可证</A>
+&middot;
+<A HREF="contents.html">参考手册</A>
 &middot;
 <A HREF="term.html">中英术语对照表</A>
-<HR>
-<SMALL>
-Lua.org, PUC-Rio 版权所有 &copy; 2015 ，
-在遵循
-<A HREF="http://www.lua.org/license.html">Lua license</A>
-条款下，可自由使用。
-</SMALL>
 
-<H2><A NAME="contents">目录</A></H2>
-<UL style="padding: 0">
-<LI><A HREF="manual.html">1 &ndash; 概要</A>
+<H2><A NAME="about">关于 Lua</A></H2>
+
 <P>
-<LI><A HREF="manual.html#2">2 &ndash; 基本概念</A>
+Lua 是一门强大、快速、轻量的嵌入式脚本语言。它由巴西里约热内卢 Pontifical Catholic 大学的
+<A HREF="http://www.puc-rio.br/">PUC-Rio</A>
+<A HREF="http://www.lua.org/authors.html">团队</A>
+开发。
+Lua 是一个
+<A HREF="#license">自由软件</A>，
+它在全世界范围内广泛用于很多产品和项目。
+
+<P>
+Lua 的
+<A HREF="http://www.lua.org/">官方网站</A>
+上有关于 Lua 的完整信息，
+其中包括
+<A HREF="http://www.lua.org/about.html">综合概要</A>
+以及最新版的
+<A HREF="http://www.lua.org/docs.html">文档</A>，
+需要注意的是
+<A HREF="http://www.lua.org/manual/5.3/">参考手册</A> 可能和
+<A HREF="contents.html">这里的版本</A> 有所不同。
+
+<H2><A NAME="install">安装 Lua</A></H2>
+
+<P>
+Lua 是以
+<A HREF="http://www.lua.org/ftp/">源代码</A>
+的形式发布的。
+在使用前，你需要自己构建它。
+构建 Lua 非常简单，因为 Lua 是用纯粹的 ANSI C 实现的，在所有有 ANSI C 编译器的平台都可以直接编译。
+同时，Lua 还可以直接以 C++ 形式编译。
+下面介绍了类 Unix 平台上的构建流程，另有
+<A HREF="#other">其它系统构建介绍</A>
+与
+<A HREF="#customization">配置选项</A> 以作参考。
+
+<P>
+如果你没有时间或兴趣自己编译 Lua ，
+可以从
+<A HREF="http://lua-users.org/wiki/LuaBinaries">LuaBinaries</A> 获取编译后的二进制文件，
+或者从
+<A HREF="http://luadist.org/">LuaDist</A> 这里获取 Lua 的多平台发布版（自带电池）。
+
+<H3>构建 Lua</H3>
+
+<P>
+对于大多数类 Unix 平台，只需要输入 "<KBD>make</KBD>" 加上合适的平台名即可。细节如下：
+
+<OL>
+<LI>
+打开一个控制台窗口，切换到名为 <TT>lua-5.3.0</TT> 的目录下。
+这里有一个 <TT>Makefile</TT> 文件内含构建及安装流程。
+<P>
+<LI>
+  运行 "<KBD>make</KBD>" 看看你的平台是否列在其中。
+  当前支持的平台有：
+<P>
+<P CLASS="display">
+   aix bsd c89 freebsd generic linux macosx mingw posix solaris
+</P>
+<P>
+  如果你的平台列在其中，那么只需要运行 "<KBD>make xxx</KBD>"，这里的 xxx
+  指你的平台名。
+<P>
+  如果你的平台不在这个列表内，那么先试一下最接近的那个，然后再按 posix generic c89 这个次序依次尝试。
+<P>
+<LI>
+编译流程要花一会儿功夫，最终在 <TT>src</TT> 目录产生三个文件：
+lua (解释器),
+luac (编译器),
+以及 liblua.a (静态库) 。
+<P>
+<LI>
+  你可以运行 "<KBD>make test</KBD>" 检查一下构建是否成功，
+  它会运行解释器打印出版本号。
+</OL>
+<P>
+如果你是 Linux 系统，出现了编译错误的话，请确认你有安装
+<TT>readline</TT> 开发包。
+如果还是有链接错误，可以试一下
+"<KBD>make linux MYLIBS=-ltermcap</KBD>" 。
+
+<H3>安装 Lua</H3>
+<P>
+  一旦你构建完毕，可能希望把 Lua 安装到系统默认位置。
+  那么，执行 "<KBD>make install</KBD>" 就可以了。
+  系统默认位置以及如何安装都定义在 <TT>Makefile</TT> 中。
+  这个过程可能需要有相关的全县。
+
+<P>
+  运行 "<KBD>make xxx install</KBD>" 可以构建和安装一步到位，
+  这里的 xxx 指你的平台名。
+
+<P>
+  如果你想把 Lua 安装在本地，运行 "<KBD>make local</KBD>"。
+  它会创建一个 <TT>install</TT> 目录，内有
+  <TT>bin</TT>, <TT>include</TT>, <TT>lib</TT>, <TT>man</TT>, <TT>share</TT>,
+  子目录，并将下列文件安装在其中。
+
+  如果你想安装到本地其它目录，
+  运行 "<KBD>make install INSTALL_TOP=xxx</KBD>"，这里的 xxx 指你选择的目录。
+  由于安装过程中会切换到 <TT>src</TT> 以及 <TT>doc</TT> 目录进行，
+  所以当 <TT>INSTALL_TOP</TT> 不是绝对路径时务必小心。
+
+<DL CLASS="display">
+<DT>
+    bin:
+<DD>
+    lua luac
+<DT>
+    include:
+<DD>
+    lauxlib.h lua.h lua.hpp luaconf.h lualib.h
+<DT>
+    lib:
+<DD>
+    liblua.a
+<DT>
+    man/man1:
+<DD>
+    lua.1 luac.1
+</DL>
+
+<P>
+  这些是开发时需要的目录。
+  如果你仅仅想运行一些 Lua 程序，
+  那么只需要 <TT>bin</TT> 和 <TT>man</TT> 下的文件。
+  <TT>include</TT> 和 <TT>lib</TT> 下的文件用于将 Lua 嵌入
+  C 或 C++ 程序。
+
+<H3><A NAME="customization">定制</A></H3>
+<P>
+  有三类定制，可以通过编辑文件完成：
 <UL>
-<LI><A HREF="manual.html#2.1">2.1 &ndash; 值与类型</A>
-<LI><A HREF="manual.html#2.2">2.2 &ndash; 环境与全局环境</A>
-<LI><A HREF="manual.html#2.3">2.3 &ndash; 错误处理</A>
-<LI><A HREF="manual.html#2.4">2.4 &ndash; 元表与元方法</A>
-<LI><A HREF="manual.html#2.5">2.5 &ndash; 垃圾收集</A>
+    <LI> 怎样安装 Lua 以及安装到哪里 &mdash; 编辑 <TT>Makefile</TT>。
+    <LI> 怎样构建 Lua &mdash; 编辑 <TT>src/Makefile</TT>。
+    <LI> Lua 特性 &mdash; 编辑 <TT>src/luaconf.h</TT>。
+</UL>
+
+<P>
+  其实你不必编辑 Makefile 文件，make 的时候在命令行指定相关变量即可。
+  当然，编辑保存 Makefile 可以给定制留个记录。
+
+<P>
+  另一方面，如果你需要定制一些 Lua 特性，那就需要在构建安装 Lua 前
+  编辑 <TT>src/luaconf.h</TT> 。
+  编辑过的文件必须确保一致性，也就是只安装在一个地方，
+  让所有你编译出来的用到 Lua 的程序都使用这唯一的这一份。
+  专家可以通过编辑 Lua 源代码来定制更多的东西。
+  
+<H3><A NAME="other">在其它系统上构建 Lua</A></H3>
+
+<P>
+  如果你不使用常规的 Unix 工具，那么构建 Lua 的流程就取决于你使用的编译器。
+  你需要创建若干工程来构建库，解释器以及编译器等。请把下列源文件加入相关工程：
+
+<DL CLASS="display">
+<DT>
+库:
+<DD>
+lapi.c lcode.c lctype.c ldebug.c ldo.c ldump.c lfunc.c lgc.c llex.c
+lmem.c lobject.c lopcodes.c lparser.c lstate.c lstring.c ltable.c
+ltm.c lundump.c lvm.c lzio.c
+lauxlib.c lbaselib.c lbitlib.c lcorolib.c ldblib.c liolib.c
+lmathlib.c loslib.c lstrlib.c ltablib.c lutf8lib.c loadlib.c linit.c
+<DT>
+解释器:
+<DD>
+  library, lua.c
+<DT>
+编译器:
+<DD>
+  library, luac.c
+</DL>
+
+<P>
+  把 Lua 以一个库形式用于你的程序，你需要知道如何用你的编译器创建库和使用库。
+  比如，以动态加载的 C 库形式使用 Lua 你需要了解如果创建动态库并让 Lua API 函数
+  在动态库中可见 &mdash; <EM>不要</EM> 将 Lua 库链入每个动态库。
+  在 Unix 下，我们建议把 Lua 库静态链入宿主程序，然后将符号导出用于动态链接；
+  <TT>src/Makefile</TT> 就是这样处理 Lua 解释器的。
+  在 Windows 下，我们建议把 Lua 库编译成一个 DLL 。
+  无论怎样，编译器 luac 都应该静态链接。
+
+<P>
+  正如上面所述，你可以在构建 Lua 前编辑 <TT>src/luaconf.h</TT>
+  以定制一些特性。
+
+<H2><A NAME="changes">Lua 5.2 以来的变更</A></H2>
+
+<P>
+这里列出了 Lua 5.3 引入的主要变更。
+<A HREF="contents.html">参考手册</A>
+中列出了
+<A HREF="manual.html#8">不兼容的地方</A>。
+
+<H3>主要变化</H3>
 <UL>
-<LI><A HREF="manual.html#2.5.1">2.5.1 &ndash; 垃圾收集的元方法</A>
-<LI><A HREF="manual.html#2.5.2">2.5.2 &ndash; 弱表</A>
+<LI> 整数 (默认 64 位)
+<LI> 32 位整数的官方支持
+<LI> 位操作符
+<LI> 基本的 utf-8 支持
+<LI> 值的打包及解包函数
+
 </UL>
-<LI><A HREF="manual.html#2.6">2.6 &ndash; 协程</A>
-</UL>
-<P>
-<LI><A HREF="manual.html#3">3 &ndash; 语言定义</A>
+
+这些是 Lua 5.3 引入的其它变更：
+<H3>语言</H3>
 <UL>
-<LI><A HREF="manual.html#3.1">3.1 &ndash; 语法约定</A>
-<LI><A HREF="manual.html#3.2">3.2 &ndash; 变量</A>
-<LI><A HREF="manual.html#3.3">3.3 &ndash; 语句</A>
+<LI> 用户数据可以是任意 Lua 值
+<LI> 整数除法
+<LI> 某些更加灵活的元方法有了更加灵活的规则
+</UL>
+
+<H3>库</H3>
 <UL>
-<LI><A HREF="manual.html#3.3.1">3.3.1 &ndash; Blocks</A>
-<LI><A HREF="manual.html#3.3.2">3.3.2 &ndash; Chunks</A>
-<LI><A HREF="manual.html#3.3.3">3.3.3 &ndash; 赋值</A>
-<LI><A HREF="manual.html#3.3.4">3.3.4 &ndash; 控制结构</A>
-<LI><A HREF="manual.html#3.3.5">3.3.5 &ndash; For 语句</A>
-<LI><A HREF="manual.html#3.3.6">3.3.6 &ndash; 函数调用语句</A>
-<LI><A HREF="manual.html#3.3.7">3.3.7 &ndash; 局部声明</A>
+<LI> <CODE>ipairs</CODE> 以及表处理库都会考虑元方法
+<LI> <CODE>string.dump</CODE> 多了裁减选项
+<LI> 表处理库考虑了元方法
+<LI> 新函数 <CODE>table.move</CODE>
+<LI> 新函数 <CODE>string.pack</CODE>
+<LI> 新函数 <CODE>string.unpack</CODE>
+<LI> 新函数 <CODE>string.packsize</CODE>
 </UL>
-<LI><A HREF="manual.html#3.4">3.4 &ndash; 表达式</A>
+
+<H3>C API</H3>
 <UL>
-<LI><A HREF="manual.html#3.4.1">3.4.1 &ndash; 数学操作符</A>
-<LI><A HREF="manual.html#3.4.2">3.4.2 &ndash; 位操作符</A>
-<LI><A HREF="manual.html#3.4.3">3.4.3 &ndash; 强制转换</A>
-<LI><A HREF="manual.html#3.4.4">3.4.4 &ndash; 比较操作符</A>
-<LI><A HREF="manual.html#3.4.5">3.4.5 &ndash; 逻辑操作符</A>
-<LI><A HREF="manual.html#3.4.6">3.4.6 &ndash; 字符串连接</A>
-<LI><A HREF="manual.html#3.4.7">3.4.7 &ndash; 长度操作符</A>
-<LI><A HREF="manual.html#3.4.8">3.4.8 &ndash; 优先级</A>
-<LI><A HREF="manual.html#3.4.9">3.4.9 &ndash; 表创建</A>
-<LI><A HREF="manual.html#3.4.10">3.4.10 &ndash; 函数调用</A>
-<LI><A HREF="manual.html#3.4.11">3.4.11 &ndash; 函数定义</A>
+<LI> 简化了延续点 API 
+<LI> <CODE>lua_gettable</CODE> 以及类似函数会返回结果的值类型
+<LI> <CODE>lua_dump</CODE> 增加了裁减选项
+<LI> 新函数： <CODE>lua_geti</CODE>
+<LI> 新函数： <CODE>lua_seti</CODE>
+<LI> 新函数： <CODE>lua_isyieldable</CODE>
+<LI> 新函数： <CODE>lua_numbertointeger</CODE>
+<LI> 新函数： <CODE>lua_rotate</CODE>
+<LI> 新函数： <CODE>lua_stringtonumber</CODE>
 </UL>
-<LI><A HREF="manual.html#3.5">3.5 &ndash; 可见性规则</A>
-</UL>
-<P>
-<LI><A HREF="manual.html#4">4 &ndash; 编程接口</A>
+
+<H3>Lua 独立解释器</H3>
 <UL>
-<LI><A HREF="manual.html#4.1">4.1 &ndash; 栈</A>
-<LI><A HREF="manual.html#4.2">4.2 &ndash; 栈大小</A>
-<LI><A HREF="manual.html#4.3">4.3 &ndash; 合法及可访问下标</A>
-<LI><A HREF="manual.html#4.4">4.4 &ndash; C 闭包</A>
-<LI><A HREF="manual.html#4.5">4.5 &ndash; 注册表</A>
-<LI><A HREF="manual.html#4.6">4.6 &ndash; C 中的错误处理</A>
-<LI><A HREF="manual.html#4.7">4.7 &ndash; C 中的让出处理</A>
-<LI><A HREF="manual.html#4.8">4.8 &ndash; 函数和类型</A>
-<LI><A HREF="manual.html#4.9">4.9 &ndash; 调试接口</A>
-</UL>
-<P>
-<LI><A HREF="manual.html#5">5 &ndash; 辅助库</A>
-<UL>
-<LI><A HREF="manual.html#5.1">5.1 &ndash; 函数和类型</A>
-</UL>
-<P>
-<LI><A HREF="manual.html#6">6 &ndash; 标准库</A>
-<UL>
-<LI><A HREF="manual.html#6.1">6.1 &ndash; 基本函数</A>
-<LI><A HREF="manual.html#6.2">6.2 &ndash; 协程处理</A>
-<LI><A HREF="manual.html#6.3">6.3 &ndash; 模块</A>
-<LI><A HREF="manual.html#6.4">6.4 &ndash; 字符串处理</A>
-<UL>
-<LI><A HREF="manual.html#6.4.1">6.4.1 &ndash; 模式</A>
-<LI><A HREF="manual.html#6.4.2">6.4.2 &ndash; 打包和解包用到的格式串</A>
-</UL>
-<LI><A HREF="manual.html#6.5">6.5 &ndash; UTF-8 支持</A>
-<LI><A HREF="manual.html#6.6">6.6 &ndash; 表操作</A>
-<LI><A HREF="manual.html#6.7">6.7 &ndash; 数学函数</A>
-<LI><A HREF="manual.html#6.8">6.8 &ndash; 输入输出设施</A>
-<LI><A HREF="manual.html#6.9">6.9 &ndash; 操作系统设施</A>
-<LI><A HREF="manual.html#6.10">6.10 &ndash; 调试库</A>
-</UL>
-<P>
-<LI><A HREF="manual.html#7">7 &ndash; 独立版 Lua</A>
-<P>
-<LI><A HREF="manual.html#8">8 &ndash; 与之前版本不兼容的地方</A>
-<UL>
-<LI><A HREF="manual.html#8.1">8.1 &ndash; 语言的变更</A>
-<LI><A HREF="manual.html#8.2">8.2 &ndash; 库的变更</A>
-<LI><A HREF="manual.html#8.3">8.3 &ndash; API 的变更</A>
-</UL>
-<P>
-<LI><A HREF="manual.html#9">9 &ndash; Lua 的完整词法</A>
+<LI> 可以做计算器使用；不再需要前置 '='
+<LI> <CODE>arg</CODE> 表对所有代码都可用
 </UL>
 
-<H2><A NAME="index">索引</A></H2>
-<TABLE WIDTH="100%">
-<TR VALIGN="top">
-<TD>
-<H3><A NAME="functions">Lua 函数</A></H3>
-<P>
-<A HREF="manual.html#6.1">基础</A><BR>
-<A HREF="manual.html#pdf-_G">_G</A><BR>
-<A HREF="manual.html#pdf-_VERSION">_VERSION</A><BR>
-
-<A HREF="manual.html#pdf-assert">assert</A><BR>
-<A HREF="manual.html#pdf-collectgarbage">collectgarbage</A><BR>
-<A HREF="manual.html#pdf-dofile">dofile</A><BR>
-<A HREF="manual.html#pdf-error">error</A><BR>
-<A HREF="manual.html#pdf-getmetatable">getmetatable</A><BR>
-<A HREF="manual.html#pdf-ipairs">ipairs</A><BR>
-<A HREF="manual.html#pdf-load">load</A><BR>
-<A HREF="manual.html#pdf-loadfile">loadfile</A><BR>
-<A HREF="manual.html#pdf-next">next</A><BR>
-<A HREF="manual.html#pdf-pairs">pairs</A><BR>
-<A HREF="manual.html#pdf-pcall">pcall</A><BR>
-<A HREF="manual.html#pdf-print">print</A><BR>
-<A HREF="manual.html#pdf-rawequal">rawequal</A><BR>
-<A HREF="manual.html#pdf-rawget">rawget</A><BR>
-<A HREF="manual.html#pdf-rawlen">rawlen</A><BR>
-<A HREF="manual.html#pdf-rawset">rawset</A><BR>
-<A HREF="manual.html#pdf-require">require</A><BR>
-<A HREF="manual.html#pdf-select">select</A><BR>
-<A HREF="manual.html#pdf-setmetatable">setmetatable</A><BR>
-<A HREF="manual.html#pdf-tonumber">tonumber</A><BR>
-<A HREF="manual.html#pdf-tostring">tostring</A><BR>
-<A HREF="manual.html#pdf-type">type</A><BR>
-<A HREF="manual.html#pdf-xpcall">xpcall</A><BR>
+<H2><A NAME="license">License</A></H2>
+<A HREF="http://www.opensource.org/docs/definition.php">
+<IMG SRC="osi-certified-72x60.png" ALIGN="right" BORDER="0" ALT="[osi certified]" STYLE="padding-left: 30px ;">
+</A>
 
 <P>
-<A HREF="manual.html#6.2">协程</A><BR>
-<A HREF="manual.html#pdf-coroutine.create">coroutine.create</A><BR>
-<A HREF="manual.html#pdf-coroutine.isyieldable">coroutine.isyieldable</A><BR>
-<A HREF="manual.html#pdf-coroutine.resume">coroutine.resume</A><BR>
-<A HREF="manual.html#pdf-coroutine.running">coroutine.running</A><BR>
-<A HREF="manual.html#pdf-coroutine.status">coroutine.status</A><BR>
-<A HREF="manual.html#pdf-coroutine.wrap">coroutine.wrap</A><BR>
-<A HREF="manual.html#pdf-coroutine.yield">coroutine.yield</A><BR>
+Lua is free software distributed under the terms of the
+<A HREF="http://www.opensource.org/licenses/mit-license.html">MIT license</A>
+reproduced below;
+it may be used for any purpose, including commercial purposes,
+at absolutely no cost without having to ask us.
+
+The only requirement is that if you do use Lua,
+then you should give us credit by including the appropriate copyright notice somewhere in your product or its documentation.
+
+For details, see
+<A HREF="http://www.lua.org/license.html">this</A>.
+
+<BLOCKQUOTE STYLE="padding-bottom: 0em">
+Copyright &copy; 1994&ndash;2015 Lua.org, PUC-Rio.
 
 <P>
-<A HREF="manual.html#6.10">调试</A><BR>
-<A HREF="manual.html#pdf-debug.debug">debug.debug</A><BR>
-<A HREF="manual.html#pdf-debug.gethook">debug.gethook</A><BR>
-<A HREF="manual.html#pdf-debug.getinfo">debug.getinfo</A><BR>
-<A HREF="manual.html#pdf-debug.getlocal">debug.getlocal</A><BR>
-<A HREF="manual.html#pdf-debug.getmetatable">debug.getmetatable</A><BR>
-<A HREF="manual.html#pdf-debug.getregistry">debug.getregistry</A><BR>
-<A HREF="manual.html#pdf-debug.getupvalue">debug.getupvalue</A><BR>
-<A HREF="manual.html#pdf-debug.getuservalue">debug.getuservalue</A><BR>
-<A HREF="manual.html#pdf-debug.sethook">debug.sethook</A><BR>
-<A HREF="manual.html#pdf-debug.setlocal">debug.setlocal</A><BR>
-<A HREF="manual.html#pdf-debug.setmetatable">debug.setmetatable</A><BR>
-<A HREF="manual.html#pdf-debug.setupvalue">debug.setupvalue</A><BR>
-<A HREF="manual.html#pdf-debug.setuservalue">debug.setuservalue</A><BR>
-<A HREF="manual.html#pdf-debug.traceback">debug.traceback</A><BR>
-<A HREF="manual.html#pdf-debug.upvalueid">debug.upvalueid</A><BR>
-<A HREF="manual.html#pdf-debug.upvaluejoin">debug.upvaluejoin</A><BR>
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
 <P>
-<A HREF="manual.html#6.8">输入输出</A><BR>
-<A HREF="manual.html#pdf-io.close">io.close</A><BR>
-<A HREF="manual.html#pdf-io.flush">io.flush</A><BR>
-<A HREF="manual.html#pdf-io.input">io.input</A><BR>
-<A HREF="manual.html#pdf-io.lines">io.lines</A><BR>
-<A HREF="manual.html#pdf-io.open">io.open</A><BR>
-<A HREF="manual.html#pdf-io.output">io.output</A><BR>
-<A HREF="manual.html#pdf-io.popen">io.popen</A><BR>
-<A HREF="manual.html#pdf-io.read">io.read</A><BR>
-<A HREF="manual.html#pdf-io.stderr">io.stderr</A><BR>
-<A HREF="manual.html#pdf-io.stdin">io.stdin</A><BR>
-<A HREF="manual.html#pdf-io.stdout">io.stdout</A><BR>
-<A HREF="manual.html#pdf-io.tmpfile">io.tmpfile</A><BR>
-<A HREF="manual.html#pdf-io.type">io.type</A><BR>
-<A HREF="manual.html#pdf-io.write">io.write</A><BR>
-
-<A HREF="manual.html#pdf-file:close">file:close</A><BR>
-<A HREF="manual.html#pdf-file:flush">file:flush</A><BR>
-<A HREF="manual.html#pdf-file:lines">file:lines</A><BR>
-<A HREF="manual.html#pdf-file:read">file:read</A><BR>
-<A HREF="manual.html#pdf-file:seek">file:seek</A><BR>
-<A HREF="manual.html#pdf-file:setvbuf">file:setvbuf</A><BR>
-<A HREF="manual.html#pdf-file:write">file:write</A><BR>
-
-</TD>
-<TD>
-<H3>&nbsp;</H3>
-<P>
-<A HREF="manual.html#6.7">数学</A><BR>
-<A HREF="manual.html#pdf-math.abs">math.abs</A><BR>
-<A HREF="manual.html#pdf-math.acos">math.acos</A><BR>
-<A HREF="manual.html#pdf-math.asin">math.asin</A><BR>
-<A HREF="manual.html#pdf-math.atan">math.atan</A><BR>
-<A HREF="manual.html#pdf-math.ceil">math.ceil</A><BR>
-<A HREF="manual.html#pdf-math.cos">math.cos</A><BR>
-<A HREF="manual.html#pdf-math.deg">math.deg</A><BR>
-<A HREF="manual.html#pdf-math.exp">math.exp</A><BR>
-<A HREF="manual.html#pdf-math.floor">math.floor</A><BR>
-<A HREF="manual.html#pdf-math.fmod">math.fmod</A><BR>
-<A HREF="manual.html#pdf-math.huge">math.huge</A><BR>
-<A HREF="manual.html#pdf-math.log">math.log</A><BR>
-<A HREF="manual.html#pdf-math.max">math.max</A><BR>
-<A HREF="manual.html#pdf-math.maxinteger">math.maxinteger</A><BR>
-<A HREF="manual.html#pdf-math.min">math.min</A><BR>
-<A HREF="manual.html#pdf-math.mininteger">math.mininteger</A><BR>
-<A HREF="manual.html#pdf-math.modf">math.modf</A><BR>
-<A HREF="manual.html#pdf-math.pi">math.pi</A><BR>
-<A HREF="manual.html#pdf-math.rad">math.rad</A><BR>
-<A HREF="manual.html#pdf-math.random">math.random</A><BR>
-<A HREF="manual.html#pdf-math.randomseed">math.randomseed</A><BR>
-<A HREF="manual.html#pdf-math.sin">math.sin</A><BR>
-<A HREF="manual.html#pdf-math.sqrt">math.sqrt</A><BR>
-<A HREF="manual.html#pdf-math.tan">math.tan</A><BR>
-<A HREF="manual.html#pdf-math.tointeger">math.tointeger</A><BR>
-<A HREF="manual.html#pdf-math.type">math.type</A><BR>
-<A HREF="manual.html#pdf-math.ult">math.ult</A><BR>
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 
 <P>
-<A HREF="manual.html#6.9">操作系统</A><BR>
-<A HREF="manual.html#pdf-os.clock">os.clock</A><BR>
-<A HREF="manual.html#pdf-os.date">os.date</A><BR>
-<A HREF="manual.html#pdf-os.difftime">os.difftime</A><BR>
-<A HREF="manual.html#pdf-os.execute">os.execute</A><BR>
-<A HREF="manual.html#pdf-os.exit">os.exit</A><BR>
-<A HREF="manual.html#pdf-os.getenv">os.getenv</A><BR>
-<A HREF="manual.html#pdf-os.remove">os.remove</A><BR>
-<A HREF="manual.html#pdf-os.rename">os.rename</A><BR>
-<A HREF="manual.html#pdf-os.setlocale">os.setlocale</A><BR>
-<A HREF="manual.html#pdf-os.time">os.time</A><BR>
-<A HREF="manual.html#pdf-os.tmpname">os.tmpname</A><BR>
-
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+</BLOCKQUOTE>
 <P>
-<A HREF="manual.html#6.3">包</A><BR>
-<A HREF="manual.html#pdf-package.config">package.config</A><BR>
-<A HREF="manual.html#pdf-package.cpath">package.cpath</A><BR>
-<A HREF="manual.html#pdf-package.loaded">package.loaded</A><BR>
-<A HREF="manual.html#pdf-package.loadlib">package.loadlib</A><BR>
-<A HREF="manual.html#pdf-package.path">package.path</A><BR>
-<A HREF="manual.html#pdf-package.preload">package.preload</A><BR>
-<A HREF="manual.html#pdf-package.searchers">package.searchers</A><BR>
-<A HREF="manual.html#pdf-package.searchpath">package.searchpath</A><BR>
-
-<P>
-<A HREF="manual.html#6.4">字符串</A><BR>
-<A HREF="manual.html#pdf-string.byte">string.byte</A><BR>
-<A HREF="manual.html#pdf-string.char">string.char</A><BR>
-<A HREF="manual.html#pdf-string.dump">string.dump</A><BR>
-<A HREF="manual.html#pdf-string.find">string.find</A><BR>
-<A HREF="manual.html#pdf-string.format">string.format</A><BR>
-<A HREF="manual.html#pdf-string.gmatch">string.gmatch</A><BR>
-<A HREF="manual.html#pdf-string.gsub">string.gsub</A><BR>
-<A HREF="manual.html#pdf-string.len">string.len</A><BR>
-<A HREF="manual.html#pdf-string.lower">string.lower</A><BR>
-<A HREF="manual.html#pdf-string.match">string.match</A><BR>
-<A HREF="manual.html#pdf-string.pack">string.pack</A><BR>
-<A HREF="manual.html#pdf-string.packsize">string.packsize</A><BR>
-<A HREF="manual.html#pdf-string.rep">string.rep</A><BR>
-<A HREF="manual.html#pdf-string.reverse">string.reverse</A><BR>
-<A HREF="manual.html#pdf-string.sub">string.sub</A><BR>
-<A HREF="manual.html#pdf-string.unpack">string.unpack</A><BR>
-<A HREF="manual.html#pdf-string.upper">string.upper</A><BR>
-
-<P>
-<A HREF="manual.html#6.6">表</A><BR>
-<A HREF="manual.html#pdf-table.concat">table.concat</A><BR>
-<A HREF="manual.html#pdf-table.insert">table.insert</A><BR>
-<A HREF="manual.html#pdf-table.move">table.move</A><BR>
-<A HREF="manual.html#pdf-table.pack">table.pack</A><BR>
-<A HREF="manual.html#pdf-table.remove">table.remove</A><BR>
-<A HREF="manual.html#pdf-table.sort">table.sort</A><BR>
-<A HREF="manual.html#pdf-table.unpack">table.unpack</A><BR>
-
-<P>
-<A HREF="manual.html#6.5">utf8</A><BR>
-<A HREF="manual.html#pdf-utf8.char">utf8.char</A><BR>
-<A HREF="manual.html#pdf-utf8.charpattern">utf8.charpattern</A><BR>
-<A HREF="manual.html#pdf-utf8.codepoint">utf8.codepoint</A><BR>
-<A HREF="manual.html#pdf-utf8.codes">utf8.codes</A><BR>
-<A HREF="manual.html#pdf-utf8.len">utf8.len</A><BR>
-<A HREF="manual.html#pdf-utf8.offset">utf8.offset</A><BR>
-
-<H3><A NAME="env">环境变量</A></H3>
-<A HREF="manual.html#pdf-LUA_CPATH">LUA_CPATH</A><BR>
-<A HREF="manual.html#pdf-LUA_CPATH_5_3">LUA_CPATH_5_3</A><BR>
-<A HREF="manual.html#pdf-LUA_INIT">LUA_INIT</A><BR>
-<A HREF="manual.html#pdf-LUA_INIT_5_3">LUA_INIT_5_3</A><BR>
-<A HREF="manual.html#pdf-LUA_PATH">LUA_PATH</A><BR>
-<A HREF="manual.html#pdf-LUA_PATH_5_3">LUA_PATH_5_3</A><BR>
-
-</TD>
-<TD>
-<H3><A NAME="api">C API</A></H3>
-<P>
-<A HREF="manual.html#lua_Alloc">lua_Alloc</A><BR>
-<A HREF="manual.html#lua_CFunction">lua_CFunction</A><BR>
-<A HREF="manual.html#lua_Debug">lua_Debug</A><BR>
-<A HREF="manual.html#lua_Hook">lua_Hook</A><BR>
-<A HREF="manual.html#lua_Integer">lua_Integer</A><BR>
-<A HREF="manual.html#lua_KContext">lua_KContext</A><BR>
-<A HREF="manual.html#lua_KFunction">lua_KFunction</A><BR>
-<A HREF="manual.html#lua_Number">lua_Number</A><BR>
-<A HREF="manual.html#lua_Reader">lua_Reader</A><BR>
-<A HREF="manual.html#lua_State">lua_State</A><BR>
-<A HREF="manual.html#lua_Unsigned">lua_Unsigned</A><BR>
-<A HREF="manual.html#lua_Writer">lua_Writer</A><BR>
-
-<P>
-<A HREF="manual.html#lua_absindex">lua_absindex</A><BR>
-<A HREF="manual.html#lua_arith">lua_arith</A><BR>
-<A HREF="manual.html#lua_atpanic">lua_atpanic</A><BR>
-<A HREF="manual.html#lua_call">lua_call</A><BR>
-<A HREF="manual.html#lua_callk">lua_callk</A><BR>
-<A HREF="manual.html#lua_checkstack">lua_checkstack</A><BR>
-<A HREF="manual.html#lua_close">lua_close</A><BR>
-<A HREF="manual.html#lua_compare">lua_compare</A><BR>
-<A HREF="manual.html#lua_concat">lua_concat</A><BR>
-<A HREF="manual.html#lua_copy">lua_copy</A><BR>
-<A HREF="manual.html#lua_createtable">lua_createtable</A><BR>
-<A HREF="manual.html#lua_dump">lua_dump</A><BR>
-<A HREF="manual.html#lua_error">lua_error</A><BR>
-<A HREF="manual.html#lua_gc">lua_gc</A><BR>
-<A HREF="manual.html#lua_getallocf">lua_getallocf</A><BR>
-<A HREF="manual.html#lua_getextraspace">lua_getextraspace</A><BR>
-<A HREF="manual.html#lua_getfield">lua_getfield</A><BR>
-<A HREF="manual.html#lua_getglobal">lua_getglobal</A><BR>
-<A HREF="manual.html#lua_gethook">lua_gethook</A><BR>
-<A HREF="manual.html#lua_gethookcount">lua_gethookcount</A><BR>
-<A HREF="manual.html#lua_gethookmask">lua_gethookmask</A><BR>
-<A HREF="manual.html#lua_geti">lua_geti</A><BR>
-<A HREF="manual.html#lua_getinfo">lua_getinfo</A><BR>
-<A HREF="manual.html#lua_getlocal">lua_getlocal</A><BR>
-<A HREF="manual.html#lua_getmetatable">lua_getmetatable</A><BR>
-<A HREF="manual.html#lua_getstack">lua_getstack</A><BR>
-<A HREF="manual.html#lua_gettable">lua_gettable</A><BR>
-<A HREF="manual.html#lua_gettop">lua_gettop</A><BR>
-<A HREF="manual.html#lua_getupvalue">lua_getupvalue</A><BR>
-<A HREF="manual.html#lua_getuservalue">lua_getuservalue</A><BR>
-<A HREF="manual.html#lua_insert">lua_insert</A><BR>
-<A HREF="manual.html#lua_isboolean">lua_isboolean</A><BR>
-<A HREF="manual.html#lua_iscfunction">lua_iscfunction</A><BR>
-<A HREF="manual.html#lua_isfunction">lua_isfunction</A><BR>
-<A HREF="manual.html#lua_isinteger">lua_isinteger</A><BR>
-<A HREF="manual.html#lua_islightuserdata">lua_islightuserdata</A><BR>
-<A HREF="manual.html#lua_isnil">lua_isnil</A><BR>
-<A HREF="manual.html#lua_isnone">lua_isnone</A><BR>
-<A HREF="manual.html#lua_isnoneornil">lua_isnoneornil</A><BR>
-<A HREF="manual.html#lua_isnumber">lua_isnumber</A><BR>
-<A HREF="manual.html#lua_isstring">lua_isstring</A><BR>
-<A HREF="manual.html#lua_istable">lua_istable</A><BR>
-<A HREF="manual.html#lua_isthread">lua_isthread</A><BR>
-<A HREF="manual.html#lua_isuserdata">lua_isuserdata</A><BR>
-<A HREF="manual.html#lua_isyieldable">lua_isyieldable</A><BR>
-<A HREF="manual.html#lua_len">lua_len</A><BR>
-<A HREF="manual.html#lua_load">lua_load</A><BR>
-<A HREF="manual.html#lua_newstate">lua_newstate</A><BR>
-<A HREF="manual.html#lua_newtable">lua_newtable</A><BR>
-<A HREF="manual.html#lua_newthread">lua_newthread</A><BR>
-<A HREF="manual.html#lua_newuserdata">lua_newuserdata</A><BR>
-<A HREF="manual.html#lua_next">lua_next</A><BR>
-<A HREF="manual.html#lua_numbertointeger">lua_numbertointeger</A><BR>
-<A HREF="manual.html#lua_pcall">lua_pcall</A><BR>
-<A HREF="manual.html#lua_pcallk">lua_pcallk</A><BR>
-<A HREF="manual.html#lua_pop">lua_pop</A><BR>
-<A HREF="manual.html#lua_pushboolean">lua_pushboolean</A><BR>
-<A HREF="manual.html#lua_pushcclosure">lua_pushcclosure</A><BR>
-<A HREF="manual.html#lua_pushcfunction">lua_pushcfunction</A><BR>
-<A HREF="manual.html#lua_pushfstring">lua_pushfstring</A><BR>
-<A HREF="manual.html#lua_pushglobaltable">lua_pushglobaltable</A><BR>
-<A HREF="manual.html#lua_pushinteger">lua_pushinteger</A><BR>
-<A HREF="manual.html#lua_pushlightuserdata">lua_pushlightuserdata</A><BR>
-<A HREF="manual.html#lua_pushliteral">lua_pushliteral</A><BR>
-<A HREF="manual.html#lua_pushlstring">lua_pushlstring</A><BR>
-<A HREF="manual.html#lua_pushnil">lua_pushnil</A><BR>
-<A HREF="manual.html#lua_pushnumber">lua_pushnumber</A><BR>
-<A HREF="manual.html#lua_pushstring">lua_pushstring</A><BR>
-<A HREF="manual.html#lua_pushthread">lua_pushthread</A><BR>
-<A HREF="manual.html#lua_pushvalue">lua_pushvalue</A><BR>
-<A HREF="manual.html#lua_pushvfstring">lua_pushvfstring</A><BR>
-<A HREF="manual.html#lua_rawequal">lua_rawequal</A><BR>
-<A HREF="manual.html#lua_rawget">lua_rawget</A><BR>
-<A HREF="manual.html#lua_rawgeti">lua_rawgeti</A><BR>
-<A HREF="manual.html#lua_rawgetp">lua_rawgetp</A><BR>
-<A HREF="manual.html#lua_rawlen">lua_rawlen</A><BR>
-<A HREF="manual.html#lua_rawset">lua_rawset</A><BR>
-<A HREF="manual.html#lua_rawseti">lua_rawseti</A><BR>
-<A HREF="manual.html#lua_rawsetp">lua_rawsetp</A><BR>
-<A HREF="manual.html#lua_register">lua_register</A><BR>
-<A HREF="manual.html#lua_remove">lua_remove</A><BR>
-<A HREF="manual.html#lua_replace">lua_replace</A><BR>
-<A HREF="manual.html#lua_resume">lua_resume</A><BR>
-<A HREF="manual.html#lua_rotate">lua_rotate</A><BR>
-<A HREF="manual.html#lua_setallocf">lua_setallocf</A><BR>
-<A HREF="manual.html#lua_setfield">lua_setfield</A><BR>
-<A HREF="manual.html#lua_setglobal">lua_setglobal</A><BR>
-<A HREF="manual.html#lua_sethook">lua_sethook</A><BR>
-<A HREF="manual.html#lua_seti">lua_seti</A><BR>
-<A HREF="manual.html#lua_setlocal">lua_setlocal</A><BR>
-<A HREF="manual.html#lua_setmetatable">lua_setmetatable</A><BR>
-<A HREF="manual.html#lua_settable">lua_settable</A><BR>
-<A HREF="manual.html#lua_settop">lua_settop</A><BR>
-<A HREF="manual.html#lua_setupvalue">lua_setupvalue</A><BR>
-<A HREF="manual.html#lua_setuservalue">lua_setuservalue</A><BR>
-<A HREF="manual.html#lua_status">lua_status</A><BR>
-<A HREF="manual.html#lua_stringtonumber">lua_stringtonumber</A><BR>
-<A HREF="manual.html#lua_toboolean">lua_toboolean</A><BR>
-<A HREF="manual.html#lua_tocfunction">lua_tocfunction</A><BR>
-<A HREF="manual.html#lua_tointeger">lua_tointeger</A><BR>
-<A HREF="manual.html#lua_tointegerx">lua_tointegerx</A><BR>
-<A HREF="manual.html#lua_tolstring">lua_tolstring</A><BR>
-<A HREF="manual.html#lua_tonumber">lua_tonumber</A><BR>
-<A HREF="manual.html#lua_tonumberx">lua_tonumberx</A><BR>
-<A HREF="manual.html#lua_topointer">lua_topointer</A><BR>
-<A HREF="manual.html#lua_tostring">lua_tostring</A><BR>
-<A HREF="manual.html#lua_tothread">lua_tothread</A><BR>
-<A HREF="manual.html#lua_touserdata">lua_touserdata</A><BR>
-<A HREF="manual.html#lua_type">lua_type</A><BR>
-<A HREF="manual.html#lua_typename">lua_typename</A><BR>
-<A HREF="manual.html#lua_upvalueid">lua_upvalueid</A><BR>
-<A HREF="manual.html#lua_upvalueindex">lua_upvalueindex</A><BR>
-<A HREF="manual.html#lua_upvaluejoin">lua_upvaluejoin</A><BR>
-<A HREF="manual.html#lua_version">lua_version</A><BR>
-<A HREF="manual.html#lua_xmove">lua_xmove</A><BR>
-<A HREF="manual.html#lua_yield">lua_yield</A><BR>
-<A HREF="manual.html#lua_yieldk">lua_yieldk</A><BR>
-
-</TD>
-<TD>
-<H3><A NAME="auxlib">辅助库</A></H3>
-<P>
-<A HREF="manual.html#luaL_Buffer">luaL_Buffer</A><BR>
-<A HREF="manual.html#luaL_Reg">luaL_Reg</A><BR>
-<A HREF="manual.html#luaL_Stream">luaL_Stream</A><BR>
-
-<P>
-<A HREF="manual.html#luaL_addchar">luaL_addchar</A><BR>
-<A HREF="manual.html#luaL_addlstring">luaL_addlstring</A><BR>
-<A HREF="manual.html#luaL_addsize">luaL_addsize</A><BR>
-<A HREF="manual.html#luaL_addstring">luaL_addstring</A><BR>
-<A HREF="manual.html#luaL_addvalue">luaL_addvalue</A><BR>
-<A HREF="manual.html#luaL_argcheck">luaL_argcheck</A><BR>
-<A HREF="manual.html#luaL_argerror">luaL_argerror</A><BR>
-<A HREF="manual.html#luaL_buffinit">luaL_buffinit</A><BR>
-<A HREF="manual.html#luaL_buffinitsize">luaL_buffinitsize</A><BR>
-<A HREF="manual.html#luaL_callmeta">luaL_callmeta</A><BR>
-<A HREF="manual.html#luaL_checkany">luaL_checkany</A><BR>
-<A HREF="manual.html#luaL_checkinteger">luaL_checkinteger</A><BR>
-<A HREF="manual.html#luaL_checklstring">luaL_checklstring</A><BR>
-<A HREF="manual.html#luaL_checknumber">luaL_checknumber</A><BR>
-<A HREF="manual.html#luaL_checkoption">luaL_checkoption</A><BR>
-<A HREF="manual.html#luaL_checkstack">luaL_checkstack</A><BR>
-<A HREF="manual.html#luaL_checkstring">luaL_checkstring</A><BR>
-<A HREF="manual.html#luaL_checktype">luaL_checktype</A><BR>
-<A HREF="manual.html#luaL_checkudata">luaL_checkudata</A><BR>
-<A HREF="manual.html#luaL_checkversion">luaL_checkversion</A><BR>
-<A HREF="manual.html#luaL_dofile">luaL_dofile</A><BR>
-<A HREF="manual.html#luaL_dostring">luaL_dostring</A><BR>
-<A HREF="manual.html#luaL_error">luaL_error</A><BR>
-<A HREF="manual.html#luaL_execresult">luaL_execresult</A><BR>
-<A HREF="manual.html#luaL_fileresult">luaL_fileresult</A><BR>
-<A HREF="manual.html#luaL_getmetafield">luaL_getmetafield</A><BR>
-<A HREF="manual.html#luaL_getmetatable">luaL_getmetatable</A><BR>
-<A HREF="manual.html#luaL_getsubtable">luaL_getsubtable</A><BR>
-<A HREF="manual.html#luaL_gsub">luaL_gsub</A><BR>
-<A HREF="manual.html#luaL_len">luaL_len</A><BR>
-<A HREF="manual.html#luaL_loadbuffer">luaL_loadbuffer</A><BR>
-<A HREF="manual.html#luaL_loadbufferx">luaL_loadbufferx</A><BR>
-<A HREF="manual.html#luaL_loadfile">luaL_loadfile</A><BR>
-<A HREF="manual.html#luaL_loadfilex">luaL_loadfilex</A><BR>
-<A HREF="manual.html#luaL_loadstring">luaL_loadstring</A><BR>
-<A HREF="manual.html#luaL_newlib">luaL_newlib</A><BR>
-<A HREF="manual.html#luaL_newlibtable">luaL_newlibtable</A><BR>
-<A HREF="manual.html#luaL_newmetatable">luaL_newmetatable</A><BR>
-<A HREF="manual.html#luaL_newstate">luaL_newstate</A><BR>
-<A HREF="manual.html#luaL_openlibs">luaL_openlibs</A><BR>
-<A HREF="manual.html#luaL_optinteger">luaL_optinteger</A><BR>
-<A HREF="manual.html#luaL_optlstring">luaL_optlstring</A><BR>
-<A HREF="manual.html#luaL_optnumber">luaL_optnumber</A><BR>
-<A HREF="manual.html#luaL_optstring">luaL_optstring</A><BR>
-<A HREF="manual.html#luaL_prepbuffer">luaL_prepbuffer</A><BR>
-<A HREF="manual.html#luaL_prepbuffsize">luaL_prepbuffsize</A><BR>
-<A HREF="manual.html#luaL_pushresult">luaL_pushresult</A><BR>
-<A HREF="manual.html#luaL_pushresultsize">luaL_pushresultsize</A><BR>
-<A HREF="manual.html#luaL_ref">luaL_ref</A><BR>
-<A HREF="manual.html#luaL_requiref">luaL_requiref</A><BR>
-<A HREF="manual.html#luaL_setfuncs">luaL_setfuncs</A><BR>
-<A HREF="manual.html#luaL_setmetatable">luaL_setmetatable</A><BR>
-<A HREF="manual.html#luaL_testudata">luaL_testudata</A><BR>
-<A HREF="manual.html#luaL_tolstring">luaL_tolstring</A><BR>
-<A HREF="manual.html#luaL_traceback">luaL_traceback</A><BR>
-<A HREF="manual.html#luaL_typename">luaL_typename</A><BR>
-<A HREF="manual.html#luaL_unref">luaL_unref</A><BR>
-<A HREF="manual.html#luaL_where">luaL_where</A><BR>
-
-<H3><A NAME="library">标准库</A></H3>
-<P>
-<A HREF="manual.html#pdf-luaopen_base">luaopen_base</A><BR>
-<A HREF="manual.html#pdf-luaopen_coroutine">luaopen_coroutine</A><BR>
-<A HREF="manual.html#pdf-luaopen_debug">luaopen_debug</A><BR>
-<A HREF="manual.html#pdf-luaopen_io">luaopen_io</A><BR>
-<A HREF="manual.html#pdf-luaopen_math">luaopen_math</A><BR>
-<A HREF="manual.html#pdf-luaopen_os">luaopen_os</A><BR>
-<A HREF="manual.html#pdf-luaopen_package">luaopen_package</A><BR>
-<A HREF="manual.html#pdf-luaopen_string">luaopen_string</A><BR>
-<A HREF="manual.html#pdf-luaopen_table">luaopen_table</A><BR>
-<A HREF="manual.html#pdf-luaopen_utf8">luaopen_utf8</A><BR>
-
-<H3><A NAME="constants">常量</A></H3>
-<A HREF="manual.html#pdf-LUA_ERRERR">LUA_ERRERR</A><BR>
-<A HREF="manual.html#pdf-LUA_ERRFILE">LUA_ERRFILE</A><BR>
-<A HREF="manual.html#pdf-LUA_ERRGCMM">LUA_ERRGCMM</A><BR>
-<A HREF="manual.html#pdf-LUA_ERRMEM">LUA_ERRMEM</A><BR>
-<A HREF="manual.html#pdf-LUA_ERRRUN">LUA_ERRRUN</A><BR>
-<A HREF="manual.html#pdf-LUA_ERRSYNTAX">LUA_ERRSYNTAX</A><BR>
-<A HREF="manual.html#pdf-LUA_HOOKCALL">LUA_HOOKCALL</A><BR>
-<A HREF="manual.html#pdf-LUA_HOOKCOUNT">LUA_HOOKCOUNT</A><BR>
-<A HREF="manual.html#pdf-LUA_HOOKLINE">LUA_HOOKLINE</A><BR>
-<A HREF="manual.html#pdf-LUA_HOOKRET">LUA_HOOKRET</A><BR>
-<A HREF="manual.html#pdf-LUA_HOOKTAILCALL">LUA_HOOKTAILCALL</A><BR>
-<A HREF="manual.html#pdf-LUA_MASKCALL">LUA_MASKCALL</A><BR>
-<A HREF="manual.html#pdf-LUA_MASKCOUNT">LUA_MASKCOUNT</A><BR>
-<A HREF="manual.html#pdf-LUA_MASKLINE">LUA_MASKLINE</A><BR>
-<A HREF="manual.html#pdf-LUA_MASKRET">LUA_MASKRET</A><BR>
-<A HREF="manual.html#pdf-LUA_MAXINTEGER">LUA_MAXINTEGER</A><BR>
-<A HREF="manual.html#pdf-LUA_MININTEGER">LUA_MININTEGER</A><BR>
-<A HREF="manual.html#pdf-LUA_MINSTACK">LUA_MINSTACK</A><BR>
-<A HREF="manual.html#pdf-LUA_MULTRET">LUA_MULTRET</A><BR>
-<A HREF="manual.html#pdf-LUA_NOREF">LUA_NOREF</A><BR>
-<A HREF="manual.html#pdf-LUA_OK">LUA_OK</A><BR>
-<A HREF="manual.html#pdf-LUA_OPADD">LUA_OPADD</A><BR>
-<A HREF="manual.html#pdf-LUA_OPBAND">LUA_OPBAND</A><BR>
-<A HREF="manual.html#pdf-LUA_OPBNOT">LUA_OPBNOT</A><BR>
-<A HREF="manual.html#pdf-LUA_OPBOR">LUA_OPBOR</A><BR>
-<A HREF="manual.html#pdf-LUA_OPBXOR">LUA_OPBXOR</A><BR>
-<A HREF="manual.html#pdf-LUA_OPDIV">LUA_OPDIV</A><BR>
-<A HREF="manual.html#pdf-LUA_OPEQ">LUA_OPEQ</A><BR>
-<A HREF="manual.html#pdf-LUA_OPIDIV">LUA_OPIDIV</A><BR>
-<A HREF="manual.html#pdf-LUA_OPLE">LUA_OPLE</A><BR>
-<A HREF="manual.html#pdf-LUA_OPLT">LUA_OPLT</A><BR>
-<A HREF="manual.html#pdf-LUA_OPMOD">LUA_OPMOD</A><BR>
-<A HREF="manual.html#pdf-LUA_OPMUL">LUA_OPMUL</A><BR>
-<A HREF="manual.html#pdf-LUA_OPPOW">LUA_OPPOW</A><BR>
-<A HREF="manual.html#pdf-LUA_OPSHL">LUA_OPSHL</A><BR>
-<A HREF="manual.html#pdf-LUA_OPSHR">LUA_OPSHR</A><BR>
-<A HREF="manual.html#pdf-LUA_OPSUB">LUA_OPSUB</A><BR>
-<A HREF="manual.html#pdf-LUA_OPUNM">LUA_OPUNM</A><BR>
-<A HREF="manual.html#pdf-LUA_REFNIL">LUA_REFNIL</A><BR>
-<A HREF="manual.html#pdf-LUA_REGISTRYINDEX">LUA_REGISTRYINDEX</A><BR>
-<A HREF="manual.html#pdf-LUA_RIDX_GLOBALS">LUA_RIDX_GLOBALS</A><BR>
-<A HREF="manual.html#pdf-LUA_RIDX_MAINTHREAD">LUA_RIDX_MAINTHREAD</A><BR>
-<A HREF="manual.html#pdf-LUA_TBOOLEAN">LUA_TBOOLEAN</A><BR>
-<A HREF="manual.html#pdf-LUA_TFUNCTION">LUA_TFUNCTION</A><BR>
-<A HREF="manual.html#pdf-LUA_TLIGHTUSERDATA">LUA_TLIGHTUSERDATA</A><BR>
-<A HREF="manual.html#pdf-LUA_TNIL">LUA_TNIL</A><BR>
-<A HREF="manual.html#pdf-LUA_TNONE">LUA_TNONE</A><BR>
-<A HREF="manual.html#pdf-LUA_TNUMBER">LUA_TNUMBER</A><BR>
-<A HREF="manual.html#pdf-LUA_TSTRING">LUA_TSTRING</A><BR>
-<A HREF="manual.html#pdf-LUA_TTABLE">LUA_TTABLE</A><BR>
-<A HREF="manual.html#pdf-LUA_TTHREAD">LUA_TTHREAD</A><BR>
-<A HREF="manual.html#pdf-LUA_TUSERDATA">LUA_TUSERDATA</A><BR>
-<A HREF="manual.html#pdf-LUA_USE_APICHECK">LUA_USE_APICHECK</A><BR>
-<A HREF="manual.html#pdf-LUA_YIELD">LUA_YIELD</A><BR>
-<A HREF="manual.html#pdf-LUAL_BUFFERSIZE">LUAL_BUFFERSIZE</A><BR>
-
-</TD>
-</TR>
-</TABLE>
 
 <HR>
 <SMALL CLASS="footer">
-最后更新时间：
-2015年1月13日12:28
+最后修改时间:
+2015年1月13日15:16
 </SMALL>
 
 </BODY>
