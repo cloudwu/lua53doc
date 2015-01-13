@@ -303,300 +303,270 @@ Lua 本身只会产生字符串类型的错误对象，
 
 
 
-<h2>2.4 &ndash; <a name="2.4">Metatables and Metamethods</a></h2>
+<h2>2.4 &ndash; <a name="2.4">元表及元方法</a></h2>
 
 <p>
-Every value in Lua can have a <em>metatable</em>.
-This <em>metatable</em> is an ordinary Lua table
-that defines the behavior of the original value
-under certain special operations.
-You can change several aspects of the behavior
-of operations over a value by setting specific fields in its metatable.
-For instance, when a non-numeric value is the operand of an addition,
-Lua checks for a function in the field "<code>__add</code>" of the value's metatable.
-If it finds one,
-Lua calls this function to perform the addition.
+Lua 中的每个值都可以用一个 <em>元表</em>。
+这个 <em>元表</em> 就是一个普通的 Lua 表，
+它用于定义原始值在特定操作下的行为。
+如果你想改变一个值在特定操作下的行为，你可以在它的元表中设置对应域。
+例如，当你对非数字值做加操作时，
+Lua 会检查该值的元表中的 "<code>__add</code>" 域下的函数。
+如果能找到，Lua 则调用这个函数来完成加这个操作。
 
 
 <p>
-The keys in a metatable are derived from the <em>event</em> names;
-the corresponding values are called <em>metamethods</em>.
-In the previous example, the event is <code>"add"</code>
-and the metamethod is the function that performs the addition.
+元表中的键对应着不同的 <em>事件</em> 名；
+键关联的那些值被称为 <em>元方法</em>。
+在上面那个例子中引用的事件为 <code>"add"</code> ，
+完成加操作的那个函数就是元方法。
 
 
 <p>
-You can query the metatable of any value
-using the <a href="#pdf-getmetatable"><code>getmetatable</code></a> function.
+你可以用 <a href="#pdf-getmetatable"><code>getmetatable</code></a> 函数
+来获取任何值的元表。
 
 
 <p>
-You can replace the metatable of tables
-using the <a href="#pdf-setmetatable"><code>setmetatable</code></a> function.
-You cannot change the metatable of other types from Lua
-(except by using the debug library (<a href="#6.10">&sect;6.10</a>));
-you must use the C&nbsp;API for that.
+使用 <a href="#pdf-setmetatable"><code>setmetatable</code></a> 
+来替换一张表的元表。在 Lua 中，你不可以改变其它类型的值的元表
+（除非你使用调试库（参见<a href="#6.10">&sect;6.10</a>））；
+若想改变这些非表类型的值的元表，请使用 C API。
 
 
 <p>
-Tables and full userdata have individual metatables
-(although multiple tables and userdata can share their metatables).
-Values of all other types share one single metatable per type;
-that is, there is one single metatable for all numbers,
-one for all strings, etc.
-By default, a value has no metatable,
-but the string library sets a metatable for the string type (see <a href="#6.4">&sect;6.4</a>).
+表和完全用户数据有独立的元表
+（当然，多个表和用户数据可以共享同一个元表）。
+其它类型的值按类型共享元表；
+也就是说所有的数字都共享同一个元表，
+所有的字符串共享另一个元表等等。
+默认情况下，值是没有元表的，
+但字符串库在初始化的时候为字符串类型设置了元表
+（参见 <a href="#6.4">&sect;6.4</a>）。
 
 
 <p>
-A metatable controls how an object behaves in
-arithmetic operations, bitwise operations,
-order comparisons, concatenation, length operation, calls, and indexing.
-A metatable also can define a function to be called
-when a userdata or a table is garbage collected (<a href="#2.5">&sect;2.5</a>).
+元表决定了一个对象在数学运算、位运算、比较、连接、
+取长度、调用、索引时的行为。
+元表还可以定义一个函数，当表对象或用户数据对象在垃圾回收
+（参见<a href="#2.5">&sect;2.5</a>）时调用它。
 
 
 <p>
-A detailed list of events controlled by metatables is given next.
-Each operation is identified by its corresponding event name.
-The key for each event is a string with its name prefixed by
-two underscores, '<code>__</code>';
-for instance, the key for operation "add" is the
-string "<code>__add</code>".
-Note that queries for metamethods are always raw;
-the access to a metamethod does not invoke other metamethods.
-You can emulate how Lua queries a metamethod for an object <code>obj</code>
-with the following code:
+接下来会给出一张元表可以控制的事件的完整列表。
+每个操作都用对应的事件名来区分。
+每个事件的键名用加有 '<code>__</code>' 前缀的字符串来表示；
+例如 "add" 操作的键名为字符串 "<code>__add</code>"。
+注意、Lua 从元表中直接获取元方法；
+访问元表中的元方法永远不会触发另一次元方法。
+下面的代码模拟了 Lua 从一个对象 <code>obj</code> 中获取一个元方法的过程：
 
 <pre>
      rawget(getmetatable(obj) or {}, "__" .. event_name)
 </pre>
 
 <p>
-For the unary operators (negation, length, and bitwise not),
-the metamethod is computed and called with a dummy second operand,
-equal to the first one.
-This extra operand is only to simplify Lua's internals
-(by making these operators behave like a binary operation)
-and may be removed in future versions.
-(For most uses this extra operand is irrelevant.)
-
+对于一元操作符（取负、求长度、位反），
+元方法调用的时候，第二个参数是个哑元，其值等于第一个参数。
+这样处理仅仅是为了简化 Lua 的内部实现
+（这样处理可以让所有的操作都和二元操作一致），
+这个行为有可能在将来的版本中移除。
+（使用这个额外参数的行为都是不确定的。）
 
 
 <ul>
 
 <li><b>"add": </b>
-the <code>+</code> operation.
+<code>+</code> 操作。
 
-If any operand for an addition is not a number
-(nor a string coercible to a number),
-Lua will try to call a metamethod.
-First, Lua will check the first operand (even if it is valid).
-If that operand does not define a metamethod for the "<code>__add</code>" event,
-then Lua will check the second operand.
-If Lua can find a metamethod,
-it calls the metamethod with the two operands as arguments,
-and the result of the call
-(adjusted to one value)
-is the result of the operation.
-Otherwise,
-it raises an error.
+如果任何不是数字的值（包括不能转换为数字的字符串）做加法，
+Lua 就会尝试调用元方法。
+首先、Lua 检查第一个操作数（即使它是合法的），
+如果这个操作数没有为 "<code>__add</code>" 事件定义元方法，
+Lua 就会接着检查第二个操作数。
+一旦 Lua 找到了元方法，
+它将把两个操作数作为参数传入元方法，
+元方法的结果（调整为单个值）作为这个操作的结果。
+如果找不到元方法，将抛出一个操作。
 </li>
 
 <li><b>"sub": </b>
-the <code>-</code> operation.
+<code>-</code> 操作。
 
-Behavior similar to the "add" operation.
+行为和 "add" 操作类似。
 </li>
 
 <li><b>"mul": </b>
-the <code>*</code> operation.
+<code>*</code> 操作。
 
-Behavior similar to the "add" operation.
+行为和 "add" 操作类似。
 </li>
 
 <li><b>"div": </b>
-the <code>/</code> operation.
+<code>/</code> 操作。
 
-Behavior similar to the "add" operation.
+行为和 "add" 操作类似。
 </li>
 
 <li><b>"mod": </b>
-the <code>%</code> operation.
+<code>%</code> 操作。
 
-Behavior similar to the "add" operation.
+行为和 "add" 操作类似。
 </li>
 
 <li><b>"pow": </b>
-the <code>^</code> (exponentiation) operation.
+<code>^</code> （次方）操作。
 
-Behavior similar to the "add" operation.
+行为和 "add" 操作类似。
 </li>
 
 <li><b>"unm": </b>
-the <code>-</code> (unary minus) operation.
+<code>-</code> （取负）操作。
 
-Behavior similar to the "add" operation.
+行为和 "add" 操作类似。
 </li>
 
 <li><b>"idiv": </b>
-the <code>//</code> (floor division) operation.
+<code>//</code> （向下取整除法）操作。
 
-Behavior similar to the "add" operation.
+行为和 "add" 操作类似。
 </li>
 
 <li><b>"band": </b>
-the <code>&amp;</code> (bitwise and) operation.
+<code>&amp;</code> （按位与）操作。
 
-Behavior similar to the "add" operation,
-except that Lua will try a metamethod
-if any operator is neither an integer
-nor a value coercible to an integer (see <a href="#3.4.3">&sect;3.4.3</a>).
+行为和 "add" 操作类似，
+不同的是 Lua 会在任何一个操作数无法转换为整数时
+（参见 <a href="#3.4.3">&sect;3.4.3</a>）尝试取元方法。
 </li>
 
 <li><b>"bor": </b>
-the <code>|</code> (bitwise or) operation.
+<code>|</code> （按位或）操作。
 
-Behavior similar to the "band" operation.
+行为和 "band" 操作类似。
 </li>
 
 <li><b>"bxor": </b>
-the <code>~</code> (bitwise exclusive or) operation.
+<code>~</code> （按位异或）操作。
 
-Behavior similar to the "band" operation.
+行为和 "band" 操作类似。
 </li>
 
 <li><b>"bnot": </b>
-the <code>~</code> (bitwise unary not) operation.
+<code>~</code> （按位非）操作。
 
-Behavior similar to the "band" operation.
+行为和 "band" 操作类似。
 </li>
 
 <li><b>"shl": </b>
-the <code>&lt;&lt;</code> (bitwise left shift) operation.
+<code>&lt;&lt;</code> （左移）操作。
 
-Behavior similar to the "band" operation.
+行为和 "band" 操作类似。
 </li>
 
 <li><b>"shr": </b>
-the <code>&gt;&gt;</code> (bitwise right shift) operation.
+<code>&gt;&gt;</code> （右移）操作。
 
-Behavior similar to the "band" operation.
+行为和 "band" 操作类似。
 </li>
 
 <li><b>"concat": </b>
-the <code>..</code> (concatenation) operation.
+<code>..</code> （连接）操作。
 
-Behavior similar to the "add" operation,
-except that Lua will try a metamethod
-if any operator is neither a string nor a number
-(which is always coercible to a string).
+行为和 "add" 操作类似，
+不同的是 Lua 在任何操作数即不是一个字符串
+也不是数字（数字总能转换为对应的字符串）的情况下尝试元方法。
 </li>
 
 <li><b>"len": </b>
-the <code>#</code> (length) operation.
+<code>#</code> （取长度）操作。
 
-If the object is not a string,
-Lua will try its metamethod.
-If there is a metamethod,
-Lua calls it with the object as argument,
-and the result of the call
-(always adjusted to one value)
-is the result of the operation.
-If there is no metamethod but the object is a table,
-then Lua uses the table length operation (see <a href="#3.4.7">&sect;3.4.7</a>).
-Otherwise, Lua raises an error.
+如果对象不是字符串，Lua 会尝试它的元方法。
+如果有元方法，则调用它并将对象以参数形式传入，
+而返回值（被调整为单个）则作为结果。
+如果对象是一张表且没有元方法，
+Lua 使用表的取长度操作（参见 <a href="#3.4.7">&sect;3.4.7</a>）。
+其它情况，均抛出错误。
 </li>
 
 <li><b>"eq": </b>
-the <code>==</code> (equal) operation.
+<code>==</code> （等于）操作。
 
-Behavior similar to the "add" operation,
-except that Lua will try a metamethod only when the values
-being compared are either both tables or both full userdata
-and they are not primitively equal.
-The result of the call is always converted to a boolean.
+和 "add" 操作行为类似，
+不同的是 Lua 仅在两个值都是表或都是完全用户数据
+且它们不是同一个对象时才尝试元方法。
+调用的结果总会被转换为布尔量。
 </li>
 
 <li><b>"lt": </b>
-the <code>&lt;</code> (less than) operation.
+<code>&lt;</code> （小于）操作。
 
-Behavior similar to the "add" operation,
-except that Lua will try a metamethod only when the values
-being compared are neither both numbers nor both strings.
-The result of the call is always converted to a boolean.
+和 "add" 操作行为类似，
+不同的是 Lua 仅在两个值不全为整数也不全为字符串时才尝试元方法。
+调用的结果总会被转换为布尔量。
 </li>
 
 <li><b>"le": </b>
-the <code>&lt;=</code> (less equal) operation.
+<code>&lt;=</code> （小于等于）操作。
 
-Unlike other operations,
-The less-equal operation can use two different events.
-First, Lua looks for the "<code>__le</code>" metamethod in both operands,
-like in the "lt" operation.
-If it cannot find such a metamethod,
-then it will try the "<code>__lt</code>" event,
-assuming that <code>a &lt;= b</code> is equivalent to <code>not (b &lt; a)</code>.
-As with the other comparison operators,
-the result is always a boolean.
+和其它操作不同，
+小于等于操作可能用到两个不同的事件。
+首先，像 "lt" 操作的行为那样，Lua 在两个操作数中查找 "<code>__le</code>" 元方法。
+如果一个元方法都找不到，就会再次查找 "<code>__lt</code>" 事件，
+它会假设 <code>a &lt;= b</code> 等价于 <code>not (b &lt; a)</code>。
+而其它比较操作符类似，其结果会被转换为布尔量。
 </li>
 
 <li><b>"index": </b>
-The indexing access <code>table[key]</code>.
+索引 <code>table[key]</code>。
 
-This event happens when <code>table</code> is not a table or
-when <code>key</code> is not present in <code>table</code>.
-The metamethod is looked up in <code>table</code>.
-
+当 <code>table</code> 不是表或是表 <code>table</code> 中不存在
+<code>key</code> 这个键时，这个事件被触发。
+此时，会读出 <code>table</code> 相应的元方法。
 
 <p>
-Despite the name,
-the metamethod for this event can be either a function or a table.
-If it is a function,
-it is called with <code>table</code> and <code>key</code> as arguments.
-If it is a table,
-the final result is the result of indexing this table with <code>key</code>.
-(This indexing is regular, not raw,
-and therefore can trigger another metamethod.)
+尽管名字取成这样，
+这个事件的元方法其实可以是一个函数也可以是一张表。
+如果它是一个函数，则以 <code>table</code> 和 <code>key</code> 作为参数调用它。
+如果它是一张表，最终的结果就是以 <code>key</code> 取索引这张表的结果。
+（这个索引过程是走常规的流程，而不是直接索引，
+所以这次索引有可能引发另一次元方法。）
 </li>
 
 <li><b>"newindex": </b>
-The indexing assignment <code>table[key] = value</code>.
+索引赋值 <code>table[key] = value</code> 。
 
-Like the index event,
-this event happens when <code>table</code> is not a table or
-when <code>key</code> is not present in <code>table</code>.
-The metamethod is looked up in <code>table</code>.
+和索引事件类似，它发生在
+<code>table</code> 不是表或是表 <code>table</code> 中不存在
+<code>key</code> 这个键的时候。
+此时，会读出 <code>table</code> 相应的元方法。
+
+<p>
+同索引过程那样，
+这个事件的元方法即可以是函数，也可以是一张表。
+如果是一个函数，
+则以 <code>table</code>、 <code>key</code>、以及 <code>value</code> 为参数传入。
+如果是一张表，
+Lua 对这张表做索引赋值操作。
+（这个索引过程是走常规的流程，而不是直接索引赋值，
+所以这次索引赋值有可能引发另一次元方法。）
 
 
 <p>
-Like with indexing,
-the metamethod for this event can be either a function or a table.
-If it is a function,
-it is called with <code>table</code>, <code>key</code>, and <code>value</code> as arguments.
-If it is a table,
-Lua does an indexing assignment to this table with the same key and value.
-(This assignment is regular, not raw,
-and therefore can trigger another metamethod.)
-
-
-<p>
-Whenever there is a "newindex" metamethod,
-Lua does not perform the primitive assignment.
-(If necessary,
-the metamethod itself can call <a href="#pdf-rawset"><code>rawset</code></a>
-to do the assignment.)
+一旦有了 "newindex" 元方法，
+Lua 就不再做最初的赋值操作。
+（如果有必要，在元方法内部可以调用 <a href="#pdf-rawset"><code>rawset</code></a>
+来做赋值。）
 </li>
 
 <li><b>"call": </b>
-The call operation <code>func(args)</code>.
+函数调用操作 <code>func(args)</code>。
 
-This event happens when Lua tries to call a non-function value
-(that is, <code>func</code> is not a function).
-The metamethod is looked up in <code>func</code>.
-If present,
-the metamethod is called with <code>func</code> as its first argument,
-followed by the arguments of the original call (<code>args</code>).
+当 Lua 尝试调用一个非函数的值的时候会触发这个事件
+（即 <code>func</code> 不是一个函数）。
+查找 <code>func</code> 的元方法，
+如果找得到，就调用这个元方法，
+<code>func</code> 作为第一个参数传入，原来调用的参数（<code>args</code>）后依次排在后面。
 </li>
 
 </ul>
