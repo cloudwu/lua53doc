@@ -1,9 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
 <HEAD>
-<TITLE>Lua 5.3 Reference Manual - contents</TITLE>
+<TITLE>Lua 5.3 参考手册 - 目录</TITLE>
 <LINK REL="stylesheet" TYPE="text/css" HREF="lua.css">
-<META HTTP-EQUIV="content-type" CONTENT="text/html; charset=iso-8859-1">
+<META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8">
 <STYLE TYPE="text/css">
 ul {
 	list-style-type: none ;
@@ -17,131 +17,135 @@ ul {
 <HR>
 <H1>
 <A HREF="http://www.lua.org/"><IMG SRC="logo.gif" ALT="" BORDER=0></A>
-Lua 5.3 Reference Manual
+Lua 5.3 参考手册
 </H1>
 
 <P>
-The reference manual is the official definition of the Lua language.
-For a complete introduction to Lua programming, see the book
-<A HREF="http://www.lua.org/pil/">Programming in Lua</A>.
+这份参考手册是对 Lua 语言的官方定义。
+关于 Lua 编程的方方面面，则放在
+<A HREF="http://www.lua.org/pil/">Programming in Lua</A>
+这本书中。
 
 <P>
-<A HREF="manual.html">start</A>
+<A HREF="manual.html">开始</A>
 &middot;
-<A HREF="#contents">contents</A>
+<A HREF="#contents">目录</A>
 &middot;
-<A HREF="#index">index</A>
+<A HREF="#index">索引</A>
+&middot;
+<A HREF="term.html">中英术语对照表</A>
 <HR>
 <SMALL>
-Copyright &copy; 2015 Lua.org, PUC-Rio.
-Freely available under the terms of the
-<A HREF="http://www.lua.org/license.html">Lua license</A>.
+Lua.org, PUC-Rio 版权所有 &copy; 2015 ，
+在遵循
+<A HREF="http://www.lua.org/license.html">Lua license</A>
+条款下，可自由使用。
 </SMALL>
 
-<H2><A NAME="contents">Contents</A></H2>
+<H2><A NAME="contents">目录</A></H2>
 <UL style="padding: 0">
-<LI><A HREF="manual.html">1 &ndash; Introduction</A>
+<LI><A HREF="manual.html">1 &ndash; 概要</A>
 <P>
-<LI><A HREF="manual.html#2">2 &ndash; Basic Concepts</A>
+<LI><A HREF="manual.html#2">2 &ndash; 基本概念</A>
 <UL>
-<LI><A HREF="manual.html#2.1">2.1 &ndash; Values and Types</A>
-<LI><A HREF="manual.html#2.2">2.2 &ndash; Environments and the Global Environment</A>
-<LI><A HREF="manual.html#2.3">2.3 &ndash; Error Handling</A>
-<LI><A HREF="manual.html#2.4">2.4 &ndash; Metatables and Metamethods</A>
-<LI><A HREF="manual.html#2.5">2.5 &ndash; Garbage Collection</A>
+<LI><A HREF="manual.html#2.1">2.1 &ndash; 值与类型</A>
+<LI><A HREF="manual.html#2.2">2.2 &ndash; 环境与全局环境</A>
+<LI><A HREF="manual.html#2.3">2.3 &ndash; 错误处理</A>
+<LI><A HREF="manual.html#2.4">2.4 &ndash; 元表与元方法</A>
+<LI><A HREF="manual.html#2.5">2.5 &ndash; 垃圾收集</A>
 <UL>
-<LI><A HREF="manual.html#2.5.1">2.5.1 &ndash; Garbage-Collection Metamethods</A>
-<LI><A HREF="manual.html#2.5.2">2.5.2 &ndash; Weak Tables</A>
+<LI><A HREF="manual.html#2.5.1">2.5.1 &ndash; 垃圾收集的元方法</A>
+<LI><A HREF="manual.html#2.5.2">2.5.2 &ndash; 弱表</A>
 </UL>
-<LI><A HREF="manual.html#2.6">2.6 &ndash; Coroutines</A>
+<LI><A HREF="manual.html#2.6">2.6 &ndash; 协程</A>
 </UL>
 <P>
-<LI><A HREF="manual.html#3">3 &ndash; The Language</A>
+<LI><A HREF="manual.html#3">3 &ndash; 语言定义</A>
 <UL>
-<LI><A HREF="manual.html#3.1">3.1 &ndash; Lexical Conventions</A>
-<LI><A HREF="manual.html#3.2">3.2 &ndash; Variables</A>
-<LI><A HREF="manual.html#3.3">3.3 &ndash; Statements</A>
+<LI><A HREF="manual.html#3.1">3.1 &ndash; 语法约定</A>
+<LI><A HREF="manual.html#3.2">3.2 &ndash; 变量</A>
+<LI><A HREF="manual.html#3.3">3.3 &ndash; 语句</A>
 <UL>
 <LI><A HREF="manual.html#3.3.1">3.3.1 &ndash; Blocks</A>
 <LI><A HREF="manual.html#3.3.2">3.3.2 &ndash; Chunks</A>
-<LI><A HREF="manual.html#3.3.3">3.3.3 &ndash; Assignment</A>
-<LI><A HREF="manual.html#3.3.4">3.3.4 &ndash; Control Structures</A>
-<LI><A HREF="manual.html#3.3.5">3.3.5 &ndash; For Statement</A>
-<LI><A HREF="manual.html#3.3.6">3.3.6 &ndash; Function Calls as Statements</A>
-<LI><A HREF="manual.html#3.3.7">3.3.7 &ndash; Local Declarations</A>
+<LI><A HREF="manual.html#3.3.3">3.3.3 &ndash; 赋值</A>
+<LI><A HREF="manual.html#3.3.4">3.3.4 &ndash; 控制结构</A>
+<LI><A HREF="manual.html#3.3.5">3.3.5 &ndash; For 语句</A>
+<LI><A HREF="manual.html#3.3.6">3.3.6 &ndash; 函数调用语句</A>
+<LI><A HREF="manual.html#3.3.7">3.3.7 &ndash; 局部声明</A>
 </UL>
-<LI><A HREF="manual.html#3.4">3.4 &ndash; Expressions</A>
+<LI><A HREF="manual.html#3.4">3.4 &ndash; 表达式</A>
 <UL>
-<LI><A HREF="manual.html#3.4.1">3.4.1 &ndash; Arithmetic Operators</A>
-<LI><A HREF="manual.html#3.4.2">3.4.2 &ndash; Bitwise Operators</A>
-<LI><A HREF="manual.html#3.4.3">3.4.3 &ndash; Coercions and Conversions</A>
-<LI><A HREF="manual.html#3.4.4">3.4.4 &ndash; Relational Operators</A>
-<LI><A HREF="manual.html#3.4.5">3.4.5 &ndash; Logical Operators</A>
-<LI><A HREF="manual.html#3.4.6">3.4.6 &ndash; Concatenation</A>
-<LI><A HREF="manual.html#3.4.7">3.4.7 &ndash; The Length Operator</A>
-<LI><A HREF="manual.html#3.4.8">3.4.8 &ndash; Precedence</A>
-<LI><A HREF="manual.html#3.4.9">3.4.9 &ndash; Table Constructors</A>
-<LI><A HREF="manual.html#3.4.10">3.4.10 &ndash; Function Calls</A>
-<LI><A HREF="manual.html#3.4.11">3.4.11 &ndash; Function Definitions</A>
+<LI><A HREF="manual.html#3.4.1">3.4.1 &ndash; 数学操作符</A>
+<LI><A HREF="manual.html#3.4.2">3.4.2 &ndash; 位操作符</A>
+<LI><A HREF="manual.html#3.4.3">3.4.3 &ndash; 强制转换</A>
+<LI><A HREF="manual.html#3.4.4">3.4.4 &ndash; 比较操作符</A>
+<LI><A HREF="manual.html#3.4.5">3.4.5 &ndash; 逻辑操作符</A>
+<LI><A HREF="manual.html#3.4.6">3.4.6 &ndash; 字符串连接</A>
+<LI><A HREF="manual.html#3.4.7">3.4.7 &ndash; 长度操作符</A>
+<LI><A HREF="manual.html#3.4.8">3.4.8 &ndash; 优先级</A>
+<LI><A HREF="manual.html#3.4.9">3.4.9 &ndash; 表创建</A>
+<LI><A HREF="manual.html#3.4.10">3.4.10 &ndash; 函数调用</A>
+<LI><A HREF="manual.html#3.4.11">3.4.11 &ndash; 函数定义</A>
 </UL>
-<LI><A HREF="manual.html#3.5">3.5 &ndash; Visibility Rules</A>
+<LI><A HREF="manual.html#3.5">3.5 &ndash; 可见性规则</A>
 </UL>
 <P>
-<LI><A HREF="manual.html#4">4 &ndash; The Application Program Interface</A>
+<LI><A HREF="manual.html#4">4 &ndash; 编程接口</A>
 <UL>
-<LI><A HREF="manual.html#4.1">4.1 &ndash; The Stack</A>
-<LI><A HREF="manual.html#4.2">4.2 &ndash; Stack Size</A>
-<LI><A HREF="manual.html#4.3">4.3 &ndash; Valid and Acceptable Indices</A>
-<LI><A HREF="manual.html#4.4">4.4 &ndash; C Closures</A>
-<LI><A HREF="manual.html#4.5">4.5 &ndash; Registry</A>
-<LI><A HREF="manual.html#4.6">4.6 &ndash; Error Handling in C</A>
-<LI><A HREF="manual.html#4.7">4.7 &ndash; Handling Yields in C</A>
-<LI><A HREF="manual.html#4.8">4.8 &ndash; Functions and Types</A>
-<LI><A HREF="manual.html#4.9">4.9 &ndash; The Debug Interface</A>
+<LI><A HREF="manual.html#4.1">4.1 &ndash; 栈</A>
+<LI><A HREF="manual.html#4.2">4.2 &ndash; 栈大小</A>
+<LI><A HREF="manual.html#4.3">4.3 &ndash; 合法及可访问下标</A>
+<LI><A HREF="manual.html#4.4">4.4 &ndash; C 闭包</A>
+<LI><A HREF="manual.html#4.5">4.5 &ndash; 注册表</A>
+<LI><A HREF="manual.html#4.6">4.6 &ndash; C 中的错误处理</A>
+<LI><A HREF="manual.html#4.7">4.7 &ndash; C 中的让出处理</A>
+<LI><A HREF="manual.html#4.8">4.8 &ndash; 函数和类型</A>
+<LI><A HREF="manual.html#4.9">4.9 &ndash; 调试接口</A>
 </UL>
 <P>
-<LI><A HREF="manual.html#5">5 &ndash; The Auxiliary Library</A>
+<LI><A HREF="manual.html#5">5 &ndash; 辅助库</A>
 <UL>
-<LI><A HREF="manual.html#5.1">5.1 &ndash; Functions and Types</A>
+<LI><A HREF="manual.html#5.1">5.1 &ndash; 函数和类型</A>
 </UL>
 <P>
-<LI><A HREF="manual.html#6">6 &ndash; Standard Libraries</A>
+<LI><A HREF="manual.html#6">6 &ndash; 标准库</A>
 <UL>
-<LI><A HREF="manual.html#6.1">6.1 &ndash; Basic Functions</A>
-<LI><A HREF="manual.html#6.2">6.2 &ndash; Coroutine Manipulation</A>
-<LI><A HREF="manual.html#6.3">6.3 &ndash; Modules</A>
-<LI><A HREF="manual.html#6.4">6.4 &ndash; String Manipulation</A>
+<LI><A HREF="manual.html#6.1">6.1 &ndash; 基本函数</A>
+<LI><A HREF="manual.html#6.2">6.2 &ndash; 协程处理</A>
+<LI><A HREF="manual.html#6.3">6.3 &ndash; 模块</A>
+<LI><A HREF="manual.html#6.4">6.4 &ndash; 字符串处理</A>
 <UL>
-<LI><A HREF="manual.html#6.4.1">6.4.1 &ndash; Patterns</A>
-<LI><A HREF="manual.html#6.4.2">6.4.2 &ndash; Format Strings for Pack and Unpack</A>
+<LI><A HREF="manual.html#6.4.1">6.4.1 &ndash; 模式</A>
+<LI><A HREF="manual.html#6.4.2">6.4.2 &ndash; 打包和解包用到的格式串</A>
 </UL>
-<LI><A HREF="manual.html#6.5">6.5 &ndash; UTF-8 Support</A>
-<LI><A HREF="manual.html#6.6">6.6 &ndash; Table Manipulation</A>
-<LI><A HREF="manual.html#6.7">6.7 &ndash; Mathematical Functions</A>
-<LI><A HREF="manual.html#6.8">6.8 &ndash; Input and Output Facilities</A>
-<LI><A HREF="manual.html#6.9">6.9 &ndash; Operating System Facilities</A>
-<LI><A HREF="manual.html#6.10">6.10 &ndash; The Debug Library</A>
-</UL>
-<P>
-<LI><A HREF="manual.html#7">7 &ndash; Lua Standalone</A>
-<P>
-<LI><A HREF="manual.html#8">8 &ndash; Incompatibilities with the Previous Version</A>
-<UL>
-<LI><A HREF="manual.html#8.1">8.1 &ndash; Changes in the Language</A>
-<LI><A HREF="manual.html#8.2">8.2 &ndash; Changes in the Libraries</A>
-<LI><A HREF="manual.html#8.3">8.3 &ndash; Changes in the API</A>
+<LI><A HREF="manual.html#6.5">6.5 &ndash; UTF-8 支持</A>
+<LI><A HREF="manual.html#6.6">6.6 &ndash; 表操作</A>
+<LI><A HREF="manual.html#6.7">6.7 &ndash; 数学函数</A>
+<LI><A HREF="manual.html#6.8">6.8 &ndash; 输入输出设施</A>
+<LI><A HREF="manual.html#6.9">6.9 &ndash; 操作系统设施</A>
+<LI><A HREF="manual.html#6.10">6.10 &ndash; 调试库</A>
 </UL>
 <P>
-<LI><A HREF="manual.html#9">9 &ndash; The Complete Syntax of Lua</A>
+<LI><A HREF="manual.html#7">7 &ndash; 独立版 Lua</A>
+<P>
+<LI><A HREF="manual.html#8">8 &ndash; 与之前版本不兼容的地方</A>
+<UL>
+<LI><A HREF="manual.html#8.1">8.1 &ndash; 语言的变更</A>
+<LI><A HREF="manual.html#8.2">8.2 &ndash; 库的变更</A>
+<LI><A HREF="manual.html#8.3">8.3 &ndash; API 的变更</A>
+</UL>
+<P>
+<LI><A HREF="manual.html#9">9 &ndash; Lua 的完整词法</A>
 </UL>
 
-<H2><A NAME="index">Index</A></H2>
+<H2><A NAME="index">索引</A></H2>
 <TABLE WIDTH="100%">
 <TR VALIGN="top">
 <TD>
-<H3><A NAME="functions">Lua functions</A></H3>
+<H3><A NAME="functions">Lua 函数</A></H3>
 <P>
-<A HREF="manual.html#6.1">basic</A><BR>
+<A HREF="manual.html#6.1">基础</A><BR>
 <A HREF="manual.html#pdf-_G">_G</A><BR>
 <A HREF="manual.html#pdf-_VERSION">_VERSION</A><BR>
 
@@ -170,7 +174,7 @@ Freely available under the terms of the
 <A HREF="manual.html#pdf-xpcall">xpcall</A><BR>
 
 <P>
-<A HREF="manual.html#6.2">coroutine</A><BR>
+<A HREF="manual.html#6.2">协程</A><BR>
 <A HREF="manual.html#pdf-coroutine.create">coroutine.create</A><BR>
 <A HREF="manual.html#pdf-coroutine.isyieldable">coroutine.isyieldable</A><BR>
 <A HREF="manual.html#pdf-coroutine.resume">coroutine.resume</A><BR>
@@ -180,7 +184,7 @@ Freely available under the terms of the
 <A HREF="manual.html#pdf-coroutine.yield">coroutine.yield</A><BR>
 
 <P>
-<A HREF="manual.html#6.10">debug</A><BR>
+<A HREF="manual.html#6.10">调试</A><BR>
 <A HREF="manual.html#pdf-debug.debug">debug.debug</A><BR>
 <A HREF="manual.html#pdf-debug.gethook">debug.gethook</A><BR>
 <A HREF="manual.html#pdf-debug.getinfo">debug.getinfo</A><BR>
@@ -199,7 +203,7 @@ Freely available under the terms of the
 <A HREF="manual.html#pdf-debug.upvaluejoin">debug.upvaluejoin</A><BR>
 
 <P>
-<A HREF="manual.html#6.8">io</A><BR>
+<A HREF="manual.html#6.8">输入输出</A><BR>
 <A HREF="manual.html#pdf-io.close">io.close</A><BR>
 <A HREF="manual.html#pdf-io.flush">io.flush</A><BR>
 <A HREF="manual.html#pdf-io.input">io.input</A><BR>
@@ -227,7 +231,7 @@ Freely available under the terms of the
 <TD>
 <H3>&nbsp;</H3>
 <P>
-<A HREF="manual.html#6.7">math</A><BR>
+<A HREF="manual.html#6.7">数学</A><BR>
 <A HREF="manual.html#pdf-math.abs">math.abs</A><BR>
 <A HREF="manual.html#pdf-math.acos">math.acos</A><BR>
 <A HREF="manual.html#pdf-math.asin">math.asin</A><BR>
@@ -257,7 +261,7 @@ Freely available under the terms of the
 <A HREF="manual.html#pdf-math.ult">math.ult</A><BR>
 
 <P>
-<A HREF="manual.html#6.9">os</A><BR>
+<A HREF="manual.html#6.9">操作系统</A><BR>
 <A HREF="manual.html#pdf-os.clock">os.clock</A><BR>
 <A HREF="manual.html#pdf-os.date">os.date</A><BR>
 <A HREF="manual.html#pdf-os.difftime">os.difftime</A><BR>
@@ -271,7 +275,7 @@ Freely available under the terms of the
 <A HREF="manual.html#pdf-os.tmpname">os.tmpname</A><BR>
 
 <P>
-<A HREF="manual.html#6.3">package</A><BR>
+<A HREF="manual.html#6.3">包</A><BR>
 <A HREF="manual.html#pdf-package.config">package.config</A><BR>
 <A HREF="manual.html#pdf-package.cpath">package.cpath</A><BR>
 <A HREF="manual.html#pdf-package.loaded">package.loaded</A><BR>
@@ -282,7 +286,7 @@ Freely available under the terms of the
 <A HREF="manual.html#pdf-package.searchpath">package.searchpath</A><BR>
 
 <P>
-<A HREF="manual.html#6.4">string</A><BR>
+<A HREF="manual.html#6.4">字符串</A><BR>
 <A HREF="manual.html#pdf-string.byte">string.byte</A><BR>
 <A HREF="manual.html#pdf-string.char">string.char</A><BR>
 <A HREF="manual.html#pdf-string.dump">string.dump</A><BR>
@@ -302,7 +306,7 @@ Freely available under the terms of the
 <A HREF="manual.html#pdf-string.upper">string.upper</A><BR>
 
 <P>
-<A HREF="manual.html#6.6">table</A><BR>
+<A HREF="manual.html#6.6">表</A><BR>
 <A HREF="manual.html#pdf-table.concat">table.concat</A><BR>
 <A HREF="manual.html#pdf-table.insert">table.insert</A><BR>
 <A HREF="manual.html#pdf-table.move">table.move</A><BR>
@@ -320,7 +324,7 @@ Freely available under the terms of the
 <A HREF="manual.html#pdf-utf8.len">utf8.len</A><BR>
 <A HREF="manual.html#pdf-utf8.offset">utf8.offset</A><BR>
 
-<H3><A NAME="env">environment<BR>variables</A></H3>
+<H3><A NAME="env">环境变量</A></H3>
 <A HREF="manual.html#pdf-LUA_CPATH">LUA_CPATH</A><BR>
 <A HREF="manual.html#pdf-LUA_CPATH_5_3">LUA_CPATH_5_3</A><BR>
 <A HREF="manual.html#pdf-LUA_INIT">LUA_INIT</A><BR>
@@ -466,7 +470,7 @@ Freely available under the terms of the
 
 </TD>
 <TD>
-<H3><A NAME="auxlib">auxiliary library</A></H3>
+<H3><A NAME="auxlib">辅助库</A></H3>
 <P>
 <A HREF="manual.html#luaL_Buffer">luaL_Buffer</A><BR>
 <A HREF="manual.html#luaL_Reg">luaL_Reg</A><BR>
@@ -532,7 +536,7 @@ Freely available under the terms of the
 <A HREF="manual.html#luaL_unref">luaL_unref</A><BR>
 <A HREF="manual.html#luaL_where">luaL_where</A><BR>
 
-<H3><A NAME="library">standard library</A></H3>
+<H3><A NAME="library">标准库</A></H3>
 <P>
 <A HREF="manual.html#pdf-luaopen_base">luaopen_base</A><BR>
 <A HREF="manual.html#pdf-luaopen_coroutine">luaopen_coroutine</A><BR>
@@ -545,7 +549,7 @@ Freely available under the terms of the
 <A HREF="manual.html#pdf-luaopen_table">luaopen_table</A><BR>
 <A HREF="manual.html#pdf-luaopen_utf8">luaopen_utf8</A><BR>
 
-<H3><A NAME="constants">constants</A></H3>
+<H3><A NAME="constants">常量</A></H3>
 <A HREF="manual.html#pdf-LUA_ERRERR">LUA_ERRERR</A><BR>
 <A HREF="manual.html#pdf-LUA_ERRFILE">LUA_ERRFILE</A><BR>
 <A HREF="manual.html#pdf-LUA_ERRGCMM">LUA_ERRGCMM</A><BR>
@@ -608,12 +612,9 @@ Freely available under the terms of the
 
 <HR>
 <SMALL CLASS="footer">
-Last update:
-Tue Dec  9 21:26:07 BRST 2014
+最后更新时间：
+2015年1月13日12:28
 </SMALL>
-<!--
-Last change: updated for Lua 5.3.0 (final)
--->
 
 </BODY>
 </HTML>
