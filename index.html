@@ -135,7 +135,7 @@ luac (编译器),
   一旦你构建完毕，可能希望把 Lua 安装到系统默认位置。
   那么，执行 "<KBD>make install</KBD>" 就可以了。
   系统默认位置以及如何安装都定义在 <TT>Makefile</TT> 中。
-  这个过程可能需要有相关的权限。
+  这个过程可能需要有相关的全县。
 
 <P>
   运行 "<KBD>make xxx install</KBD>" 可以构建和安装一步到位，
@@ -225,7 +225,7 @@ lmathlib.c loslib.c lstrlib.c ltablib.c lutf8lib.c loadlib.c linit.c
 
 <P>
   把 Lua 以一个库形式用于你的程序，你需要知道如何用你的编译器创建库和使用库。
-  比如，以动态加载的 C 库形式使用 Lua 你需要了解如果创建动态库并让 Lua API 函数
+  比如，以动态加载的 C 库形式使用 Lua，你需要了解如何创建动态库并让 Lua API 函数
   在动态库中可见 &mdash; <EM>不要</EM> 将 Lua 库链入每个动态库。
   在 Unix 下，我们建议把 Lua 库静态链入宿主程序，然后将符号导出用于动态链接；
   <TT>src/Makefile</TT> 就是这样处理 Lua 解释器的。
@@ -236,7 +236,7 @@ lmathlib.c loslib.c lstrlib.c ltablib.c lutf8lib.c loadlib.c linit.c
   正如上面所述，你可以在构建 Lua 前编辑 <TT>src/luaconf.h</TT>
   以定制一些特性。
 
-<H2><A NAME="changes">Lua 5.2 以来的变更</A></H2>
+<H2><A NAME="changes">自 Lua 5.2 以来的变更</A></H2>
 
 <P>
 这里列出了 Lua 5.3 引入的主要变更。
