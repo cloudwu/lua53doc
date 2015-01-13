@@ -220,7 +220,7 @@ Lua 为所有的系统，包括那些不提供原生线程支持的系统，提�
 
 
 
-<h2>2.2 &ndash; <a name="2.2">En环境与全局环境</a></h2>
+<h2>2.2 &ndash; <a name="2.2">环境与全局环境</a></h2>
 
 <p>
 后面在 <a href="#3.2">&sect;3.2</a> 以及 <a href="#3.3.3">&sect;3.3.3</a> 会讨论，
@@ -263,55 +263,43 @@ Lua 保有一个被称为 <em>全局环境</em> 特别环境。它被保存在 C
 
 
 
-<h2>2.3 &ndash; <a name="2.3">Error Handling</a></h2>
+<h2>2.3 &ndash; <a name="2.3">错误处理</a></h2>
 
 <p>
-Because Lua is an embedded extension language,
-all Lua actions start from C&nbsp;code in the host program
-calling a function from the Lua library.
-(When you use Lua standalone,
-the <code>lua</code> application is the host program.)
-Whenever an error occurs during
-the compilation or execution of a Lua chunk,
-control returns to the host,
-which can take appropriate measures
-(such as printing an error message).
+Lua 作为一门嵌入式语言，
+所有的 Lua 行为都始于宿主程序的 C 代码中对于 Lua 库里某函数的一次调用。
+（当你使用 Lua 独立版本时，<code>lua</code> 程序就是那个宿主程序。）
+在编译或运行一个 Lua 代码块时，无论发生任何错误，
+控制权都返还给宿主。接下来可以针对情况来采取恰当的措施
+（比如打印错误消息）。
 
 
 <p>
-Lua code can explicitly generate an error by calling the
-<a href="#pdf-error"><code>error</code></a> function.
-If you need to catch errors in Lua,
-you can use <a href="#pdf-pcall"><code>pcall</code></a> or <a href="#pdf-xpcall"><code>xpcall</code></a>
-to call a given function in <em>protected mode</em>.
+Lua 代码中可以通过调用 <a href="#pdf-error"><code>error</code></a> 函数来显式的抛出一个错误。
+如果你需要在 Lua 中捕获这些错误，
+你可以使用 <a href="#pdf-pcall"><code>pcall</code></a> 或
+<a href="#pdf-xpcall"><code>xpcall</code></a>
+以 <em>保护模式</em> 来调用一个函数。
 
 
 <p>
-Whenever there is an error,
-an <em>error object</em> (also called an <em>error message</em>)
-is propagated with information about the error.
-Lua itself only generates errors whose error object is a string,
-but programs may generate errors with
-any value as the error object.
-It is up to the Lua program or its host to handle such error objects.
-
+无论何时错误发生，都会产生一个携带有错误信息的 <em>错误对象</em> 
+（也被称为 <em>错误消息</em>）。
+Lua 本身只会产生字符串类型的错误对象，
+但你的程序可以为一个错误抛出任何类型的错误对象。
+这就看 Lua 程序或你的宿主如何处理这些错误对象了。
 
 <p>
-When you use <a href="#pdf-xpcall"><code>xpcall</code></a> or <a href="#lua_pcall"><code>lua_pcall</code></a>,
-you may give a <em>message handler</em>
-to be called in case of errors.
-This function is called with the original error message
-and returns a new error message.
-It is called before the error unwinds the stack,
-so that it can gather more information about the error,
-for instance by inspecting the stack and creating a stack traceback.
-This message handler is still protected by the protected call;
-so, an error inside the message handler
-will call the message handler again.
-If this loop goes on for too long,
-Lua breaks it and returns an appropriate message.
-
-
+当你使用 <a href="#pdf-xpcall"><code>xpcall</code></a> 或
+<a href="#lua_pcall"><code>lua_pcall</code></a> 时，
+你应当给出一个 <em>消息处理器</em> 用于发生错误时的处理流程。
+这个处理器函数会被传入原始的错误消息，并应返回一个新的错误消息。
+它在错误发生后栈尚未展开时调用，
+因此它可以通过栈来收集更多的信息。
+例如它可以通过探知栈来创建一组栈回溯信息。
+这个处理器函数也被保护模式调用以保护；
+因此在处理器函数内发生的错误会再次调用它。
+如果递归调用太深，Lua 会打破递归并返回一个恰当的消息。
 
 
 
