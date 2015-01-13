@@ -220,54 +220,45 @@ Lua 为所有的系统，包括那些不提供原生线程支持的系统，提�
 
 
 
-<h2>2.2 &ndash; <a name="2.2">Environments and the Global Environment</a></h2>
+<h2>2.2 &ndash; <a name="2.2">En环境与全局环境</a></h2>
 
 <p>
-As will be discussed in <a href="#3.2">&sect;3.2</a> and <a href="#3.3.3">&sect;3.3.3</a>,
-any reference to a free name
-(that is, a name not bound to any declaration) <code>var</code>
-is syntactically translated to <code>_ENV.var</code>.
-Moreover, every chunk is compiled in the scope of
-an external local variable named <code>_ENV</code> (see <a href="#3.3.2">&sect;3.3.2</a>),
-so <code>_ENV</code> itself is never a free name in a chunk.
-
-
-<p>
-Despite the existence of this external <code>_ENV</code> variable and
-the translation of free names,
-<code>_ENV</code> is a completely regular name.
-In particular,
-you can define new variables and parameters with that name.
-Each reference to a free name uses the <code>_ENV</code> that is
-visible at that point in the program,
-following the usual visibility rules of Lua (see <a href="#3.5">&sect;3.5</a>).
+后面在 <a href="#3.2">&sect;3.2</a> 以及 <a href="#3.3.3">&sect;3.3.3</a> 会讨论，
+引用一个叫 <code>var</code> 的自由名字（指在任何层级都未被声明的名字）
+在句法上都被翻译为 <code>_ENV.var</code> 。
+此外，每个被编译的 Lua 代码块都会有一个额外的局部变量叫 <code>_ENV</code>
+（参见 <a href="#3.3.2">&sect;3.3.2</a>），
+因此，<code>_ENV</code> 这个名字永远都不会成为一个代码块中的自由名字。
 
 
 <p>
-Any table used as the value of <code>_ENV</code> is called an <em>environment</em>.
+在转译那些自由名字时，<code>_ENV</code> 是否是那个额外的局部变量无所谓。
+<code>_ENV</code> 和其它你可以使用的变量名没有区别。
+这里特别指出，你可以定义一个新变量或指定一个参数叫这个名字。
+当编译器在转译自由名字时所用到的 <code>_ENV</code> ，
+指的是你的程序在那个点上可见的那个名为 _ENV 的变量。
+（Lua 的可见性规则参见 <a href="#3.5">&sect;3.5</a>）
+
+<p>
+
+被 <code>_ENV</code> 用于值的那张表被称为 <em>环境</em>。
 
 
 <p>
-Lua keeps a distinguished environment called the <em>global environment</em>.
-This value is kept at a special index in the C registry (see <a href="#4.5">&sect;4.5</a>).
-In Lua, the global variable <a href="#pdf-_G"><code>_G</code></a> is initialized with this same value.
-(<a href="#pdf-_G"><code>_G</code></a> is never used internally.)
+Lua 保有一个被称为 <em>全局环境</em> 特别环境。它被保存在 C 注册表
+（参见 <a href="#4.5">&sect;4.5</a>）的一个特别索引下。
+在 Lua 中，全局变量 <a href="#pdf-_G"><code>_G</code></a> 被初始化为这个值。
+（<a href="#pdf-_G"><code>_G</code></a> 不被内部任何地方使用。）
 
 
 <p>
-When Lua loads a chunk,
-the default value for its <code>_ENV</code> upvalue
-is the global environment (see <a href="#pdf-load"><code>load</code></a>).
-Therefore, by default,
-free names in Lua code refer to entries in the global environment
-(and, therefore, they are also called <em>global variables</em>).
-Moreover, all standard libraries are loaded in the global environment
-and some functions there operate on that environment.
-You can use <a href="#pdf-load"><code>load</code></a> (or <a href="#pdf-loadfile"><code>loadfile</code></a>)
-to load a chunk with a different environment.
-(In C, you have to load the chunk and then change the value
-of its first upvalue.)
-
+当 Lua 加载一个代码块，<code>_ENV</code> 这个 upvalue 的默认值就是这个全局环境
+（参见 <a href="#pdf-load"><code>load</code></a>）。
+因此，在默认情况下，Lua 代码中提及的自由名字都指的全局环境中的相关项
+（因此，它们也被称为 <em>全局变量</em> ）。
+此外，所有的标准库都被加载入全局环境，一些函数也针对这个环境做操作。
+你可以用 <a href="#pdf-load"><code>load</code></a> （或 <a href="#pdf-loadfile"><code>loadfile</code></a>）加载代码块，并赋予它们不同的环境。
+（在 C 里，当你加载一个代码块后，可以通过改变它的第一个 upvalue 来改变它的环境。）
 
 
 
