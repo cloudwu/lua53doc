@@ -2,10 +2,10 @@
 <html>
 
 <head>
-<title>Lua 5.3 Reference Manual</title>
+<title>Lua 5.3 参考手册</title>
 <link rel="stylesheet" type="text/css" href="lua.css">
 <link rel="stylesheet" type="text/css" href="manual.css">
-<META HTTP-EQUIV="content-type" CONTENT="text/html; charset=iso-8859-1">
+<META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8">
 </head>
 
 <body>
@@ -13,22 +13,27 @@
 <hr>
 <h1>
 <a href="http://www.lua.org/"><img src="logo.gif" alt="" border="0"></a>
-Lua 5.3 Reference Manual
+Lua 5.3 参考手册
 </h1>
 
-by Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes
+作者 Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes
+<p>
+译者 <a href="http://blog.codingnow.com">云风</a>
 <p>
 <small>
-Copyright &copy; 2015 Lua.org, PUC-Rio.
-Freely available under the terms of the
-<a href="http://www.lua.org/license.html">Lua license</a>.
+Lua.org, PUC-Rio 版权所有 &copy; 2015 ，
+在遵循
+<A HREF="http://www.lua.org/license.html">Lua license</A>
+条款下，可自由使用。
 </small>
 <hr>
 <p>
 
-<a href="contents.html#contents">contents</A>
+<a href="contents.html#contents">目录</A>
 &middot;
-<a href="contents.html#index">index</A>
+<a href="contents.html#index">索引</A>
+&middot;
+<A HREF="term.html">中英术语对照表</A>
 
 <!-- ====================================================================== -->
 <p>
@@ -38,52 +43,38 @@ Freely available under the terms of the
 
 
 
-<h1>1 &ndash; <a name="1">Introduction</a></h1>
+<h1>1 &ndash; <a name="1">概要</a></h1>
 
 <p>
-Lua is an extension programming language designed to support
-general procedural programming with data description
-facilities.
-Lua also offers good support for object-oriented programming,
-functional programming, and data-driven programming.
-Lua is intended to be used as a powerful, lightweight,
-embeddable scripting language for any program that needs one.
-Lua is implemented as a library, written in <em>clean C</em>,
-the common subset of Standard&nbsp;C and C++.
+Lua 是一门扩展式程序设计语言，它被设计成支持通用过程式编程，并有相关数据描述设施。
+同时也很好的支持了面向对象编程、函数式编程、数据驱动式编程。
+它作为一个强大、轻量的嵌入式脚本语言，可供任何需要的程序使用。
+它以库形式实现，用 <em>clean C</em> 写成。
+所谓 Clean C ，指的是标准 C 和 C++ 间共通的一个子集。
 
 
 <p>
-As an extension language, Lua has no notion of a "main" program:
-it only works <em>embedded</em> in a host client,
-called the <em>embedding program</em> or simply the <em>host</em>.
-The host program can invoke functions to execute a piece of Lua code,
-can write and read Lua variables,
-and can register C&nbsp;functions to be called by Lua code.
-Through the use of C&nbsp;functions, Lua can be augmented to cope with
-a wide range of different domains,
-thus creating customized programming languages sharing a syntactical framework.
-The Lua distribution includes a sample host program called <code>lua</code>,
-which uses the Lua library to offer a complete, standalone Lua interpreter,
-for interactive or batch use.
+作为一个扩展式语言，Lua 没有 "main" 程序的概念：
+它只能 <em>嵌入</em> 一个宿主程序中工作，
+这个宿主程序被称作 <em>被嵌入的程序</em> 或简称为 <em>宿主</em> 。 
+宿主程序可以调用函数执行一小段 Lua 代码，可以读写 Lua 变量，可以注入 C 函数让 Lua 代码调用。
+依靠这些 C 函数，在各种不同的领域中，都可以将拥有相同句法结构的 Lua 定制为该领域下的编程语言。
+Lua 的官方发布版包含了一个叫做 <code>lua</code> 的简单的宿主程序，
+它用 Lua 库实现了一个完整的独立 Lua 解释器。
+你可以把它作交互式应用或用于批处理。
 
 
 <p>
-Lua is free software,
-and is provided as usual with no guarantees,
-as stated in its license.
-The implementation described in this manual is available
-at Lua's official web site, <code>www.lua.org</code>.
+Lua 是一个自由软件，它的使用许可证决定了它的使用过程没有任何担保。
+这份手册中描述的实现，可以在 Lua 的官方网站 <code>www.lua.org</code> 找到。
 
 
 <p>
-Like any other reference manual,
-this document is dry in places.
-For a discussion of the decisions behind the design of Lua,
-see the technical papers available at Lua's web site.
-For a detailed introduction to programming in Lua,
-see Roberto's book, <em>Programming in Lua</em>.
-
-
+跟其它的许多参考手册一样，这份文档有些地方比较枯燥。
+Lua 设计决定方面的讨论，
+可以看看 Lua 网站上提供的技术论文。
+有关用 Lua 编程的细节介绍，
+可以读一下 Roberto 的书，<em>Programming in Lua</em>。
 
 <h1>2 &ndash; <a name="2">Basic Concepts</a></h1>
 
