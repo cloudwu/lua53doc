@@ -574,146 +574,119 @@ Lua 就不再做最初的赋值操作。
 
 
 
-<h2>2.5 &ndash; <a name="2.5">Garbage Collection</a></h2>
+<h2>2.5 &ndash; <a name="2.5">垃圾收集</a></h2>
 
 <p>
-Lua performs automatic memory management.
-This means that
-you do not have to worry about allocating memory for new objects
-or freeing it when the objects are no longer needed.
-Lua manages memory automatically by running
-a <em>garbage collector</em> to collect all <em>dead objects</em>
-(that is, objects that are no longer accessible from Lua).
-All memory used by Lua is subject to automatic management:
-strings, tables, userdata, functions, threads, internal structures, etc.
+Lua 采用了自动内存管理。
+这意味着你不用操心新创建的对象需要的内存如何分配出来，
+也不用考虑在对象不再被使用后怎样释放它们所占用的内存。
+Lua 运行了一个 <em>垃圾收集器</em> 来收集所有 <em>死对象</em>
+（即在 Lua 中不可能再访问到的对象）来完成自动内存管理的工作。
+Lua 中所有用到的内存，如：字符串、表、用户数据、函数、线程、
+内部结构等，都服从自动管理。
 
 
 <p>
-Lua implements an incremental mark-and-sweep collector.
-It uses two numbers to control its garbage-collection cycles:
-the <em>garbage-collector pause</em> and
-the <em>garbage-collector step multiplier</em>.
-Both use percentage points as units
-(e.g., a value of 100 means an internal value of 1).
+Lua 实现了一个增量标记-扫描收集器。
+它使用这两个数字来控制垃圾收集循环：
+<em>垃圾收集器间歇率</em> 和 <em>垃圾收集器步进倍率</em>。
+这两个数字都使用百分数为单位
+（例如：值 100 在内部表示 1 ）。
 
 
 <p>
-The garbage-collector pause
-controls how long the collector waits before starting a new cycle.
-Larger values make the collector less aggressive.
-Values smaller than 100 mean the collector will not wait to
-start a new cycle.
-A value of 200 means that the collector waits for the total memory in use
-to double before starting a new cycle.
+垃圾收集器间歇率控制着收集器需要在开启新的循环前要等待多久。
+增大这个值会减少收集器的积极性。
+当这个值比 100 小的时候，收集器在开启新的循环前不会有等待。
+设置这个值为 200 就会让收集器等到总内存使用量达到
+之前的两倍时才开始新的循环。
 
 
 <p>
-The garbage-collector step multiplier
-controls the relative speed of the collector relative to
-memory allocation.
-Larger values make the collector more aggressive but also increase
-the size of each incremental step.
-You should not use values smaller than 100,
-because they make the collector too slow and
-can result in the collector never finishing a cycle.
-The default is 200,
-which means that the collector runs at "twice"
-the speed of memory allocation.
+垃圾收集器步进倍率控制着收集器运作速度相对于内存分配速度的倍率。
+增大这个值不仅会让收集器更加积极，还会增加每个增量步骤的长度。
+不要把这个值设得小于 100 ，
+那样的话收集器就工作的太慢了以至于永远都不干不完一个循环。
+默认值是 200 ，这表示收集器以内存分配的“两倍”速工作。
 
 
 <p>
-If you set the step multiplier to a very large number
-(larger than 10% of the maximum number of
-bytes that the program may use),
-the collector behaves like a stop-the-world collector.
-If you then set the pause to 200,
-the collector behaves as in old Lua versions,
-doing a complete collection every time Lua doubles its
-memory usage.
+如果你把步进倍率设为一个非常大的数字
+（比你的程序可能用到的字节数还大 10% ），
+收集器的行为就像一个 stop-the-world 收集器。
+接着你若把间歇率设为 200 ，
+收集器的行为就和过去的 Lua 版本一样了：
+每次 Lua 使用的内存翻倍时，就做一次完整的收集。
+
 
 
 <p>
-You can change these numbers by calling <a href="#lua_gc"><code>lua_gc</code></a> in C
-or <a href="#pdf-collectgarbage"><code>collectgarbage</code></a> in Lua.
-You can also use these functions to control
-the collector directly (e.g., stop and restart it).
+你可以通过在 C 中调用 <a href="#lua_gc"><code>lua_gc</code></a>
+或在 Lua 中调用 <a href="#pdf-collectgarbage"><code>collectgarbage</code></a>
+来改变这俩数字。
+这两个函数也可以用来直接控制收集器（例如停止它或重启它）。
 
 
-
-<h3>2.5.1 &ndash; <a name="2.5.1">Garbage-Collection Metamethods</a></h3>
+<h3>2.5.1 &ndash; <a name="2.5.1">垃圾收集元方法</a></h3>
 
 <p>
-You can set garbage-collector metamethods for tables
-and, using the C&nbsp;API,
-for full userdata (see <a href="#2.4">&sect;2.4</a>).
-These metamethods are also called <em>finalizers</em>.
-Finalizers allow you to coordinate Lua's garbage collection
-with external resource management
-(such as closing files, network or database connections,
-or freeing your own memory).
+你可以为表设定垃圾收集的元方法，
+对于完全用户数据（参见 <a href="#2.4">&sect;2.4</a>），
+则需要使用 C API 。
+该元方法被称为 <em>终结器</em>。
+终结器允许你配合 Lua 的垃圾收集器做一些额外的资源管理工作
+（例如关闭文件、网络或数据库连接，或是释放一些你自己的内存）。
 
 
 <p>
-For an object (table or userdata) to be finalized when collected,
-you must <em>mark</em> it for finalization.
+如果要让一个对象（表或用户数据）在收集过程中进入终结流程，
+你必须 <em>标记</em> 它需要触发终结器。
 
-You mark an object for finalization when you set its metatable
-and the metatable has a field indexed by the string "<code>__gc</code>".
-Note that if you set a metatable without a <code>__gc</code> field
-and later create that field in the metatable,
-the object will not be marked for finalization.
-However, after an object has been marked,
-you can freely change the <code>__gc</code> field of its metatable.
-
-
-<p>
-When a marked object becomes garbage,
-it is not collected immediately by the garbage collector.
-Instead, Lua puts it in a list.
-After the collection,
-Lua goes through that list.
-For each object in the list,
-it checks the object's <code>__gc</code> metamethod:
-If it is a function,
-Lua calls it with the object as its single argument;
-if the metamethod is not a function,
-Lua simply ignores it.
+当你为一个对象设置元表时，若此刻这张元表中用一个以字符串
+"<code>__gc</code>" 为索引的域，那么就标记了这个对象需要触发终结器。
+注意：如果你给对象设置了一个没有 <code>__gc</code>
+域的元表，之后才给元表加上这个域，
+那么这个对象是没有被标记成需要触发终结器的。
+然而，一旦对象被标记，
+你还是可以自由的改变其元表中的 <code>__gc</code> 域的。
 
 
 <p>
-At the end of each garbage-collection cycle,
-the finalizers for objects are called in
-the reverse order that the objects were marked for finalization,
-among those collected in that cycle;
-that is, the first finalizer to be called is the one associated
-with the object marked last in the program.
-The execution of each finalizer may occur at any point during
-the execution of the regular code.
+当一个被标记的对象成为了垃圾后，
+垃圾收集器并不会立刻回收它。
+取而代之的是，Lua 会将其置入一个链表。
+在收集完成后，Lua 将遍历这个链表。
+Lua 会检查每个链表中的对象的 <code>__gc</code>
+元方法：如果是一个函数，那么就以对象为唯一参数调用它；
+否则直接忽略它。
 
 
 <p>
-Because the object being collected must still be used by the finalizer,
-that object (and other objects accessible only through it)
-must be <em>resurrected</em> by Lua.
-Usually, this resurrection is transient,
-and the object memory is freed in the next garbage-collection cycle.
-However, if the finalizer stores the object in some global place
-(e.g., a global variable),
-then the resurrection is permanent.
-Moreover, if the finalizer marks a finalizing object for finalization again,
-its finalizer will be called again in the next cycle where the
-object is unreachable.
-In any case,
-the object memory is freed only in the GC cycle where
-the object is unreachable and not marked for finalization.
+在每次垃圾收集循环的最后阶段，
+本次循环中检测到的需要被回收之对象，
+其终结器的触发次序按当初给对象作需要触发终结器的标记之次序的逆序进行；
+这就是说，第一个被调用的终结器是程序中最后一个被标记的对象所携的那个。
+每个终结器的运行可能发生在执行常规代码过程中的任意一刻。
 
 
 <p>
-When you close a state (see <a href="#lua_close"><code>lua_close</code></a>),
-Lua calls the finalizers of all objects marked for finalization,
-following the reverse order that they were marked.
-If any finalizer marks objects for collection during that phase,
-these marks have no effect.
+由于被回收的对象还需要被终结器使用，
+该对象（以及仅能通过它访问到的其它对象）一定会被 Lua <em>复活</em>。
+通常，复活是短暂的，对象所属内存会在下一个垃圾收集循环释放。
+然后，若终结器又将对象保存去一些全局的地方
+（例如：放在一个全局变量里），这次复活就持续生效了。
+此外，如果在终结器中对一个正进入终结流程的对象再次做一次标记让它触发终结器，
+只要这个对象在下个循环中依旧不可达，它的终结函数还会再调用一次。
+无论是哪种情况，
+对象所属内存仅在垃圾收集循环中该对象不可达且
+没有被标记成需要触发终结器才会被释放。
+
+
+<p>
+当你关闭一个状态机（参见 <a href="#lua_close"><code>lua_close</code></a>），
+Lua 将调用所有被标记了需要触发终结器对象的终结过程，
+其次序为标记次序的逆序。
+在这个过程中，任何终结器再次标记对象的行为都会不会生效。
 
 
 
