@@ -885,51 +885,44 @@ Lua 为每个协程提供一个独立的运行序。
 
 
 
-<h1>3 &ndash; <a name="3">The Language</a></h1>
+<h1>3 &ndash; <a name="3">语言定义</a></h1>
 
 <p>
-This section describes the lexis, the syntax, and the semantics of Lua.
-In other words,
-this section describes
-which tokens are valid,
-how they can be combined,
-and what their combinations mean.
+这一章描述了 Lua 的词法、语法和句法。
+换句话说，本章描述哪些符记是有效的，
+它们如何被组合起来，这些组合方式有什么含义。
 
 
 <p>
-Language constructs will be explained using the usual extended BNF notation,
-in which
-{<em>a</em>}&nbsp;means&nbsp;0 or more <em>a</em>'s, and
-[<em>a</em>]&nbsp;means an optional <em>a</em>.
-Non-terminals are shown like non-terminal,
-keywords are shown like <b>kword</b>,
-and other terminal symbols are shown like &lsquo;<b>=</b>&rsquo;.
-The complete syntax of Lua can be found in <a href="#9">&sect;9</a>
-at the end of this manual.
+关于语言的构成概念将用常见的扩展 BNF 表达式写出。
+也就是这个样子：
+{<em>a</em>} 表示 0 或多个 <em>a</em>，
+[<em>a</em>] 表示一个可选的 <em>a</em>。
+
+可以被分解的非最终符号会这样写 non-terminal ，
+关键字会写成这样 <b>kword</b>，
+而其它不能被分解的最终符号则写成这样 &lsquo;<b>=</b>&rsquo; 。
+完整的 Lua 语法可以在本手册最后一章 <a href="#9">&sect;9</a> 找到。
 
 
 
-<h2>3.1 &ndash; <a name="3.1">Lexical Conventions</a></h2>
-
-<p>
-Lua is a free-form language.
-It ignores spaces (including new lines) and comments
-between lexical elements (tokens),
-except as delimiters between names and keywords.
-
+<h2>3.1 &ndash; <a name="3.1">词法约定</a></h2>
 
 <p>
-<em>Names</em>
-(also called <em>identifiers</em>)
-in Lua can be any string of letters,
-digits, and underscores,
-not beginning with a digit.
-Identifiers are used to name variables, table fields, and labels.
+Lua 语言的格式自由。
+它会忽略语法元素（符记）间的空格（包括换行）和注释，
+仅把它们看作为名字和关键字间的分割符。
 
 
 <p>
-The following <em>keywords</em> are reserved
-and cannot be used as names:
+Lua 中的 <em>名字</em>
+（也被称为 <em>标识符</em>）
+可以是由非数字打头的任意字母下划线和数字构成的字符串。
+标识符可用于对变量、表的域、以及标签命名。
+
+
+<p>
+下列 <em>关键字</em> 是保留的，不可用于名字：
 
 
 <pre>
@@ -940,17 +933,15 @@ and cannot be used as names:
 </pre>
 
 <p>
-Lua is a case-sensitive language:
-<code>and</code> is a reserved word, but <code>And</code> and <code>AND</code>
-are two different, valid names.
-As a convention,
-programs should avoid creating 
-names that start with an underscore followed by
-one or more uppercase letters (such as <a href="#pdf-_VERSION"><code>_VERSION</code></a>).
+Lua 语言对大小写敏感：
+<code>and</code> 是一个保留字，但 <code>And</code> 与 <code>AND</code>
+则是两个不同的有效名字。
+作为一个约定，程序应避免创建以下划线加一个或多个大写字母构成的名字
+（例如 <a href="#pdf-_VERSION"><code>_VERSION</code></a>）。
 
 
 <p>
-The following strings denote other tokens:
+下列字符串是另外一些符记：
 
 <pre>
      +     -     *     /     %     ^     #
@@ -961,95 +952,70 @@ The following strings denote other tokens:
 </pre>
 
 <p>
-<em>Literal strings</em>
-can be delimited by matching single or double quotes,
-and can contain the following C-like escape sequences:
-'<code>\a</code>' (bell),
-'<code>\b</code>' (backspace),
-'<code>\f</code>' (form feed),
-'<code>\n</code>' (newline),
-'<code>\r</code>' (carriage return),
-'<code>\t</code>' (horizontal tab),
-'<code>\v</code>' (vertical tab),
-'<code>\\</code>' (backslash),
-'<code>\"</code>' (quotation mark [double quote]),
-and '<code>\'</code>' (apostrophe [single quote]).
-A backslash followed by a real newline
-results in a newline in the string.
-The escape sequence '<code>\z</code>' skips the following span
-of white-space characters,
-including line breaks;
-it is particularly useful to break and indent a long literal string
-into multiple lines without adding the newlines and spaces
-into the string contents.
+<em>字面串</em> 可以用单引号或双引号括起。
+字面串内部可以包含下列 C 风格的转义串： 
+'<code>\a</code>' （响铃），
+'<code>\b</code>' （退格），
+'<code>\f</code>' （换页），
+'<code>\n</code>' （换行），
+'<code>\r</code>' （回车），
+'<code>\t</code>' （横项制表），
+'<code>\v</code>' （纵向制表），
+'<code>\\</code>' （反斜杠），
+'<code>\"</code>' （双引号），
+以及 '<code>\'</code>' (单引号)。
+在反斜杠后跟一个真正的换行等价于在字符串中写一个换行符。
+转义串 '<code>\z</code>' 会忽略其后的一系列空白符，包括换行；
+它在你需要对一个很长的字符串常量断行为多行并希望在每个新行保持缩进时非常有用。
+
 
 
 <p>
-Strings in Lua can contain any 8-bit value, including embedded zeros,
-which can be specified as '<code>\0</code>'.
-More generally,
-we can specify any byte in a literal string by its numerical value.
-This can be done
-with the escape sequence <code>\x<em>XX</em></code>,
-where <em>XX</em> is a sequence of exactly two hexadecimal digits,
-or with the escape sequence <code>\<em>ddd</em></code>,
-where <em>ddd</em> is a sequence of up to three decimal digits.
-(Note that if a decimal escape sequence is to be followed by a digit,
-it must be expressed using exactly three digits.)
+Lua 中的字符串可以保存任意 8 位值，其中包括用 '<code>\0</code>' 表示的 0 。
+一般而言，你可以用字符的数字值来表示这个字符。
+方式是用转义串 <code>\x<em>XX</em></code>，
+此处的 <em>XX</em> 必须是恰好两个字符的 16 进制数。
+或者你也可以使用转义串 <code>\<em>ddd</em></code> ，
+这里的 <em>ddd</em> 是一到三个十进制数字。
+（注意，如果在转义符后接着恰巧是一个数字符号的话，
+你就必须在这个转义形式中写满三个数字。）
 
 
 <p>
-The UTF-8 encoding of a Unicode character
-can be inserted in a literal string with
-the escape sequence <code>\u{<em>XXX</em>}</code>
-(note the mandatory enclosing brackets),
-where <em>XXX</em> is a sequence of one or more hexadecimal digits
-representing the character code point.
+对于用 UTF-8 编码的 Unicode 字符，你可以用
+转义符 <code>\u{<em>XXX</em>}</code> 来表示
+（这里必须有一对花括号），
+此处的 <em>XXX</em> 是用 16 进制表示的字符编号。
 
 
 <p>
-Literal strings can also be defined using a long format
-enclosed by <em>long brackets</em>.
-We define an <em>opening long bracket of level <em>n</em></em> as an opening
-square bracket followed by <em>n</em> equal signs followed by another
-opening square bracket.
-So, an opening long bracket of level&nbsp;0 is written as <code>[[</code>, 
-an opening long bracket of level&nbsp;1 is written as <code>[=[</code>, 
-and so on.
-A <em>closing long bracket</em> is defined similarly;
-for instance,
-a closing long bracket of level&nbsp;4 is written as  <code>]====]</code>.
-A <em>long literal</em> starts with an opening long bracket of any level and
-ends at the first closing long bracket of the same level.
-It can contain any text except a closing bracket of the same level.
-Literals in this bracketed form can run for several lines,
-do not interpret any escape sequences,
-and ignore long brackets of any other level.
-Any kind of end-of-line sequence
-(carriage return, newline, carriage return followed by newline,
-or newline followed by carriage return)
-is converted to a simple newline.
+字面串还可以用一种 <em>长括号</em> 括起来的方式定义。
+我们把两个正的方括号间插入 <em>n</em> 个等号定义为 <em>第 <em>n</em> 级开长括号</em>。
+就是说，0 级开的长括号写作 <code>[[</code> ， 一级开长括号写作 <code>[=[</code> ，
+如此等等。
+<em>闭长括号</em>也作类似定义； 
+举个例子，4 级反的长括号写作 <code>]====]</code> 。
+一个 <em>长字面串</em> 可以由任何一级的开长括号开始，而由第一个碰到的同级的闭长括号结束。
+这种方式描述的字符串可以包含任何东西，当然特定级别的反长括号除外。
+整个词法分析过程将不受分行限制，不处理任何转义符，并且忽略掉任何不同级别的长括号。 
+其中碰到的任何形式的换行串（回车、换行、回车加换行、换行加回车），都会被转换为单个换行符。
 
 
 <p>
-Any byte in a literal string not
-explicitly affected by the previous rules represents itself.
-However, Lua opens files for parsing in text mode,
-and the system file functions may have problems with
-some control characters.
-So, it is safer to represent
-non-text data as a quoted literal with
-explicit escape sequences for non-text characters.
+字面串中的每个不被上述规则影响的字节都呈现为本身。
+然而，Lua 是用文本模式打开源文件解析的，
+一些系统的文件操作函数对某些控制字符的处理可能有问题。
+因此，对于非文本数据，用引号括起来并显式按转义符规则来表述更安全。
 
 
 <p>
-For convenience,
-when the opening long bracket is immediately followed by a newline,
-the newline is not included in the string.
-As an example, in a system using ASCII
-(in which '<code>a</code>' is coded as&nbsp;97,
-newline is coded as&nbsp;10, and '<code>1</code>' is coded as&nbsp;49),
-the five literal strings below denote the same string:
+为了方便起见，
+当一个开长括号后紧接一个换行符时，
+这个换行符不会放在字符串内。
+举个例子，假设一个系统使用 ASCII 码
+（此时 '<code>a</code>' 编码为 97 ，
+换行编码为 10 ，'<code>1</code>' 编码为 49 ），
+下面五种方式描述了完全相同的字符串：
 
 <pre>
      a = 'alo\n123"'
@@ -1063,41 +1029,32 @@ the five literal strings below denote the same string:
 </pre>
 
 <p>
-A <em>numerical constant</em> (or <em>numeral</em>)
-can be written with an optional fractional part
-and an optional decimal exponent,
-marked by a letter '<code>e</code>' or '<code>E</code>'.
-Lua also accepts hexadecimal constants,
-which start with <code>0x</code> or <code>0X</code>.
-Hexadecimal constants also accept an optional fractional part
-plus an optional binary exponent,
-marked by a letter '<code>p</code>' or '<code>P</code>'.
-A numeric constant with a fractional dot or an exponent 
-denotes a float;
-otherwise it denotes an integer.
-Examples of valid integer constants are
-
+<em>数字常量</em> （或称为 <em>数字量</em>）
+可以由可选的小数部分和可选的十为底的指数部分构成，
+指数部分用字符 '<code>e</code>' 或 '<code>E</code>' 来标记。
+Lua 也接受以 <code>0x</code> 或 <code>0X</code> 开头的 16 进制常量。
+16 进制常量也接受小数加指数部分的形式，指数部分是以二为底，
+用字符 '<code>p</code>' 或 '<code>P</code>' 来标记。
+数字常量中包含小数点或指数部分时，被认为是一个浮点数；
+否则被认为是一个整数。
+下面有一些合法的整数常量的例子：
 <pre>
      3   345   0xff   0xBEBADA
 </pre><p>
-Examples of valid float constants are
-
+以下为合法的浮点常量：
 <pre>
      3.0     3.1416     314.16e-2     0.31416E1     34e1
      0x0.1E  0xA23p-4   0X1.921FB54442D18P+1
 </pre>
 
 <p>
-A <em>comment</em> starts with a double hyphen (<code>--</code>)
-anywhere outside a string.
-If the text immediately after <code>--</code> is not an opening long bracket,
-the comment is a <em>short comment</em>,
-which runs until the end of the line.
-Otherwise, it is a <em>long comment</em>,
-which runs until the corresponding closing long bracket.
-Long comments are frequently used to disable code temporarily.
-
-
+在字符串外的任何地方出现以双横线 (<code>--</code>) 开头的部分是 <em>注释</em> 。
+如果 <code>--</code> 后没有紧跟着一个开大括号，
+该注释为 <em>短注释</em>，
+注释到当前行末截至。
+否则，这是一段 <em>长注释</em> ，
+注释区一直维持到对应的闭长括号。
+长注释通常用于临时屏蔽掉一大段代码。
 
 
 
