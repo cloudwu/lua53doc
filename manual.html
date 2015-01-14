@@ -755,83 +755,91 @@ Lua 将调用所有被标记了需要触发终结器对象的终结过程，
 
 
 
-<h2>2.6 &ndash; <a name="2.6">Coroutines</a></h2>
+<h2>2.6 &ndash; <a name="2.6">协程</a></h2>
 
 <p>
-Lua supports coroutines,
-also called <em>collaborative multithreading</em>.
-A coroutine in Lua represents an independent thread of execution.
-Unlike threads in multithread systems, however,
-a coroutine only suspends its execution by explicitly calling
-a yield function.
+Lua 支持协程，同时它也被称为 <em>协同式多线程</em>。
+Lua 为每个协程提供一个独立的运行序。
+然而和多线程系统中的线程不同，
+协程仅在显式地调用一个让出函数时才挂起当前的执行状态。
 
 
 <p>
-You create a coroutine by calling <a href="#pdf-coroutine.create"><code>coroutine.create</code></a>.
-Its sole argument is a function
-that is the main function of the coroutine.
-The <code>create</code> function only creates a new coroutine and
-returns a handle to it (an object of type <em>thread</em>);
-it does not start the coroutine.
+通过调用
+<a href="#pdf-coroutine.create"><code>coroutine.create</code></a>
+可创建一个协程。
+它唯一的参数是一个函数，这个函数将作为这个协程的主函数。
+<code>create</code> 函数仅仅创建出这个协程然后返回它的句柄
+（一个类型为 <em>thread</em> 的对象）；
+它并不运行该协程。
 
 
 <p>
-You execute a coroutine by calling <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a>.
-When you first call <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a>,
-passing as its first argument
-a thread returned by <a href="#pdf-coroutine.create"><code>coroutine.create</code></a>,
-the coroutine starts its execution,
-at the first line of its main function.
-Extra arguments passed to <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a> are passed
-as arguments to the coroutine's main function.
-After the coroutine starts running,
-it runs until it terminates or <em>yields</em>.
+通过调用
+<a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a>
+可执行一个协程。
+第一次调用
+<a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a>
+时，第一个参数应传入
+<a href="#pdf-coroutine.create"><code>coroutine.create</code></a>
+返回的线程对象，这样协程就会从其主函数的第一行开始执行。
+<a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a>
+后面的参数将作为主函数的参数传入。
+协程将一直运行到它结束或 <em>让出</em>。
 
 
 <p>
-A coroutine can terminate its execution in two ways:
-normally, when its main function returns
-(explicitly or implicitly, after the last instruction);
-and abnormally, if there is an unprotected error.
-In case of normal termination,
-<a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a> returns <b>true</b>,
-plus any values returned by the coroutine main function.
-In case of errors, <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a> returns <b>false</b>
-plus an error message.
+协程的运行可能被两种方式终止：
+正常途径是主函数返回
+（显式返回或运行完最后一条指令）；
+非正常途径是发生了一个未被捕获的错误。
+对于正常结束，
+<a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a> 将返回 <b>true</b>，
+并接上协程主函数的返回值。
+当错误发生时，
+<a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a> 将返回 <b>false</b>
+与错误消息。
 
 
 <p>
-A coroutine yields by calling <a href="#pdf-coroutine.yield"><code>coroutine.yield</code></a>.
-When a coroutine yields,
-the corresponding <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a> returns immediately,
-even if the yield happens inside nested function calls
-(that is, not in the main function,
-but in a function directly or indirectly called by the main function).
-In the case of a yield, <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a> also returns <b>true</b>,
-plus any values passed to <a href="#pdf-coroutine.yield"><code>coroutine.yield</code></a>.
-The next time you resume the same coroutine,
-it continues its execution from the point where it yielded,
-with the call to <a href="#pdf-coroutine.yield"><code>coroutine.yield</code></a> returning any extra
-arguments passed to <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a>.
+让出协程的执行通过调用
+<a href="#pdf-coroutine.yield"><code>coroutine.yield</code></a> 完成。
+当协程让出，
+即使让出发生在内嵌函数调用中
+（即不在主函数，但在主函数直接或间接调用的函数内部），
+之前对该协程调用的 <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a> 会立刻返回。
+在让出的情况下，
+<a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a> 依旧返回 <b>true</b>，
+接下来的返回值是传给
+<a href="#pdf-coroutine.yield"><code>coroutine.yield</code></a> 的那些参数。
+当下一次你延续同一个协程时，
+协程会接在让出点继续运行。
+调用 <a href="#pdf-coroutine.yield"><code>coroutine.yield</code></a>
+的让出点会返回传给
+<a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a>
+的额外参数。
 
 
 <p>
-Like <a href="#pdf-coroutine.create"><code>coroutine.create</code></a>,
-the <a href="#pdf-coroutine.wrap"><code>coroutine.wrap</code></a> function also creates a coroutine,
-but instead of returning the coroutine itself,
-it returns a function that, when called, resumes the coroutine.
-Any arguments passed to this function
-go as extra arguments to <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a>.
-<a href="#pdf-coroutine.wrap"><code>coroutine.wrap</code></a> returns all the values returned by <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a>,
-except the first one (the boolean error code).
-Unlike <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a>,
-<a href="#pdf-coroutine.wrap"><code>coroutine.wrap</code></a> does not catch errors;
-any error is propagated to the caller.
+就像
+<a href="#pdf-coroutine.create"><code>coroutine.create</code></a> 那样，
+<a href="#pdf-coroutine.wrap"><code>coroutine.wrap</code></a> 函数也会创建一个协程。
+不同的是，它不返回协程本身，而是返回一个函数。
+调用这个函数将延续这个协程。
+为这个函数提供的参数相当于
+传给 <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a> 的额外参数。
+<a href="#pdf-coroutine.wrap"><code>coroutine.wrap</code></a>
+的返回值是
+<a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a>
+的返回值中除去第一个返回值（布尔型的错误码）剩余的部分。
+和 <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a> 不同，
+<a href="#pdf-coroutine.wrap"><code>coroutine.wrap</code></a>
+不会捕获错误；
+错误会传播给调用者。
 
 
 <p>
-As an example of how coroutines work,
-consider the following code:
+下面的代码展示了一个协程工作的范例：
 
 <pre>
      function foo (a)
@@ -853,7 +861,7 @@ consider the following code:
      print("main", coroutine.resume(co, "x", "y"))
      print("main", coroutine.resume(co, "x", "y"))
 </pre><p>
-When you run it, it produces the following output:
+当你运行它，将产生下列输出：
 
 <pre>
      co-body 1       10
@@ -867,9 +875,11 @@ When you run it, it produces the following output:
 </pre>
 
 <p>
-You can also create and manipulate coroutines through the C API:
-see functions <a href="#lua_newthread"><code>lua_newthread</code></a>, <a href="#lua_resume"><code>lua_resume</code></a>,
-and <a href="#lua_yield"><code>lua_yield</code></a>.
+你也可以通过 C API 来创建及操作协程：
+参见函数
+<a href="#lua_newthread"><code>lua_newthread</code></a>，
+<a href="#lua_resume"><code>lua_resume</code></a>，
+以及 <a href="#lua_yield"><code>lua_yield</code></a>。
 
 
 
