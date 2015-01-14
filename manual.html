@@ -252,13 +252,13 @@ Lua 保有一个被称为 <em>全局环境</em> 特别环境。它被保存在 C
 
 
 <p>
-当 Lua 加载一个代码块，<code>_ENV</code> 这个 upvalue 的默认值就是这个全局环境
+当 Lua 加载一个代码块，<code>_ENV</code> 这个上值的默认值就是这个全局环境
 （参见 <a href="#pdf-load"><code>load</code></a>）。
 因此，在默认情况下，Lua 代码中提及的自由名字都指的全局环境中的相关项
 （因此，它们也被称为 <em>全局变量</em> ）。
 此外，所有的标准库都被加载入全局环境，一些函数也针对这个环境做操作。
 你可以用 <a href="#pdf-load"><code>load</code></a> （或 <a href="#pdf-loadfile"><code>loadfile</code></a>）加载代码块，并赋予它们不同的环境。
-（在 C 里，当你加载一个代码块后，可以通过改变它的第一个 upvalue 来改变它的环境。）
+（在 C 里，当你加载一个代码块后，可以通过改变它的第一个上值来改变它的环境。）
 
 
 
@@ -1058,267 +1058,246 @@ Lua 也接受以 <code>0x</code> 或 <code>0X</code> 开头的 16 进制常量�
 
 
 
-<h2>3.2 &ndash; <a name="3.2">Variables</a></h2>
+<h2>3.2 &ndash; <a name="3.2">变量</a></h2>
 
 <p>
-Variables are places that store values.
-There are three kinds of variables in Lua:
-global variables, local variables, and table fields.
+变量是储存值的地方。
+Lua 中有三种变量：
+全局变量、局部变量和表的域。
 
 
 <p>
-A single name can denote a global variable or a local variable
-(or a function's formal parameter,
-which is a particular kind of local variable):
+单个名字可以指代一个全局变量也可以指代一个局部变量
+（或者是一个函数的形参，这是一种特殊形式的局部变量）。
 
 <pre>
 	var ::= Name
 </pre><p>
-Name denotes identifiers, as defined in <a href="#3.1">&sect;3.1</a>.
+名字指 <a href="#3.1">&sect;3.1</a> 中定义的标识符。
 
 
 <p>
-Any variable name is assumed to be global unless explicitly declared
-as a local (see <a href="#3.3.7">&sect;3.3.7</a>).
-Local variables are <em>lexically scoped</em>:
-local variables can be freely accessed by functions
-defined inside their scope (see <a href="#3.5">&sect;3.5</a>).
+所有没有显式声明为局部变量（参见 <a href="#3.3.7">&sect;3.3.7</a>）
+的变量名都被当做全局变量。
+局部变量有其 <em>作用范围</em> ：
+局部变量可以被定义在它作用范围中的函数自由使用（参见
+<a href="#3.5">&sect;3.5</a>）。
 
 
 <p>
-Before the first assignment to a variable, its value is <b>nil</b>.
+在变量的首次赋值之前，变量的值均为 <b>nil</b>。
 
 
 <p>
-Square brackets are used to index a table:
+方括号被用来对表作索引：
 
 <pre>
 	var ::= prefixexp &lsquo;<b>[</b>&rsquo; exp &lsquo;<b>]</b>&rsquo;
 </pre><p>
-The meaning of accesses to table fields can be changed via metatables.
-An access to an indexed variable <code>t[i]</code> is equivalent to
-a call <code>gettable_event(t,i)</code>.
-(See <a href="#2.4">&sect;2.4</a> for a complete description of the
-<code>gettable_event</code> function.
-This function is not defined or callable in Lua.
-We use it here only for explanatory purposes.)
+对全局变量以及表的域之访问的含义可以通过元表来改变。 
+以索引方式访问一个变量 <code>t[i]</code> 等价于
+调用 <code>gettable_event(t,i)</code>。
+（参见 <a href="#2.4">&sect;2.4</a> ，有一份完整的关于
+<code>gettable_event</code> 函数的说明。
+这个函数并没有在 lua 中定义出来，也不能在 lua 中调用。这里我们把提到它只是方便说明问题。）
 
 
 <p>
-The syntax <code>var.Name</code> is just syntactic sugar for
-<code>var["Name"]</code>:
+<code>var.Name</code> 这种语法只是一个语法糖，用来表示
+<code>var["Name"]</code>：
 
 <pre>
 	var ::= prefixexp &lsquo;<b>.</b>&rsquo; Name
 </pre>
 
 <p>
-An access to a global variable <code>x</code>
-is equivalent to <code>_ENV.x</code>.
-Due to the way that chunks are compiled,
-<code>_ENV</code> is never a global name (see <a href="#2.2">&sect;2.2</a>).
+对全局变量 <code>x</code> 的操作等价于操作
+<code>_ENV.x</code>。
+由于代码块编译的方式，
+<code>_ENV</code> 永远也不可能是一个全局名字 （参见 <a href="#2.2">&sect;2.2</a>）。
 
 
 
 
 
-<h2>3.3 &ndash; <a name="3.3">Statements</a></h2>
-
-<p>
-Lua supports an almost conventional set of statements,
-similar to those in Pascal or C.
-This set includes
-assignments, control structures, function calls,
-and variable declarations.
-
-
-
-<h3>3.3.1 &ndash; <a name="3.3.1">Blocks</a></h3>
+<h2>3.3 &ndash; <a name="3.3">语句</a></h2>
 
 <p>
-A block is a list of statements,
-which are executed sequentially:
+Lua 支持所有与 Pascal 或是 C 类似的常见形式的语句，
+这个集合包括赋值，控制结构，函数调用，还有变量声明。
+
+
+
+<h3>3.3.1 &ndash; <a name="3.3.1">语句块</a></h3>
+
+<p>
+语句块是一个语句序列，它们会按次序执行：
 
 <pre>
 	block ::= {stat}
 </pre><p>
-Lua has <em>empty statements</em>
-that allow you to separate statements with semicolons,
-start a block with a semicolon
-or write two semicolons in sequence:
+Lua 支持 <em>空语句</em>，
+你可以用分号分割语句，也可以以分号开始一个语句块，
+或是连着写两个分号：
 
 <pre>
 	stat ::= &lsquo;<b>;</b>&rsquo;
 </pre>
 
 <p>
-Function calls and assignments
-can start with an open parenthesis.
-This possibility leads to an ambiguity in Lua's grammar.
-Consider the following fragment:
+函数调用和赋值语句都可能以一个小括号打头，
+这可能让 Lua 的语法产生歧义。
+我们来看看下面的代码片断：
 
 <pre>
      a = b + c
      (print or io.write)('done')
 </pre><p>
-The grammar could see it in two ways:
+从语法上说，可能有两种解释方式：
 
 <pre>
      a = b + c(print or io.write)('done')
      
      a = b + c; (print or io.write)('done')
 </pre><p>
-The current parser always sees such constructions
-in the first way,
-interpreting the open parenthesis
-as the start of the arguments to a call.
-To avoid this ambiguity,
-it is a good practice to always precede with a semicolon
-statements that start with a parenthesis:
+当前的解析器总是有第一种结构来解析，
+它会将开括号看成函数调用的参数传递开始处。
+为了避免这种二义性，
+在一条语句以小括号开头时，前面放一个分号是个好习惯：
 
 <pre>
      ;(print or io.write)('done')
 </pre>
 
 <p>
-A block can be explicitly delimited to produce a single statement:
+
+一个语句块可以被显式的定界为单条语句：
 
 <pre>
 	stat ::= <b>do</b> block <b>end</b>
 </pre><p>
-Explicit blocks are useful
-to control the scope of variable declarations.
-Explicit blocks are also sometimes used to
-add a <b>return</b> statement in the middle
-of another block (see <a href="#3.3.4">&sect;3.3.4</a>).
+显式的对一个块定界通常用来控制内部变量声明的作用域。
+有时，显式定界也用于在一个语句块中间插入
+<b>return</b> （参见 <a href="#3.3.4">&sect;3.3.4</a>）。
 
 
 
 
 
-<h3>3.3.2 &ndash; <a name="3.3.2">Chunks</a></h3>
+<h3>3.3.2 &ndash; <a name="3.3.2">代码块</a></h3>
 
 <p>
-The unit of compilation of Lua is called a <em>chunk</em>.
-Syntactically,
-a chunk is simply a block:
+Lua 的一个编译单元被称为一个 <em>代码块</em>。
+从句法构成上讲，一个代码块就是一个语句块。
 
 <pre>
 	chunk ::= block
 </pre>
 
 <p>
-Lua handles a chunk as the body of an anonymous function
-with a variable number of arguments
-(see <a href="#3.4.11">&sect;3.4.11</a>).
-As such, chunks can define local variables,
-receive arguments, and return values.
-Moreover, such anonymous function is compiled as in the
-scope of an external local variable called <code>_ENV</code> (see <a href="#2.2">&sect;2.2</a>).
-The resulting function always has <code>_ENV</code> as its only upvalue,
-even if it does not use that variable.
+Lua 把一个代码块当作一个拥有不定参数的匿名函数
+（参见<a href="#3.4.11">&sect;3.4.11</a>）来处理。
+正是这样，代码块内可以定义局部变量，它可以接收参数，返回若干值。
+此外，这个匿名函数在编译时还为它的作用域绑定了一个外部局部变量
+<code>_ENV</code> （参见 <a href="#2.2">&sect;2.2</a>）。
+该函数总是把 <code>_ENV</code> 作为它唯一的一个上值，
+即使这个函数不使用这个变量，它也存在。
 
 
 <p>
-A chunk can be stored in a file or in a string inside the host program.
-To execute a chunk,
-Lua first <em>loads</em> it,
-precompiling the chunk's code into instructions for a virtual machine,
-and then Lua executes the compiled code
-with an interpreter for the virtual machine.
+代码块可以被保存在文件中，也可以作为宿主程序内部的一个字符串。
+要执行一个代码块，
+首先要让 Lua <em>加载</em> 它，
+将代码块中的代码预编译成虚拟机中的指令，
+而后，Lua 用虚拟机解释器来运行编译后的代码。
 
 
 <p>
-Chunks can also be precompiled into binary form;
-see program <code>luac</code> and function <a href="#pdf-string.dump"><code>string.dump</code></a> for details.
-Programs in source and compiled forms are interchangeable;
-Lua automatically detects the file type and acts accordingly (see <a href="#pdf-load"><code>load</code></a>).
+代码块可以被预编译为二进制形式；
+参见程序  <code>luac</code> 以及函数 <a href="#pdf-string.dump"><code>string.dump</code></a> 可获得更多细节。
+用源码表示的程序和编译后的形式可自由替换；
+Lua 会自动检测文件格式做相应的处理
+（参见 <a href="#pdf-load"><code>load</code></a>）。
 
 
 
 
 
-<h3>3.3.3 &ndash; <a name="3.3.3">Assignment</a></h3>
+<h3>3.3.3 &ndash; <a name="3.3.3">赋值</a></h3>
 
 <p>
-Lua allows multiple assignments.
-Therefore, the syntax for assignment
-defines a list of variables on the left side
-and a list of expressions on the right side.
-The elements in both lists are separated by commas:
+Lua 允许多重赋值。
+因此，赋值的语法定义是等号左边放一个变量列表， 而等号右边放一个表达式列表。
+两边的列表中的元素都用逗号间开：
 
 <pre>
 	stat ::= varlist &lsquo;<b>=</b>&rsquo; explist
 	varlist ::= var {&lsquo;<b>,</b>&rsquo; var}
 	explist ::= exp {&lsquo;<b>,</b>&rsquo; exp}
 </pre><p>
-Expressions are discussed in <a href="#3.4">&sect;3.4</a>.
+表达式放在 <a href="#3.4">&sect;3.4</a> 中讨论。
 
 
 <p>
-Before the assignment,
-the list of values is <em>adjusted</em> to the length of
-the list of variables.
-If there are more values than needed,
-the excess values are thrown away.
-If there are fewer values than needed,
-the list is extended with as many  <b>nil</b>'s as needed.
-If the list of expressions ends with a function call,
-then all values returned by that call enter the list of values,
-before the adjustment
-(except when the call is enclosed in parentheses; see <a href="#3.4">&sect;3.4</a>).
+在作赋值操作之前，
+那值列表会被 <em>调整</em> 为左边变量列表的个数。
+如果值比需要的更多的话，多余的值就被扔掉。 
+如果值的数量不够需求，
+将会按所需扩展若干个 <b>nil</b>。
+如果表达式列表以一个函数调用结束，
+这个函数所返回的所有值都会在调整操作之前被置入值列表中
+（除非这个函数调用被用括号括了起来；参见 <a href="#3.4">&sect;3.4</a>）。
+
 
 
 <p>
-The assignment statement first evaluates all its expressions
-and only then the assignments are performed.
-Thus the code
+赋值语句首先让所有的表达式完成运算，
+之后再做赋值操作。
+因此，下面这段代码
 
 <pre>
      i = 3
      i, a[i] = i+1, 20
 </pre><p>
-sets <code>a[3]</code> to 20, without affecting <code>a[4]</code>
-because the <code>i</code> in <code>a[i]</code> is evaluated (to 3)
-before it is assigned&nbsp;4.
-Similarly, the line
+会把 <code>a[3]</code> 设置为 20，而不会影响到 <code>a[4]</code> 。
+这是因为 <code>a[i]</code> 中的 <code>i</code> 在被赋值为 4 之前就被计算出来了（当时是 3 ）。 
+简单说 ，这样一行
 
 <pre>
      x, y = y, x
 </pre><p>
-exchanges the values of <code>x</code> and <code>y</code>,
-and
+会交换 <code>x</code> 和 <code>y</code> 的值，
+及
 
 <pre>
      x, y, z = y, z, x
 </pre><p>
-cyclically permutes the values of <code>x</code>, <code>y</code>, and <code>z</code>.
+会轮换 <code>x</code>，<code>y</code>，<code>z</code> 的值。
 
 
 <p>
-The meaning of assignments to global variables
-and table fields can be changed via metatables.
-An assignment to an indexed variable <code>t[i] = val</code> is equivalent to
-<code>settable_event(t,i,val)</code>.
-(See <a href="#2.4">&sect;2.4</a> for a complete description of the
-<code>settable_event</code> function.
-This function is not defined or callable in Lua.
-We use it here only for explanatory purposes.)
+对全局变量以及表的域的赋值操作的含义可以通过元表来改变。
+对 <code>t[i] = val</code> 这样的变量索引赋值，
+等价于 <code>settable_event(t,i,val)</code>。
+（关于函数 <code>settable_event</code> 的详细说明，参见
+<a href="#2.4">&sect;2.4</a>。
+这个函数并没有在 Lua 中定义出来，也不可以被调用。
+这里我们列出来，仅仅出于方便解释的目的。）
+
 
 
 <p>
-An assignment to a global name <code>x = val</code>
-is equivalent to the assignment
-<code>_ENV.x = val</code> (see <a href="#2.2">&sect;2.2</a>).
+对于全局变量 <code>x = val</code> 的赋值等价于
+<code>_ENV.x = val</code>
+（参见 <a href="#2.2">&sect;2.2</a>）。
 
 
 
 
 
-<h3>3.3.4 &ndash; <a name="3.3.4">Control Structures</a></h3><p>
-The control structures
-<b>if</b>, <b>while</b>, and <b>repeat</b> have the usual meaning and
-familiar syntax:
+<h3>3.3.4 &ndash; <a name="3.3.4">控制结构</a></h3><p>
+<b>if</b>, <b>while</b>, and <b>repeat</b>
+这些控制结构符合通常的意义，而且也有类似的语法：
 
 
 
@@ -1328,29 +1307,28 @@ familiar syntax:
 	stat ::= <b>repeat</b> block <b>until</b> exp
 	stat ::= <b>if</b> exp <b>then</b> block {<b>elseif</b> exp <b>then</b> block} [<b>else</b> block] <b>end</b>
 </pre><p>
-Lua also has a <b>for</b> statement, in two flavors (see <a href="#3.3.5">&sect;3.3.5</a>).
+Lua 也有一个 <b>for</b> 语句，它有两种形式
+（参见 <a href="#3.3.5">&sect;3.3.5</a>）。
 
 
 <p>
-The condition expression of a
-control structure can return any value.
-Both <b>false</b> and <b>nil</b> are considered false.
-All values different from <b>nil</b> and <b>false</b> are considered true
-(in particular, the number 0 and the empty string are also true).
+控制结构中的条件表达式可以返回任何值。
+<b>false</b> 与 <b>nil</b> 两者都被认为是假。
+所有不同于 <b>nil</b> 与 <b>false</b> 的其它值都被认为是真
+（特别需要注意的是，数字 0 和空字符串也被认为是真）。
 
 
 <p>
-In the <b>repeat</b>&ndash;<b>until</b> loop,
-the inner block does not end at the <b>until</b> keyword,
-but only after the condition.
-So, the condition can refer to local variables
-declared inside the loop block.
+在 <b>repeat</b>&ndash;<b>until</b> 循环中，
+内部语句块的结束点不是在 <b>until</b> 这个关键字处，
+它还包括了其后的条件表达式。
+因此，条件表达式中可以使用循环内部语句块中的定义的局部变量。
 
 
 <p>
-The <b>goto</b> statement transfers the program control to a label.
-For syntactical reasons,
-labels in Lua are considered statements too:
+<b>goto</b> 语句将程序的控制点转移到一个标签处。
+由于句法上的原因，
+Lua 里的标签也被认为是语句：
 
 
 
@@ -1361,80 +1339,70 @@ labels in Lua are considered statements too:
 </pre>
 
 <p>
-A label is visible in the entire block where it is defined,
-except
-inside nested blocks where a label with the same name is defined and
-inside nested functions.
-A goto may jump to any visible label as long as it does not
-enter into the scope of a local variable.
+除了在内嵌函数中，以及在内嵌语句块中定义了同名标签，的情况外，
+标签对于它定义所在的整个语句块可见。
+只要 goto 没有进入一个新的局部变量的作用域，它可以跳转到任意可见标签处。
 
 
 <p>
-Labels and empty statements are called <em>void statements</em>,
-as they perform no actions.
+标签和没有内容的语句被称为<em>空语句</em>，它们不做任何操作。
 
 
 <p>
-The <b>break</b> statement terminates the execution of a
-<b>while</b>, <b>repeat</b>, or <b>for</b> loop,
-skipping to the next statement after the loop:
+<b>break</b> 被用来结束
+<b>while</b>、 <b>repeat</b>、或 <b>for</b> 循环，
+它将跳到循环外接着之后的语句运行：
 
 
 <pre>
 	stat ::= <b>break</b>
 </pre><p>
-A <b>break</b> ends the innermost enclosing loop.
+<b>break</b> 跳出最内层的循环。
 
 
 <p>
-The <b>return</b> statement is used to return values
-from a function or a chunk
-(which is an anonymous function).
+<b>return</b> 被用于从函数或是代码块（其实它就是一个函数）
+中返回值。
 
-Functions can return more than one value,
-so the syntax for the <b>return</b> statement is
+函数可以返回不只一个值，所以 <b>return</b> 的语法为
 
 <pre>
 	stat ::= <b>return</b> [explist] [&lsquo;<b>;</b>&rsquo;]
 </pre>
 
 <p>
-The <b>return</b> statement can only be written
-as the last statement of a block.
-If it is really necessary to <b>return</b> in the middle of a block,
-then an explicit inner block can be used,
-as in the idiom <code>do return end</code>,
-because now <b>return</b> is the last statement in its (inner) block.
+<b>return</b> 只能被写在一个语句块的最后一句。
+如果你真的需要从语句块的中间 <b>return</b>，
+你可以使用显式的定义一个内部语句块，
+一般写作 <code>do return end</code>。
+可以这样写是因为现在 <b>return</b> 成了（内部）语句块的最后一句了。
 
 
 
 
 
-<h3>3.3.5 &ndash; <a name="3.3.5">For Statement</a></h3>
+<h3>3.3.5 &ndash; <a name="3.3.5">For 语句</a></h3>
 
 <p>
-
-The <b>for</b> statement has two forms:
-one numeric and one generic.
+<b>for</b> 有两种形式：一种是数字形式，另一种是通用形式。
 
 
 <p>
-The numeric <b>for</b> loop repeats a block of code while a
-control variable runs through an arithmetic progression.
-It has the following syntax:
+数字形式的 <b>for</b> 循环，通过一个数学运算不断地运行内部的代码块。
+下面是它的语法：
 
 <pre>
 	stat ::= <b>for</b> Name &lsquo;<b>=</b>&rsquo; exp &lsquo;<b>,</b>&rsquo; exp [&lsquo;<b>,</b>&rsquo; exp] <b>do</b> block <b>end</b>
 </pre><p>
-The <em>block</em> is repeated for <em>name</em> starting at the value of
-the first <em>exp</em>, until it passes the second <em>exp</em> by steps of the
-third <em>exp</em>.
-More precisely, a <b>for</b> statement like
+<em>block</em> 将把 <em>name</em> 作循环变量。
+从第一个 <em>exp</em> 开始起，直到第二个 <em>exp</em> 的值为止，
+其步长为第三个 <em>exp</em> 。
+更确切的说，一个 <b>for</b> 循环看起来是这个样子
 
 <pre>
      for v = <em>e1</em>, <em>e2</em>, <em>e3</em> do <em>block</em> end
 </pre><p>
-is equivalent to the code:
+这等价于代码：
 
 <pre>
      do
@@ -1453,55 +1421,54 @@ is equivalent to the code:
 </pre>
 
 <p>
-Note the following:
+注意下面这几点：
 
 <ul>
 
 <li>
-All three control expressions are evaluated only once,
-before the loop starts.
-They must all result in numbers.
+所有三个控制表达式都只被运算一次，
+表达式的计算在循环开始之前。 
+这些表达式的结果必须是数字。
 </li>
 
 <li>
-<code><em>var</em></code>, <code><em>limit</em></code>, and <code><em>step</em></code> are invisible variables.
-The names shown here are for explanatory purposes only.
+<code><em>var</em></code>，<code><em>limit</em></code>，以及 <code><em>step</em></code>
+都是一些不可见的变量。 
+这里给它们起的名字都仅仅用于解释方便。
 </li>
 
 <li>
-If the third expression (the step) is absent,
-then a step of&nbsp;1 is used.
+如果第三个表达式（步长）没有给出，会把步长设为 1 。
 </li>
 
 <li>
-You can use <b>break</b> and <b>goto</b> to exit a <b>for</b> loop.
+你可以用 <b>break</b> 和 <b>goto</b> 来退出 <b>for</b> 循环。
 </li>
 
 <li>
-The loop variable <code>v</code> is local to the loop body.
-If you need its value after the loop,
-assign it to another variable before exiting the loop.
+循环变量 <code>v</code> 是一个循环内部的局部变量；
+如果你需要在循环结束后使用这个值，
+在退出循环前把它赋给另一个变量。
 </li>
 
 </ul>
 
 <p>
-The generic <b>for</b> statement works over functions,
-called <em>iterators</em>.
-On each iteration, the iterator function is called to produce a new value,
-stopping when this new value is <b>nil</b>.
-The generic <b>for</b> loop has the following syntax:
+通用形式的 <b>for</b> 通过一个叫作 <em>迭代器</em> 的函数工作。
+每次迭代，迭代器函数都会被调用以产生一个新的值，
+当这个值为 <b>nil</b> 时，循环停止。 
+通用形式的 <b>for</b> 循环的语法如下：
 
 <pre>
 	stat ::= <b>for</b> namelist <b>in</b> explist <b>do</b> block <b>end</b>
 	namelist ::= Name {&lsquo;<b>,</b>&rsquo; Name}
 </pre><p>
-A <b>for</b> statement like
+这样的 <b>for</b> 语句
 
 <pre>
      for <em>var_1</em>, &middot;&middot;&middot;, <em>var_n</em> in <em>explist</em> do <em>block</em> end
 </pre><p>
-is equivalent to the code:
+它等价于这样一段代码：
 
 <pre>
      do
@@ -1514,31 +1481,31 @@ is equivalent to the code:
        end
      end
 </pre><p>
-Note the following:
+注意以下几点：
 
 <ul>
 
 <li>
-<code><em>explist</em></code> is evaluated only once.
-Its results are an <em>iterator</em> function,
-a <em>state</em>,
-and an initial value for the first <em>iterator variable</em>.
+<code><em>explist</em></code> 只会被计算一次。
+它返回三个值， 一个 <em>迭代器</em> 函数，
+一个 <em>状态</em>，
+一个 <em>迭代器的初始值</em>。
 </li>
 
 <li>
-<code><em>f</em></code>, <code><em>s</em></code>, and <code><em>var</em></code> are invisible variables.
-The names are here for explanatory purposes only.
+<code><em>f</em></code>， <code><em>s</em></code>，与 <code><em>var</em></code>
+都是不可见的变量。
+这里给它们起的名字都只是为了解说方便。
 </li>
 
 <li>
-You can use <b>break</b> to exit a <b>for</b> loop.
+你可以使用 <b>break</b> 来跳出 <b>for</b> 循环。
 </li>
 
 <li>
-The loop variables <code><em>var_i</em></code> are local to the loop;
-you cannot use their values after the <b>for</b> ends.
-If you need these values,
-then assign them to other variables before breaking or exiting the loop.
+环变量 <code><em>var_i</em></code> 对于循环来说是一个局部变量；
+你不可以在 <b>for</b> 循环结束后继续使用。
+如果你需要保留这些值，那么就在循环跳出或结束前赋值到别的变量里去。
 </li>
 
 </ul>
@@ -1546,39 +1513,41 @@ then assign them to other variables before breaking or exiting the loop.
 
 
 
-<h3>3.3.6 &ndash; <a name="3.3.6">Function Calls as Statements</a></h3><p>
-To allow possible side-effects,
-function calls can be executed as statements:
+<h3>3.3.6 &ndash; <a name="3.3.6">函数调用语句</a></h3><p>
+为了允许使用函数的副作用，
+函数调用可以被作为一个语句执行：
 
 <pre>
 	stat ::= functioncall
 </pre><p>
-In this case, all returned values are thrown away.
-Function calls are explained in <a href="#3.4.10">&sect;3.4.10</a>.
+在这种情况下，所有的返回值都被舍弃。
+函数调用在 <a href="#3.4.10">&sect;3.4.10</a> 中解释。
 
 
 
 
 
-<h3>3.3.7 &ndash; <a name="3.3.7">Local Declarations</a></h3><p>
-Local variables can be declared anywhere inside a block.
-The declaration can include an initial assignment:
+<h3>3.3.7 &ndash; <a name="3.3.7">局部声明</a></h3><p>
+局部变量可以在语句块中任何地方声明。 
+声明可以包含一个初始化赋值操作：
+
 
 <pre>
 	stat ::= <b>local</b> namelist [&lsquo;<b>=</b>&rsquo; explist]
 </pre><p>
-If present, an initial assignment has the same semantics
-of a multiple assignment (see <a href="#3.3.3">&sect;3.3.3</a>).
-Otherwise, all variables are initialized with <b>nil</b>.
+如果有初始化值的话，初始化赋值操作的语法和赋值操作一致
+（参见 <a href="#3.3.3">&sect;3.3.3</a> ）。
+若没有初始化值，所有的变量都被初始化为 <b>nil</b>。
+
 
 
 <p>
-A chunk is also a block (see <a href="#3.3.2">&sect;3.3.2</a>),
-and so local variables can be declared in a chunk outside any explicit block.
+一个代码块同时也是一个语句块（参见 <a href="#3.3.2">&sect;3.3.2</a>），
+所以局部变量可以放在代码块中那些显式注明的语句块之外。 
 
 
 <p>
-The visibility rules for local variables are explained in <a href="#3.5">&sect;3.5</a>.
+局部变量的可见性规则在 <a href="#3.5">&sect;3.5</a> 中解释。
 
 
 
@@ -1586,10 +1555,10 @@ The visibility rules for local variables are explained in <a href="#3.5">&sect;3
 
 
 
-<h2>3.4 &ndash; <a name="3.4">Expressions</a></h2>
+<h2>3.4 &ndash; <a name="3.4">表达式</a></h2>
 
 <p>
-The basic expressions in Lua are the following:
+Lua 中有这些基本表达式：
 
 <pre>
 	exp ::= prefixexp
@@ -1605,313 +1574,280 @@ The basic expressions in Lua are the following:
 </pre>
 
 <p>
-Numerals and literal strings are explained in <a href="#3.1">&sect;3.1</a>;
-variables are explained in <a href="#3.2">&sect;3.2</a>;
-function definitions are explained in <a href="#3.4.11">&sect;3.4.11</a>;
-function calls are explained in <a href="#3.4.10">&sect;3.4.10</a>;
-table constructors are explained in <a href="#3.4.9">&sect;3.4.9</a>.
-Vararg expressions,
-denoted by three dots ('<code>...</code>'), can only be used when
-directly inside a vararg function;
-they are explained in <a href="#3.4.11">&sect;3.4.11</a>.
+数字和字面串在 <a href="#3.1">&sect;3.1</a> 中解释；
+变量在 <a href="#3.2">&sect;3.2</a> 中解释；
+函数定义在 <a href="#3.4.11">&sect;3.4.11</a> 中解释；
+函数调用在 <a href="#3.4.10">&sect;3.4.10</a> 中解释；
+表的构造在 <a href="#3.4.9">&sect;3.4.9</a> 中解释。
+可变参数的表达式写作三个点（'<code>...</code>'），
+它只能在有可变参数的函数中直接使用；这些在 <a href="#3.4.11">&sect;3.4.11</a> 中解释。
 
 
 <p>
-Binary operators comprise arithmetic operators (see <a href="#3.4.1">&sect;3.4.1</a>),
-bitwise operators (see <a href="#3.4.2">&sect;3.4.2</a>),
-relational operators (see <a href="#3.4.4">&sect;3.4.4</a>), logical operators (see <a href="#3.4.5">&sect;3.4.5</a>),
-and the concatenation operator (see <a href="#3.4.6">&sect;3.4.6</a>).
-Unary operators comprise the unary minus (see <a href="#3.4.1">&sect;3.4.1</a>),
-the unary bitwise not (see <a href="#3.4.2">&sect;3.4.2</a>),
-the unary logical <b>not</b> (see <a href="#3.4.5">&sect;3.4.5</a>),
-and the unary <em>length operator</em> (see <a href="#3.4.7">&sect;3.4.7</a>).
+二元操作符包含有数学运算操作符（参见 <a href="#3.4.1">&sect;3.4.1</a>），
+位操作符（参见 <a href="#3.4.2">&sect;3.4.2</a>），
+比较操作符（参见 <a href="#3.4.4">&sect;3.4.4</a>），
+逻辑操作符（参见 <a href="#3.4.5">&sect;3.4.5</a>），
+以及连接操作符（参见 <a href="#3.4.6">&sect;3.4.6</a>）。
+一元操作符包括负号（参见 <a href="#3.4.1">&sect;3.4.1</a>），
+按位非（参见 <a href="#3.4.2">&sect;3.4.2</a>），
+逻辑非（参见 <a href="#3.4.5">&sect;3.4.5</a>），
+和取长度操作符（参见 <a href="#3.4.7">&sect;3.4.7</a>）。
 
-
-<p>
-Both function calls and vararg expressions can result in multiple values.
-If a function call is used as a statement (see <a href="#3.3.6">&sect;3.3.6</a>),
-then its return list is adjusted to zero elements,
-thus discarding all returned values.
-If an expression is used as the last (or the only) element
-of a list of expressions,
-then no adjustment is made
-(unless the expression is enclosed in parentheses).
-In all other contexts,
-Lua adjusts the result list to one element,
-either discarding all values except the first one
-or adding a single <b>nil</b> if there are no values.
 
 
 <p>
-Here are some examples:
+函数调用和可变参数表达式都可以放在多重返回值中。 
+如果函数调用被当作一条语句（参见 <a href="#3.3.6">&sect;3.3.6</a>），
+其返回值列表被调整为零个元素，即抛弃所有的返回值。
+如果表达式被用于表达式列表的最后（或是唯一的）一个元素，
+那么不会做任何调整（除非表达式被括号括起来）。
+在其它情况下，
+Lua 都会把结果调整为一个元素置入表达式列表中，
+即保留第一个结果而忽略之后的所有值，或是在没有结果时，
+补单个 <b>nil</b>。
+
+
+<p>
+这里有一些例子：
 
 <pre>
-     f()                -- adjusted to 0 results
-     g(f(), x)          -- f() is adjusted to 1 result
-     g(x, f())          -- g gets x plus all results from f()
-     a,b,c = f(), x     -- f() is adjusted to 1 result (c gets nil)
-     a,b = ...          -- a gets the first vararg parameter, b gets
-                        -- the second (both a and b can get nil if there
-                        -- is no corresponding vararg parameter)
+     f()                -- 调整为 0 个结果
+     g(f(), x)          -- f() 会被调整为一个结果
+     g(x, f())          -- g 收到 x 以及 f() 返回的所有结果
+     a,b,c = f(), x     -- f() 被调整为 1 个结果 （c 收到 nil）
+     a,b = ...          -- a 收到可变参数列表的第一个参数，
+                        -- b 收到第二个参数（如果可变参数列表中
+                        -- 没有实际的参数，a 和 b 都会收到 nil）
      
-     a,b,c = x, f()     -- f() is adjusted to 2 results
-     a,b,c = f()        -- f() is adjusted to 3 results
-     return f()         -- returns all results from f()
-     return ...         -- returns all received vararg parameters
-     return x,y,f()     -- returns x, y, and all results from f()
-     {f()}              -- creates a list with all results from f()
-     {...}              -- creates a list with all vararg parameters
-     {f(), nil}         -- f() is adjusted to 1 result
+     a,b,c = x, f()     -- f() 被调整为 2 个结果
+     a,b,c = f()        -- f() 被调整为 3 个结果
+     return f()         -- 返回 f() 的所有返回结果
+     return ...         -- 返回从可变参数列表中接收到的所有参数parameters
+     return x,y,f()     -- 返回 x, y, 以及 f() 的所有返回值
+     {f()}              -- 用 f() 的所有返回值创建一个列表
+     {...}              -- 用可变参数中的所有值创建一个列表
+     {f(), nil}         -- f() 被调整为一个结果
 </pre>
 
 <p>
-Any expression enclosed in parentheses always results in only one value.
-Thus,
-<code>(f(x,y,z))</code> is always a single value,
-even if <code>f</code> returns several values.
-(The value of <code>(f(x,y,z))</code> is the first value returned by <code>f</code>
-or <b>nil</b> if <code>f</code> does not return any values.)
+被括号括起来的表达式永远被当作一个值。
+所以，
+<code>(f(x,y,z))</code> 即使 <code>f</code> 返回多个值，
+这个表达式永远是一个单一值。 
+（<code>(f(x,y,z))</code> 的值是 <code>f</code> 返回的第一个值。
+如果 <code>f</code> 不返回值的话，那么它的值就是 <b>nil</b> 。）
 
 
 
-<h3>3.4.1 &ndash; <a name="3.4.1">Arithmetic Operators</a></h3><p>
-Lua supports the following arithmetic operators:
+<h3>3.4.1 &ndash; <a name="3.4.1">数学运算操作符</a></h3><p>
+Lua 支持下列数学运算操作符：
 
 <ul>
-<li><b><code>+</code>: </b>addition</li>
-<li><b><code>-</code>: </b>subtraction</li>
-<li><b><code>*</code>: </b>multiplication</li>
-<li><b><code>/</code>: </b>float division</li>
-<li><b><code>//</code>: </b>floor division</li>
-<li><b><code>%</code>: </b>modulo</li>
-<li><b><code>^</code>: </b>exponentiation</li>
-<li><b><code>-</code>: </b>unary minus</li>
+<li><b><code>+</code>: </b>加法</li>
+<li><b><code>-</code>: </b>减法</li>
+<li><b><code>*</code>: </b>乘法</li>
+<li><b><code>/</code>: </b>浮点除法</li>
+<li><b><code>//</code>: </b>向下取整除法</li>
+<li><b><code>%</code>: </b>取模</li>
+<li><b><code>^</code>: </b>乘方</li>
+<li><b><code>-</code>: </b>取负</li>
 </ul>
 
 <p>
-With the exception of exponentiation and float division,
-the arithmetic operators work as follows:
-If both operands are integers,
-the operation is performed over integers and the result is an integer.
-Otherwise, if both operands are numbers
-or strings that can be converted to
-numbers (see <a href="#3.4.3">&sect;3.4.3</a>),
-then they are converted to floats,
-the operation is performed following the usual rules
-for floating-point arithmetic
-(usually the IEEE 754 standard),
-and the result is a float.
+除了乘方和浮点除法运算，
+数学运算按如下方式工作：
+如果两个操作数都是整数，
+该操作以整数方式操作且结果也将是一个整数。
+否则，当两个操作数都是数字或可以被转换为数字的字符串
+（参见 <a href="#3.4.3">&sect;3.4.3</a>）时，
+操作数会被转换成两个浮点数，
+操作按通常的浮点规则（一般遵循 IEEE 754 标准）
+来进行，结果也是一个浮点数。
 
 
 <p>
-Exponentiation and float division (<code>/</code>)
-always convert their operands to floats
-and the result is always a float.
-Exponentiation uses the ISO&nbsp;C function <code>pow</code>,
-so that it works for non-integer exponents too.
+乘方和浮点除法 （<code>/</code>）
+总是把操作数转换成浮点数进行，起结果总是浮点数。
+乘方使用 ISO C 函数 <code>pow</code>，
+因此它也可以接受非整数的指数。
 
 
 <p>
-Floor division (<code>//</code>) is a division 
-that rounds the quotient towards minus infinite,
-that is, the floor of the division of its operands.
+向下取整的除法 （<code>//</code>）
+指做一次除法，并将商圆整到靠近负无穷的一侧，
+即对操作数做除法后取 floor 。
 
 
 <p>
-Modulo is defined as the remainder of a division
-that rounds the quotient towards minus infinite (floor division).
+取模被定义成除法的余数，其商被圆整到靠近负无穷的一侧（向下取整的除法）。
 
 
 <p>
-In case of overflows in integer arithmetic,
-all operations <em>wrap around</em>,
-according to the usual rules of two-complement arithmetic.
-(In other words,
-they return the unique representable integer
-that is equal modulo <em>2<sup>64</sup></em> to the mathematical result.)
+对于整数数学运算的溢出问题，
+这些操作采取的策略是按通常遵循的以 2 为补码的数学运算的 <em>环绕</em> 规则。
+（换句话说，它们返回其运算的数学结果对 <em>2<sup>64</sup></em> 取模后的数字。）
 
 
 
-<h3>3.4.2 &ndash; <a name="3.4.2">Bitwise Operators</a></h3><p>
-Lua supports the following bitwise operators:
+<h3>3.4.2 &ndash; <a name="3.4.2">位操作符</a></h3><p>
+Lua 支持下列位操作符：
 
 <ul>
-<li><b><code>&amp;</code>: </b>bitwise and</li>
-<li><b><code>&#124;</code>: </b>bitwise or</li>
-<li><b><code>~</code>: </b>bitwise exclusive or</li>
-<li><b><code>&gt;&gt;</code>: </b>right shift</li>
-<li><b><code>&lt;&lt;</code>: </b>left shift</li>
-<li><b><code>~</code>: </b>unary bitwise not</li>
+<li><b><code>&amp;</code>: </b>按位与</li>
+<li><b><code>&#124;</code>: </b>按位或</li>
+<li><b><code>~</code>: </b>按位异或</li>
+<li><b><code>&gt;&gt;</code>: </b>右移</li>
+<li><b><code>&lt;&lt;</code>: </b>左移</li>
+<li><b><code>~</code>: </b>按位非</li>
 </ul>
 
 <p>
-All bitwise operations convert its operands to integers
-(see <a href="#3.4.3">&sect;3.4.3</a>),
-operate on all bits of those integers,
-and result in an integer.
+所有的位操作都将操作数先转换为整数
+（参见 <a href="#3.4.3">&sect;3.4.3</a>），
+然后按位操作，其结果是一个整数。
 
 
 <p>
-Both right and left shifts fill the vacant bits with zeros.
-Negative displacements shift to the other direction;
-displacements with absolute values equal to or higher than
-the number of bits in an integer
-result in zero (as all bits are shifted out).
+对于右移和左移，均用零来填补空位。
+移动的位数若为负，则向反方向位移；
+若移动的位数的绝对值大于等于
+整数本身的位数，其结果为零
+（所有位都被移出）。
 
 
 
 
 
-<h3>3.4.3 &ndash; <a name="3.4.3">Coercions and Conversions</a></h3><p>
-Lua provides some automatic conversions between some
-types and representations at run time.
-Bitwise operators always convert float operands to integers.
-Exponentiation and float division
-always convert integer operands to floats.
-All other arithmetic operations applied to mixed numbers
-(integers and floats) convert the integer operand to a float;
-this is called the <em>usual rule</em>.
-The C API also converts both integers to floats and
-floats to integers, as needed.
-Moreover, string concatenation accepts numbers as arguments,
-besides strings. 
+<h3>3.4.3 &ndash; <a name="3.4.3">强制转换</a></h3><p>
+Lua 对一些类型和值的内部表示会在运行时做一些数学转换。
+位操作总是将浮点操作数转换成整数。
+乘方和浮点除法总是将整数转换为浮点数。
+其它数学操作若针对混合操作数
+（整数和浮点数）将把整数转换为浮点数；
+这一点被称为 <em>通常规则</em>。
+C API 同样会按需把整数转换为浮点数以及
+把浮点数转换为整数。
+此外，字符串连接操作除了字符串，也可以接受数字作为参数。
 
 
 <p>
-Lua also converts strings to numbers,
-whenever a number is expected.
+当操作需要数字时，Lua 还会把字符串转换为数字。
 
 
 <p>
-In a conversion from integer to float,
-if the integer value has an exact representation as a float,
-that is the result.
-Otherwise,
-the conversion gets the nearest higher or
-the nearest lower representable value.
-This kind of conversion never fails.
+当把一个整数转换为浮点数时，
+若整数值恰好可以表示为一个浮点数，那就取那个浮点数。
+否则，转换会取最接近的较大值或较小值来表示这个数。
+这种转换是不会失败的。
 
 
 <p>
-The conversion from float to integer
-checks whether the float has an exact representation as an integer
-(that is, the float has an integral value and
-it is in the range of integer representation).
-If it does, that representation is the result.
-Otherwise, the conversion fails.
+将浮点数转为整数的过程会检查
+浮点数能否被准确的表达为一个整数
+（即，浮点数是一个整数值且在整数可以表达的区间）。
+如果可以，结果就是那个数，否则转换失败。
 
 
 <p>
-The conversion from strings to numbers goes as follows:
-First, the string is converted to an integer or a float,
-following its syntax and the rules of the Lua lexer.
-(The string may have also leading and trailing spaces and a sign.)
-Then, the resulting number is converted to the required type
-(float or integer) according to the previous rules.
+从字符串到数字的转换过程遵循以下流程：
+首先，遵循按 Lua 词法分析器的规则分析语法来转换为对应的
+整数或浮点数。
+（字符串可以有前置或后置的空格以及一个符号。）
+然后，结果数字再按前述副转换为所需要的类型（浮点或整数）。
 
 
 <p>
-The conversion from numbers to strings uses a
-non-specified human-readable format.
-For complete control over how numbers are converted to strings,
-use the <code>format</code> function from the string library
-(see <a href="#pdf-string.format"><code>string.format</code></a>).
+从数字转换为字符串使用非制定的人可读的格式。
+若想完全控制数字到字符串的转换过程，
+可以使用字符串库中的 <code>format</code> 函数
+（参见 <a href="#pdf-string.format"><code>string.format</code></a>）。
 
 
 
 
 
-<h3>3.4.4 &ndash; <a name="3.4.4">Relational Operators</a></h3><p>
-Lua supports the following relational operators:
+<h3>3.4.4 &ndash; <a name="3.4.4">比较操作符</a></h3><p>
+Lua 支持下列比较操作符：
 
 <ul>
-<li><b><code>==</code>: </b>equality</li>
-<li><b><code>~=</code>: </b>inequality</li>
-<li><b><code>&lt;</code>: </b>less than</li>
-<li><b><code>&gt;</code>: </b>greater than</li>
-<li><b><code>&lt;=</code>: </b>less or equal</li>
-<li><b><code>&gt;=</code>: </b>greater or equal</li>
+<li><b><code>==</code>: </b>等于</li>
+<li><b><code>~=</code>: </b>不等于</li>
+<li><b><code>&lt;</code>: </b>小于</li>
+<li><b><code>&gt;</code>: </b>大于</li>
+<li><b><code>&lt;=</code>: </b>小于等于</li>
+<li><b><code>&gt;=</code>: </b>大于等于</li>
 </ul><p>
-These operators always result in <b>false</b> or <b>true</b>.
+这些操作的结果不是 <b>false</b> 就是 <b>true</b>。
 
 
 <p>
-Equality (<code>==</code>) first compares the type of its operands.
-If the types are different, then the result is <b>false</b>.
-Otherwise, the values of the operands are compared.
-Strings are compared in the obvious way.
-Numbers follow the usual rule for binary operations:
-if both operands are integers,
-they are compared as integers;
-otherwise, they are converted to floats
-and compared as such.
+等于操作 （<code>==</code>）先比较操作数的类型。
+如果类型不同，结果就是 <b>false</b>。
+否则，继续比较值。 
+字符串按一般的方式比较。
+数字遵循二元操作的规则：
+如果两个操作数都是整数，
+它们按整数比较；
+否则，它们先转换为浮点数，然后再做比较。
 
 
 <p>
-Tables, userdata, and threads
-are compared by reference:
-two objects are considered equal only if they are the same object.
-Every time you create a new object
-(a table, userdata, or thread),
-this new object is different from any previously existing object.
-Closures with the same reference are always equal.
-Closures with any detectable difference
-(different behavior, different definition) are always different.
+表，用户数据，以及线程都按引用比较：
+只有两者引用同一个对象时才认为它们相等。
+每次你创建一个新对象（一张表，一个用户数据，或一个线程），
+新对象都一定和已有且存在的对象不同。
+相同引用的闭包一定相等。
+有任何可察觉的差异（不同的行为，不同的定义）一定不等。
 
 
 <p>
-You can change the way that Lua compares tables and userdata
-by using the "eq" metamethod (see <a href="#2.4">&sect;2.4</a>).
+你可以通过使用 "eq" 元方法（参见 <a href="#2.4">&sect;2.4</a>）
+来改变 Lua 比较表和用户数据时的方式。
 
 
 <p>
-Equality comparisons do not convert strings to numbers
-or vice versa.
-Thus, <code>"0"==0</code> evaluates to <b>false</b>,
-and <code>t[0]</code> and <code>t["0"]</code> denote different
-entries in a table.
+等于操作不会将字符串转换为数字，反之亦然。
+即，<code>"0"==0</code> 结果为 <b>false</b>，
+且 <code>t[0]</code> 与 <code>t["0"]</code> 指代着表中的不同项。
 
 
 <p>
-The operator <code>~=</code> is exactly the negation of equality (<code>==</code>).
+<code>~=</code> 操作完全等价于 (<code>==</code>) 操作的反值。
 
 
 <p>
-The order operators work as follows.
-If both arguments are numbers,
-then they are compared following
-the usual rule for binary operations.
-Otherwise, if both arguments are strings,
-then their values are compared according to the current locale.
-Otherwise, Lua tries to call the "lt" or the "le"
-metamethod (see <a href="#2.4">&sect;2.4</a>).
-A comparison <code>a &gt; b</code> is translated to <code>b &lt; a</code>
-and <code>a &gt;= b</code> is translated to <code>b &lt;= a</code>.
+大小比较操作以以下方式进行。
+如果参数都是数字，
+它们按二元操作的常规进行。
+否则，如果两个参数都是字符串，
+它们的值按当前的区域设置来比较。
+再则，Lua Lua 就试着调用 "lt" 或是 "le" 元方法
+（参见 <a href="#2.4">&sect;2.4</a>）。
+<code>a &gt; b</code> 的比较被转译为 <code>b &lt; a</code>，
+<code>a &gt;= b</code> 被转译为 <code>b &lt;= a</code>。
 
 
 
 
 
-<h3>3.4.5 &ndash; <a name="3.4.5">Logical Operators</a></h3><p>
-The logical operators in Lua are
-<b>and</b>, <b>or</b>, and <b>not</b>.
-Like the control structures (see <a href="#3.3.4">&sect;3.3.4</a>),
-all logical operators consider both <b>false</b> and <b>nil</b> as false
-and anything else as true.
+<h3>3.4.5 &ndash; <a name="3.4.5">逻辑操作符</a></h3><p>
+Lua 中的逻辑操作符有 <b>and</b>， <b>or</b>，以及 <b>not</b>。
+和控制结构（参见 <a href="#3.3.4">&sect;3.3.4</a>）一样，
+所有的逻辑操作符把 <b>false</b> 和 <b>nil</b> 都作为假，
+而其它的一切都当作真。
 
 
 <p>
-The negation operator <b>not</b> always returns <b>false</b> or <b>true</b>.
-The conjunction operator <b>and</b> returns its first argument
-if this value is <b>false</b> or <b>nil</b>;
-otherwise, <b>and</b> returns its second argument.
-The disjunction operator <b>or</b> returns its first argument
-if this value is different from <b>nil</b> and <b>false</b>;
-otherwise, <b>or</b> returns its second argument.
-Both <b>and</b> and <b>or</b> use short-circuit evaluation;
-that is,
-the second operand is evaluated only if necessary.
-Here are some examples:
+取反操作 <b>not</b> 总是返回 <b>false</b> 或 <b>true</b> 中的一个。
+与操作符 <b>and</b> 在第一个参数为 <b>false</b> 或 <b>nil</b> 时
+返回这第一个参数；
+否则，<b>and</b> 返回第二个参数。 
+或操作符 <b>or</b> 在第一个参数不为 <b>nil</b> 也不为 <b>false</b> 时，
+返回这第一个参数，否则返回第二个参数。
+<b>and</b> 和 <b>or</b> 都遵循短路规则；
+也就是说，第二个操作数只在需要的时候去求值。
+这里有一些例子：
 
 <pre>
      10 or 20            --&gt; 10
@@ -1923,65 +1859,57 @@ Here are some examples:
      false or nil        --&gt; nil
      10 and 20           --&gt; 20
 </pre><p>
-(In this manual,
-<code>--&gt;</code> indicates the result of the preceding expression.)
+（在这本手册中，
+<code>--&gt;</code> 指前面表达式的结果。）
 
 
 
 
 
-<h3>3.4.6 &ndash; <a name="3.4.6">Concatenation</a></h3><p>
-The string concatenation operator in Lua is
-denoted by two dots ('<code>..</code>').
-If both operands are strings or numbers, then they are converted to
-strings according to the rules described in <a href="#3.4.3">&sect;3.4.3</a>.
-Otherwise, the <code>__concat</code> metamethod is called (see <a href="#2.4">&sect;2.4</a>).
+<h3>3.4.6 &ndash; <a name="3.4.6">字符串连接</a></h3><p>
+Lua 中字符串的连接操作符写作两个点（'<code>..</code>'）。
+如果两个操作数都是字符串或都是数字，
+连接操作将以 <a href="#3.4.3">&sect;3.4.3</a> 中提到的规则把其转换为字符串。
+否则，会调用元方法 <code>__concat</code> （参见 <a href="#2.4">&sect;2.4</a>）。
 
 
 
 
 
-<h3>3.4.7 &ndash; <a name="3.4.7">The Length Operator</a></h3>
+<h3>3.4.7 &ndash; <a name="3.4.7">取长度操作符</a></h3>
 
 <p>
-The length operator is denoted by the unary prefix operator <code>#</code>.
-The length of a string is its number of bytes
-(that is, the usual meaning of string length when each
-character is one byte).
+取长度操作符写作一元前置符 <code>#</code>。
+字符串的长度是它的字节数（就是以一个字符一个字节计算的字符串长度）。
 
 
 <p>
-A program can modify the behavior of the length operator for
-any value but strings through the <code>__len</code> metamethod (see <a href="#2.4">&sect;2.4</a>).
+程序可以通过 <code>__len</code> 元方法（参见 <a href="#2.4">&sect;2.4</a>）
+来修改对字符串类型外的任何值的取长度操作行为。
 
 
 <p>
-Unless a <code>__len</code> metamethod is given,
-the length of a table <code>t</code> is only defined if the
-table is a <em>sequence</em>,
-that is,
-the set of its positive numeric keys is equal to <em>{1..n}</em>
-for some non-negative integer <em>n</em>.
-In that case, <em>n</em> is its length.
-Note that a table like
+如果 <code>__len</code> 元方法没有给出，
+表 <code>t</code> 的长度只在表是一个 <em>序列</em> 时有定义。
+序列指表的正数键集等于 <em>{1..n}</em> ，
+其中 <em>n</em> 是一个非负整数。
+在这种情况下，<em>n</em> 是表的长度。
+注意这样的表
 
 <pre>
      {10, 20, nil, 40}
 </pre><p>
-is not a sequence, because it has the key <code>4</code>
-but does not have the key <code>3</code>.
-(So, there is no <em>n</em> such that the set <em>{1..n}</em> is equal
-to the set of positive numeric keys of that table.)
-Note, however, that non-numeric keys do not interfere
-with whether a table is a sequence.
+不是一个序列，因为它有键 <code>4</code>
+却没有键 <code>3</code>。
+（因此，该表的正整数键集不等于 <em>{1..n}</em> 集合，故而就不存在 <em>n</em>。）
+注意，一张表是否是一个序列和它的非数字键无关。
 
 
 
 
 
-<h3>3.4.8 &ndash; <a name="3.4.8">Precedence</a></h3><p>
-Operator precedence in Lua follows the table below,
-from lower to higher priority:
+<h3>3.4.8 &ndash; <a name="3.4.8">优先级</a></h3><p>
+Lua 中操作符的优先级写在下表中，从低到高优先级排序：
 
 <pre>
      or
@@ -1997,22 +1925,21 @@ from lower to higher priority:
      unary operators (not   #     -     ~)
      ^
 </pre><p>
-As usual,
-you can use parentheses to change the precedences of an expression.
-The concatenation ('<code>..</code>') and exponentiation ('<code>^</code>')
-operators are right associative.
-All other binary operators are left associative.
+通常，
+你可以用括号来改变运算次序。
+连接操作符 ('<code>..</code>') 和乘方操作 ('<code>^</code>') 
+是从右至左的。 
+其它所有的操作都是从左至右。
 
 
 
 
-
-<h3>3.4.9 &ndash; <a name="3.4.9">Table Constructors</a></h3><p>
-Table constructors are expressions that create tables.
-Every time a constructor is evaluated, a new table is created.
-A constructor can be used to create an empty table
-or to create a table and initialize some of its fields.
-The general syntax for constructors is
+<h3>3.4.9 &ndash; <a name="3.4.9">表构建</a></h3><p>
+表构造子是一个构造表的表达式。
+每次构造子被执行，都会构造出一张新的表。
+构造子可以被用来构造一张空表，
+也可以用来构造一张表并初始化其中的一些域。
+一般的构造子的语法如下
 
 <pre>
 	tableconstructor ::= &lsquo;<b>{</b>&rsquo; [fieldlist] &lsquo;<b>}</b>&rsquo;
@@ -2022,20 +1949,19 @@ The general syntax for constructors is
 </pre>
 
 <p>
-Each field of the form <code>[exp1] = exp2</code> adds to the new table an entry
-with key <code>exp1</code> and value <code>exp2</code>.
-A field of the form <code>name = exp</code> is equivalent to
-<code>["name"] = exp</code>.
-Finally, fields of the form <code>exp</code> are equivalent to
-<code>[i] = exp</code>, where <code>i</code> are consecutive integers
-starting with 1.
-Fields in the other formats do not affect this counting.
-For example,
+每个形如 <code>[exp1] = exp2</code> 的域向表中增加新的一项，
+其键为 <code>exp1</code> 而值为 <code>exp2</code>。
+形如 <code>name = exp</code> 的域等价于
+<code>["name"] = exp</code>。
+最后，形如 <code>exp</code> 的域等价于 <code>[i] = exp</code> ，
+这里的 <code>i</code> 是一个从 1 开始不断增长的数字。
+这这个格式中的其它域不会破坏其记数。
+举个例子：
 
 <pre>
      a = { [f(1)] = g; "x", "y"; x = 1, f(x), [30] = 23; 45 }
 </pre><p>
-is equivalent to
+等价于
 
 <pre>
      do
@@ -2052,104 +1978,98 @@ is equivalent to
 </pre>
 
 <p>
-The order of the assignments in a constructor is undefined.
-(This order would be relevant only when there are repeated keys.)
+构造子中赋值的次序未定义。
+（次序问题只会对那些键重复时的情况有影响。）
 
 
 <p>
-If the last field in the list has the form <code>exp</code>
-and the expression is a function call or a vararg expression,
-then all values returned by this expression enter the list consecutively
-(see <a href="#3.4.10">&sect;3.4.10</a>).
+如果表单中最后一个域的形式是 <code>exp</code> ，
+而且其表达式是一个函数调用或者是一个可变参数，
+那么这个表达式所有的返回值将依次进入列表 
+（参见 <a href="#3.4.10">&sect;3.4.10</a>）。
 
 
 <p>
-The field list can have an optional trailing separator,
-as a convenience for machine-generated code.
+初始化域表可以在最后多一个分割符，
+这样设计可以方便由机器生成代码。
 
 
 
 
-
-<h3>3.4.10 &ndash; <a name="3.4.10">Function Calls</a></h3><p>
-A function call in Lua has the following syntax:
+<h3>3.4.10 &ndash; <a name="3.4.10">函数调用</a></h3><p>
+Lua 中的函数调用的语法如下：
 
 <pre>
 	functioncall ::= prefixexp args
 </pre><p>
-In a function call,
-first prefixexp and args are evaluated.
-If the value of prefixexp has type <em>function</em>,
-then this function is called
-with the given arguments.
-Otherwise, the prefixexp "call" metamethod is called,
-having as first parameter the value of prefixexp,
-followed by the original call arguments
-(see <a href="#2.4">&sect;2.4</a>).
+数调用时，
+第一步，prefixexp 和 args 先被求值。
+如果 prefixexp 的值的类型是 <em>function</em>，
+那么这个函数就被用给出的参数调用。
+否则 prefixexp 的元方法 "call" 就被调用，
+第一个参数是 prefixexp 的值，
+接下来的是原来的调用参数 
+（参见 <a href="#2.4">&sect;2.4</a>）。
 
 
 <p>
-The form
+这样的形式
 
 <pre>
 	functioncall ::= prefixexp &lsquo;<b>:</b>&rsquo; Name args
 </pre><p>
-can be used to call "methods".
-A call <code>v:name(<em>args</em>)</code>
-is syntactic sugar for <code>v.name(v,<em>args</em>)</code>,
-except that <code>v</code> is evaluated only once.
+可以用来调用 "方法"。
+这是 Lua 支持的一种语法糖。
+像 <code>v:name(args)</code> 这个样子，
+被解释成 <code>v.name(v,args)</code>，
+这里的 <code>v</code> 只会被求值一次。
 
 
 <p>
-Arguments have the following syntax:
+参数的语法如下：
 
 <pre>
 	args ::= &lsquo;<b>(</b>&rsquo; [explist] &lsquo;<b>)</b>&rsquo;
 	args ::= tableconstructor
 	args ::= LiteralString
 </pre><p>
-All argument expressions are evaluated before the call.
-A call of the form <code>f{<em>fields</em>}</code> is
-syntactic sugar for <code>f({<em>fields</em>})</code>;
-that is, the argument list is a single new table.
-A call of the form <code>f'<em>string</em>'</code>
-(or <code>f"<em>string</em>"</code> or <code>f[[<em>string</em>]]</code>)
-is syntactic sugar for <code>f('<em>string</em>')</code>;
-that is, the argument list is a single literal string.
+所有参数的表达式求值都在函数调用之前。
+这样的调用形式 <code>f{fields}</code> 是一种语法糖用于表示
+<code>f({fields})</code>；
+这里指参数列表是一个新创建出来的列表。
+而这样的形式 <code>f'<em>string</em>'</code>
+（或是 <code>f"<em>string</em>"</code> 亦或是 <code>f[[<em>string</em>]]</code>）
+也是一种语法糖，用于表示 <code>f('<em>string</em>')</code>；
+此时的参数列表是一个单独的字符串。
 
 
 <p>
-A call of the form <code>return <em>functioncall</em></code> is called
-a <em>tail call</em>.
-Lua implements <em>proper tail calls</em>
-(or <em>proper tail recursion</em>):
-in a tail call,
-the called function reuses the stack entry of the calling function.
-Therefore, there is no limit on the number of nested tail calls that
-a program can execute.
-However, a tail call erases any debug information about the
-calling function.
-Note that a tail call only happens with a particular syntax,
-where the <b>return</b> has one single function call as argument;
-this syntax makes the calling function return exactly
-the returns of the called function.
-So, none of the following examples are tail calls:
+<code>return <em>functioncall</em></code> 
+这样的调用形式将触发一次 <em>尾调用</em>。
+Lua 实现了 <em>完全尾调用</em>（或称为 <em>完全尾递归</em>）：
+在尾调用中， 被调用的函数重用调用它的函数的堆栈项。
+因此，对于程序执行的嵌套尾调用的层数是没有限制的。
+然而，尾调用将删除调用它的函数的任何调试信息。
+注意，尾调用只发生在特定的语法下，
+仅当 <b>return</b> 只有单一函数调用作为参数时才发生尾调用；
+这种语法使得调用函数的所有结果可以完整地返回。
+因此，下面这些例子都不是尾调用：
 
 <pre>
-     return (f(x))        -- results adjusted to 1
+     return (f(x))        -- 返回值被调整为一个
      return 2 * f(x)
-     return x, f(x)       -- additional results
-     f(x); return         -- results discarded
-     return x or f(x)     -- results adjusted to 1
+     return x, f(x)       -- 追加若干返回值
+     f(x); return         -- 返回值全部被舍弃
+     return x or f(x)     -- 返回值被调整为一个
 </pre>
 
 
 
 
-<h3>3.4.11 &ndash; <a name="3.4.11">Function Definitions</a></h3>
+<h3>3.4.11 &ndash; <a name="3.4.11">函数定义</a></h3>
 
 <p>
-The syntax for function definition is
+函数定义的语法如下：
 
 <pre>
 	functiondef ::= <b>function</b> funcbody
@@ -2157,100 +2077,94 @@ The syntax for function definition is
 </pre>
 
 <p>
-The following syntactic sugar simplifies function definitions:
+另外定义了一些语法糖简化函数定义的写法：
 
 <pre>
 	stat ::= <b>function</b> funcname funcbody
 	stat ::= <b>local</b> <b>function</b> Name funcbody
 	funcname ::= Name {&lsquo;<b>.</b>&rsquo; Name} [&lsquo;<b>:</b>&rsquo; Name]
 </pre><p>
-The statement
+该语句
 
 <pre>
      function f () <em>body</em> end
 </pre><p>
-translates to
+被转译成
 
 <pre>
      f = function () <em>body</em> end
 </pre><p>
-The statement
+该语句
 
 <pre>
      function t.a.b.c.f () <em>body</em> end
 </pre><p>
-translates to
+被转译成
 
 <pre>
      t.a.b.c.f = function () <em>body</em> end
 </pre><p>
-The statement
+该语句
 
 <pre>
      local function f () <em>body</em> end
 </pre><p>
-translates to
+被转译成
 
 <pre>
      local f; f = function () <em>body</em> end
 </pre><p>
-not to
+而不是
 
 <pre>
      local f = function () <em>body</em> end
 </pre><p>
-(This only makes a difference when the body of the function
-contains references to <code>f</code>.)
+（这个差别只在函数体内需要引用 <code>f</code> 时才有。）
 
 
 <p>
-A function definition is an executable expression,
-whose value has type <em>function</em>.
-When Lua precompiles a chunk,
-all its function bodies are precompiled too.
-Then, whenever Lua executes the function definition,
-the function is <em>instantiated</em> (or <em>closed</em>).
-This function instance (or <em>closure</em>)
-is the final value of the expression.
-
+一个函数定义是一个可执行的表达式，
+执行结果是一个类型为 <em>function</em> 的值。
+当 Lua 预编译一个代码块时，
+代码块作为一个函数，整个函数体也就被预编译了。
+那么，无论何时 Lua 执行了函数定义，
+这个函数本身就进行了 <em>实例化</em>（或者说是 <em>关闭</em>了）。
+这个函数的实例（或者说是 <em>闭包</em>）是表达式的最终值。
 
 <p>
-Parameters act as local variables that are
-initialized with the argument values:
+形参被看作是一些局部变量，
+它们将由实参的值来初始化：
 
 <pre>
 	parlist ::= namelist [&lsquo;<b>,</b>&rsquo; &lsquo;<b>...</b>&rsquo;] | &lsquo;<b>...</b>&rsquo;
 </pre><p>
-When a function is called,
-the list of arguments is adjusted to
-the length of the list of parameters,
-unless the function is a <em>vararg function</em>,
-which is indicated by three dots ('<code>...</code>')
-at the end of its parameter list.
-A vararg function does not adjust its argument list;
-instead, it collects all extra arguments and supplies them
-to the function through a <em>vararg expression</em>,
-which is also written as three dots.
-The value of this expression is a list of all actual extra arguments,
-similar to a function with multiple results.
-If a vararg expression is used inside another expression
-or in the middle of a list of expressions,
-then its return list is adjusted to one element.
-If the expression is used as the last element of a list of expressions,
-then no adjustment is made
-(unless that last expression is enclosed in parentheses).
+当一个函数被调用，
+如果函数并非一个 <em>可变参数函数</em>，
+即在形参列表的末尾注明三个点 ('<code>...</code>')，
+那么实参列表就会被调整到形参列表的长度。
+变长参数函数不会调整实参列表； 
+取而代之的是，它将把所有额外的参数放在一起通过
+<em>变长参数表达式</em>传递给函数，
+其写法依旧是三个点。
+这个表达式的值是一串实参值的列表，
+看起来就跟一个可以返回多个结果的函数一样。
+如果一个变长参数表达式放在另一个表达式中使用，
+或是放在另一串表达式的中间，
+那么它的返回值就会被调整为单个值。
+若这个表达式放在了一系列表达式的最后一个，
+就不会做调整了
+（除非这最后一个参数被括号给括了起来）。
 
 
 <p>
-As an example, consider the following definitions:
+我们先做如下定义，然后再来看一个例子：
 
 <pre>
      function f(a, b) end
      function g(a, b, ...) end
      function r() return 1,2,3 end
 </pre><p>
-Then, we have the following mapping from arguments to parameters and
-to the vararg expression:
+下面看看实参到形参数以及可变长参数的映射关系：
 
 <pre>
      CALL            PARAMETERS
@@ -2268,29 +2182,25 @@ to the vararg expression:
 </pre>
 
 <p>
-Results are returned using the <b>return</b> statement (see <a href="#3.3.4">&sect;3.3.4</a>).
-If control reaches the end of a function
-without encountering a <b>return</b> statement,
-then the function returns with no results.
+结果由 <b>return</b> 来返回（参见 <a href="#3.3.4">&sect;3.3.4</a>）。
+如果执行到函数末尾依旧没有遇到任何 <b>return</b> 语句，
+函数就不会返回任何结果。
 
 
 <p>
-
-There is a system-dependent limit on the number of values
-that a function may return.
-This limit is guaranteed to be larger than 1000.
+关于函数可返回值的数量限制和系统有关。
+这个限制一定大于 1000 。
 
 
 <p>
-The <em>colon</em> syntax
-is used for defining <em>methods</em>,
-that is, functions that have an implicit extra parameter <code>self</code>.
-Thus, the statement
+<em>冒号</em> 语法可以用来定义 <em>方法</em>，
+就是说，函数可以有一个隐式的形参 <code>self</code>。
+因此，如下语句
 
 <pre>
      function t.a.b.c:f (<em>params</em>) <em>body</em> end
 </pre><p>
-is syntactic sugar for
+是这样一种写法的语法糖
 
 <pre>
      t.a.b.c.f = function (self, <em>params</em>) <em>body</em> end
@@ -2301,50 +2211,45 @@ is syntactic sugar for
 
 
 
-<h2>3.5 &ndash; <a name="3.5">Visibility Rules</a></h2>
+<h2>3.5 &ndash; <a name="3.5">可见性规则</a></h2>
 
 <p>
-
-Lua is a lexically scoped language.
-The scope of a local variable begins at the first statement after
-its declaration and lasts until the last non-void statement
-of the innermost block that includes the declaration.
-Consider the following example:
+Lua 语言有词法作用范围。
+变量的作用范围开始于声明它们之后的第一个语句段，
+结束于包含这个声明的最内层语句块的最后一个非空语句。
+看下面这些例子：
 
 <pre>
-     x = 10                -- global variable
-     do                    -- new block
-       local x = x         -- new 'x', with value 10
+     x = 10                -- 全局变量
+     do                    -- 新的语句块
+       local x = x         -- 新的一个 'x', 它的值现在是 10
        print(x)            --&gt; 10
        x = x+1
-       do                  -- another block
-         local x = x+1     -- another 'x'
+       do                  -- 另一个语句块
+         local x = x+1     -- 又一个 'x'
          print(x)          --&gt; 12
        end
        print(x)            --&gt; 11
      end
-     print(x)              --&gt; 10  (the global one)
+     print(x)              --&gt; 10 （取到的是全局的那一个）
 </pre>
 
 <p>
-Notice that, in a declaration like <code>local x = x</code>,
-the new <code>x</code> being declared is not in scope yet,
-and so the second <code>x</code> refers to the outside variable.
+注意这里，类似 <code>local x = x</code> 这样的声明，
+新的 <code>x</code> 正在被声明，但是还没有进入它的作用范围，
+所以第二个 <code>x</code> 指向的是外面一层的变量。
 
 
 <p>
-Because of the lexical scoping rules,
-local variables can be freely accessed by functions
-defined inside their scope.
-A local variable used by an inner function is called
-an <em>upvalue</em>, or <em>external local variable</em>,
-inside the inner function.
+因为有这样一个词法作用范围的规则，
+局部变量可以被在它的作为范围内定义的函数自由使用。
+当一个局部变量被内层的函数中使用的时候，
+它被内层函数称作 <em>上值</em>，或是 <em>外部局部变量</em>。
 
 
 <p>
-Notice that each execution of a <b>local</b> statement
-defines new local variables.
-Consider the following example:
+注意，每次执行到一个 <b>local</b> 语句都会定义出一个新的局部变量。
+看看这样一个例子：
 
 <pre>
      a = {}
@@ -2354,11 +2259,9 @@ Consider the following example:
        a[i] = function () y=y+1; return x+y end
      end
 </pre><p>
-The loop creates ten closures
-(that is, ten instances of the anonymous function).
-Each of these closures uses a different <code>y</code> variable,
-while all of them share the same <code>x</code>.
-
+这个循环创建了十个闭包（这指十个匿名函数的实例）。
+这些闭包中的每一个都使用了不同的 <code>y</code> 变量，
+而它们又共享了同一份 <code>x</code>。
 
 
 
