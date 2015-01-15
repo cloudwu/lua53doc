@@ -2266,158 +2266,140 @@ Lua 语言有词法作用范围。
 
 
 
-<h1>4 &ndash; <a name="4">The Application Program Interface</a></h1>
+<h1>4 &ndash; <a name="4">编程接口</a></h1>
 
 <p>
-
-This section describes the C&nbsp;API for Lua, that is,
-the set of C&nbsp;functions available to the host program to communicate
-with Lua.
-All API functions and related types and constants
-are declared in the header file <a name="pdf-lua.h"><code>lua.h</code></a>.
+这个部分描述了 Lua 的 C API ，
+也就是宿主程序跟 Lua 通讯用的一组 C 函数。 
+所有的 API 函数按相关的类型以及常量都声明在头文件 
+<a name="pdf-lua.h"><code>lua.h</code></a> 中。
 
 
 <p>
-Even when we use the term "function",
-any facility in the API may be provided as a macro instead.
-Except where stated otherwise,
-all such macros use each of their arguments exactly once
-(except for the first argument, which is always a Lua state),
-and so do not generate any hidden side-effects.
+虽然我们说的是“函数”，
+但一部分简单的 API 是以宏的形式提供的。 
+除非另有说明，
+所有的这些宏都只使用它们的参数一次 
+（除了第一个参数，那一定是 Lua 状态机），
+因此你不需担心这些宏的展开会引起一些副作用。
 
 
 <p>
-As in most C&nbsp;libraries,
-the Lua API functions do not check their arguments for validity or consistency.
-However, you can change this behavior by compiling Lua
-with the macro <a name="pdf-LUA_USE_APICHECK"><code>LUA_USE_APICHECK</code></a> defined.
+C 库中所有的 Lua API 函数都不去检查参数是否相容及有效。
+然而，你可以在编译 Lua 时加上打开一个宏开关
+<a name="pdf-LUA_USE_APICHECK"><code>LUA_USE_APICHECK</code></a>
+来改变这个行为。
 
 
-
-<h2>4.1 &ndash; <a name="4.1">The Stack</a></h2>
-
-<p>
-Lua uses a <em>virtual stack</em> to pass values to and from C.
-Each element in this stack represents a Lua value
-(<b>nil</b>, number, string, etc.).
-
+<h2>4.1 &ndash; <a name="4.1">栈</a></h2>
 
 <p>
-Whenever Lua calls C, the called function gets a new stack,
-which is independent of previous stacks and of stacks of
-C&nbsp;functions that are still active.
-This stack initially contains any arguments to the C&nbsp;function
-and it is where the C&nbsp;function pushes its results
-to be returned to the caller (see <a href="#lua_CFunction"><code>lua_CFunction</code></a>).
+Lua 使用一个 <em>虚拟栈</em> 来和 C 互传值。
+栈上的的每个元素都是一个 Lua 值 （<b>nil</b>，数字，字符串，等等）。
+
 
 
 <p>
-For convenience,
-most query operations in the API do not follow a strict stack discipline.
-Instead, they can refer to any element in the stack
-by using an <em>index</em>:
-A positive index represents an absolute stack position
-(starting at&nbsp;1);
-a negative index represents an offset relative to the top of the stack.
-More specifically, if the stack has <em>n</em> elements,
-then index&nbsp;1 represents the first element
-(that is, the element that was pushed onto the stack first)
-and
-index&nbsp;<em>n</em> represents the last element;
-index&nbsp;-1 also represents the last element
-(that is, the element at the&nbsp;top)
-and index <em>-n</em> represents the first element.
-
-
-
-
-
-<h2>4.2 &ndash; <a name="4.2">Stack Size</a></h2>
-
-<p>
-When you interact with the Lua API,
-you are responsible for ensuring consistency.
-In particular,
-<em>you are responsible for controlling stack overflow</em>.
-You can use the function <a href="#lua_checkstack"><code>lua_checkstack</code></a>
-to ensure that the stack has enough space for pushing new elements.
+无论何时 Lua 调用 C，被调用的函数都得到一个新的栈，
+这个栈独立于 C 函数本身的栈，也独立于之前的 Lua 栈。
+它里面包含了 Lua 传递给 C 函数的所有参数，
+而 C 函数则把要返回的结果放入这个栈以返回给调用者 
+（参见 <a href="#lua_CFunction"><code>lua_CFunction</code></a>）。
 
 
 <p>
-Whenever Lua calls C,
-it ensures that the stack has space for
-at least <a name="pdf-LUA_MINSTACK"><code>LUA_MINSTACK</code></a> extra slots.
-<code>LUA_MINSTACK</code> is defined as 20,
-so that usually you do not have to worry about stack space
-unless your code has loops pushing elements onto the stack.
+方便起见，
+所有针对栈的 API 查询操作都不严格遵循栈的操作规则。
+而是可以用一个 <em>索引</em> 来指向栈上的任何元素：
+正的索引指的是栈上的绝对位置（从一开始）；
+负的索引则指从栈顶开始的偏移量。
+展开来说，如果堆栈有 <em>n</em> 个元素，
+那么索引 1 表示第一个元素
+（也就是最先被压入堆栈的元素）
+而索引 <em>n</em> 则指最后一个元素；
+索引 -1 也是指最后一个元素
+（即栈顶的元素）， 
+索引 <em>-n</em> 是指第一个元素。
+
+
+
+
+<h2>4.2 &ndash; <a name="4.2">栈大小</a></h2>
+
+<p>
+当你使用 Lua API 时，
+就有责任保证做恰当的调用。 
+特别需要注意的是，
+<em>你有责任控制不要堆栈溢出</em>。
+你可以使用 <a href="#lua_checkstack"><code>lua_checkstack</code></a>
+这个函数来扩大可用堆栈的尺寸。
 
 
 <p>
-When you call a Lua function
-without a fixed number of results (see <a href="#lua_call"><code>lua_call</code></a>),
-Lua ensures that the stack has enough space for all results,
-but it does not ensure any extra space.
-So, before pushing anything in the stack after such a call
-you should use <a href="#lua_checkstack"><code>lua_checkstack</code></a>.
-
-
-
-
-
-<h2>4.3 &ndash; <a name="4.3">Valid and Acceptable Indices</a></h2>
-
-<p>
-Any function in the API that receives stack indices
-works only with <em>valid indices</em> or <em>acceptable indices</em>.
+无论何时 Lua 调用 C ，
+它都只保证至少有
+<a name="pdf-LUA_MINSTACK"><code>LUA_MINSTACK</code></a>
+这么多的堆栈空间可以使用。
+<code>LUA_MINSTACK</code> 一般被定义为 20 ，
+因此，只要你不是不断的把数据压栈，
+通常你不用关心堆栈大小。
 
 
 <p>
-A <em>valid index</em> is an index that refers to a
-real position within the stack, that is,
-its position lies between&nbsp;1 and the stack top
-(<code>1 &le; abs(index) &le; top</code>).
+当你调用一个 Lua 函数却没有指定要接收多少个返回值时
+（参见 <a href="#lua_call"><code>lua_call</code></a>），
+Lua 可以保证栈一定有足够的空间来接收所有的返回值，
+但不保证此外留有额外的空间。
+因此，在做了一次这样的调用后，如果你需要继续压栈，
+则需要使用 <a href="#lua_checkstack"><code>lua_checkstack</code></a>。
 
-Usually, functions that can modify the value at an index
-require valid indices.
+
+
+
+<h2>4.3 &ndash; <a name="4.3">有效索引与可接受索引</a></h2>
+
+<p>
+API 中的函数若需要传入栈索引，这个索引必须是
+<em>有效索引</em> 或是 <em>可接受索引</em>。
 
 
 <p>
-Unless otherwise noted,
-any function that accepts valid indices also accepts <em>pseudo-indices</em>,
-which represent some Lua values that are accessible to C&nbsp;code
-but which are not in the stack.
-Pseudo-indices are used to access the registry
-and the upvalues of a C&nbsp;function (see <a href="#4.4">&sect;4.4</a>).
+<em>有效索引</em> 指引用栈内真实位置的索引；
+即在 1 到栈顶之间的位置
+（<code>1 &le; abs(index) &le; top</code>）。
+
+通常，一个可能修改该位置的值的函数需要传入有效索引。
 
 
 <p>
-Functions that do not need a specific stack position,
-but only a value in the stack (e.g., query functions),
-can be called with acceptable indices.
-An <em>acceptable index</em> can be any valid index,
-including the pseudo-indices,
-but it also can be any positive index after the stack top
-within the space allocated for the stack,
-that is, indices up to the stack size.
-(Note that 0 is never an acceptable index.)
-Except when noted otherwise,
-functions in the API work with acceptable indices.
+除非另有说明，
+任何可以接受有效索引的函数同时也接受 <em>伪索引</em>。
+伪索引指代一些可以被 C code 访问得到 Lua 值，而它们又不在栈内。
+这用于访问注册表以及 C 函数的上值（参见 <a href="#4.4">&sect;4.4</a>）。
 
 
 <p>
-Acceptable indices serve to avoid extra tests
-against the stack top when querying the stack.
-For instance, a C&nbsp;function can query its third argument
-without the need to first check whether there is a third argument,
-that is, without the need to check whether 3 is a valid index.
+对于那些只是需要栈中的值（例如查询函数）
+而不需要指定一个栈位置的函数，
+可以用一个可接受的索引去调用它们。
+<em>可接受索引</em> 不仅可以是任何包括伪索引在内的有效索引，
+还可以是任何超过栈顶但落下为栈分配出来的空间内的正索引。
+（注意 0 永远都不是一个可接受索引。）
+除非另有说明，API 里的函数都接受可接受索引。
 
 
 <p>
-For functions that can be called with acceptable indices,
-any non-valid index is treated as if it
-contains a value of a virtual type <a name="pdf-LUA_TNONE"><code>LUA_TNONE</code></a>,
-which behaves like a nil value.
+允许可接受索引是为了避免对栈顶以外的查询时做额外的检查。
+例如，C 函数可以直接查询传给它的第三个参数，
+而不用先检查是不是有第三个参数，
+即不需要检查 3 是不是一个有效索引。
 
+
+<p>
+对于那些以可接受索引调用的函数，
+无效索引被看作包含了一个虚拟类型
+<a name="pdf-LUA_TNONE"><code>LUA_TNONE</code></a> 的值，
+这个值的行为和 nil 一致。
 
 
 
