@@ -2684,8 +2684,8 @@ Lua 会把延续函数看作原函数。
 <pre>int lua_absindex (lua_State *L, int idx);</pre>
 
 <p>
-Converts the acceptable index <code>idx</code> into an absolute index
-(that is, one that does not depend on the stack top).
+将一个可接受的索引 <code>idx</code> 转换为绝对索引
+（即，一个不依赖栈顶在哪的值）。
 
 
 
@@ -2698,57 +2698,52 @@ Converts the acceptable index <code>idx</code> into an absolute index
                              size_t nsize);</pre>
 
 <p>
-The type of the memory-allocation function used by Lua states.
-The allocator function must provide a
-functionality similar to <code>realloc</code>,
-but not exactly the same.
-Its arguments are
-<code>ud</code>, an opaque pointer passed to <a href="#lua_newstate"><code>lua_newstate</code></a>;
-<code>ptr</code>, a pointer to the block being allocated/reallocated/freed;
-<code>osize</code>, the original size of the block or some code about what
-is being allocated;
-and <code>nsize</code>, the new size of the block.
+Lua 状态机中使用的内存分配器函数的类型。
+内存分配函数必须提供一个功能类似于 <code>realloc</code>
+但又不完全相同的函数。
+它的参数有
+<code>ud</code> ，一个由 <a href="#lua_newstate"><code>lua_newstate</code></a> 传给它的指针；
+<code>ptr</code> ，一个指向已分配出来/将被重新分配/要释放的内存块指针；
+<code>osize</code> ，内存块原来的尺寸或是关于什么将被分配出来的代码；
+<code>nsize</code> ，新内存块的尺寸。 
+
+<p>
+如果 <code>ptr</code> 不是 <code>NULL</code>，
+<code>osize</code> 是 <code>ptr</code> 指向的内存块的尺寸，
+即这个内存块当初被分配或重分配的尺寸。
 
 
 <p>
-When <code>ptr</code> is not <code>NULL</code>,
-<code>osize</code> is the size of the block pointed by <code>ptr</code>,
-that is, the size given when it was allocated or reallocated.
+如果 <code>ptr</code> 是 <code>NULL</code>，
+<code>osize</code> 是 Lua 即将分配对象类型的编码。
+当（且仅当）Lua 创建一个对应类型的新对象时，
+<code>osize</code> 是
+<a href="#pdf-LUA_TSTRING"><code>LUA_TSTRING</code></a>，<a href="#pdf-LUA_TTABLE"><code>LUA_TTABLE</code></a>，<a href="#pdf-LUA_TFUNCTION"><code>LUA_TFUNCTION</code></a>，
+<a href="#pdf-LUA_TUSERDATA"><code>LUA_TUSERDATA</code></a>，或 <a href="#pdf-LUA_TTHREAD"><code>LUA_TTHREAD</code></a> 中的一个。
+若 <code>osize</code> 是其它类型，Lua 将为其它东西分配内存。
 
 
 <p>
-When <code>ptr</code> is <code>NULL</code>,
-<code>osize</code> encodes the kind of object that Lua is allocating.
-<code>osize</code> is any of
-<a href="#pdf-LUA_TSTRING"><code>LUA_TSTRING</code></a>, <a href="#pdf-LUA_TTABLE"><code>LUA_TTABLE</code></a>, <a href="#pdf-LUA_TFUNCTION"><code>LUA_TFUNCTION</code></a>,
-<a href="#pdf-LUA_TUSERDATA"><code>LUA_TUSERDATA</code></a>, or <a href="#pdf-LUA_TTHREAD"><code>LUA_TTHREAD</code></a> when (and only when)
-Lua is creating a new object of that type.
-When <code>osize</code> is some other value,
-Lua is allocating memory for something else.
+Lua 假定分配器函数会遵循以下行为：
 
 
 <p>
-Lua assumes the following behavior from the allocator function:
+当 <code>nsize</code> 是零时，
+分配器必须和 <code>free</code> 行为类似并返回 <code>NULL</code>。
 
 
 <p>
-When <code>nsize</code> is zero,
-the allocator must behave like <code>free</code>
-and return <code>NULL</code>.
+当 <code>nsize</code> 不是零时，
+分配器必须和 <code>realloc</code> 行为类似。
+如果分配器无法完成请求，返回 <code>NULL</code>。
+Lua 假定在 <code>osize &gt;= nsize</code> 成立的条件下，
+分配器绝不会失败。
 
 
 <p>
-When <code>nsize</code> is not zero,
-the allocator must behave like <code>realloc</code>.
-The allocator returns <code>NULL</code>
-if and only if it cannot fulfill the request.
-Lua assumes that the allocator never fails when
-<code>osize &gt;= nsize</code>.
-
-
-<p>
-Here is a simple implementation for the allocator function.
-It is used in the auxiliary library by <a href="#luaL_newstate"><code>luaL_newstate</code></a>.
+这里有一个简单的分配器函数的实现。
+这个实现被放在补充库中，供
+<a href="#luaL_newstate"><code>luaL_newstate</code></a> 使用。
 
 <pre>
      static void *l_alloc (void *ud, void *ptr, size_t osize,
@@ -2762,12 +2757,10 @@ It is used in the auxiliary library by <a href="#luaL_newstate"><code>luaL_newst
          return realloc(ptr, nsize);
      }
 </pre><p>
-Note that Standard&nbsp;C ensures
-that <code>free(NULL)</code> has no effect and that
-<code>realloc(NULL,size)</code> is equivalent to <code>malloc(size)</code>.
-This code assumes that <code>realloc</code> does not fail when shrinking a block.
-(Although Standard&nbsp;C does not ensure this behavior,
-it seems to be a safe assumption.)
+注意，标准 C 能确保 <code>free(NULL)</code> 没有副作用，
+且 <code>realloc(NULL,size)</code> 等价于 <code>malloc(size)</code>。
+这段代码假定 <code>realloc</code> 在缩小块长度时不会失败。
+（虽然标准 C 没有对此行为做出保证，但这看起来是一个安全的假定。）
 
 
 
@@ -2778,34 +2771,32 @@ it seems to be a safe assumption.)
 <pre>void lua_arith (lua_State *L, int op);</pre>
 
 <p>
-Performs an arithmetic or bitwise operation over the two values
-(or one, in the case of negations)
-at the top of the stack,
-with the value at the top being the second operand,
-pops these values, and pushes the result of the operation.
-The function follows the semantics of the corresponding Lua operator
-(that is, it may call metamethods).
+对栈顶的两个值（或者一个，比如取反）做一次数学或位操作。
+其中，栈顶的那个值是第二个操作数。
+它会弹出压入的值，并把结果放在栈顶。
+这个函数遵循 Lua 对应的操作符运算规则
+（即有可能触发元方法）。
 
 
 <p>
-The value of <code>op</code> must be one of the following constants:
+<code>op</code> 的值必须是下列常量中的一个：
 
 <ul>
 
-<li><b><a name="pdf-LUA_OPADD"><code>LUA_OPADD</code></a>: </b> performs addition (<code>+</code>)</li>
-<li><b><a name="pdf-LUA_OPSUB"><code>LUA_OPSUB</code></a>: </b> performs subtraction (<code>-</code>)</li>
-<li><b><a name="pdf-LUA_OPMUL"><code>LUA_OPMUL</code></a>: </b> performs multiplication (<code>*</code>)</li>
-<li><b><a name="pdf-LUA_OPDIV"><code>LUA_OPDIV</code></a>: </b> performs float division (<code>/</code>)</li>
-<li><b><a name="pdf-LUA_OPIDIV"><code>LUA_OPIDIV</code></a>: </b> performs floor division (<code>//</code>)</li>
-<li><b><a name="pdf-LUA_OPMOD"><code>LUA_OPMOD</code></a>: </b> performs modulo (<code>%</code>)</li>
-<li><b><a name="pdf-LUA_OPPOW"><code>LUA_OPPOW</code></a>: </b> performs exponentiation (<code>^</code>)</li>
-<li><b><a name="pdf-LUA_OPUNM"><code>LUA_OPUNM</code></a>: </b> performs mathematical negation (unary <code>-</code>)</li>
-<li><b><a name="pdf-LUA_OPBNOT"><code>LUA_OPBNOT</code></a>: </b> performs bitwise negation (<code>~</code>)</li>
-<li><b><a name="pdf-LUA_OPBAND"><code>LUA_OPBAND</code></a>: </b> performs bitwise and (<code>&amp;</code>)</li>
-<li><b><a name="pdf-LUA_OPBOR"><code>LUA_OPBOR</code></a>: </b> performs bitwise or (<code>|</code>)</li>
-<li><b><a name="pdf-LUA_OPBXOR"><code>LUA_OPBXOR</code></a>: </b> performs bitwise exclusive or (<code>~</code>)</li>
-<li><b><a name="pdf-LUA_OPSHL"><code>LUA_OPSHL</code></a>: </b> performs left shift (<code>&lt;&lt;</code>)</li>
-<li><b><a name="pdf-LUA_OPSHR"><code>LUA_OPSHR</code></a>: </b> performs right shift (<code>&gt;&gt;</code>)</li>
+<li><b><a name="pdf-LUA_OPADD"><code>LUA_OPADD</code></a>: </b> 加法 (<code>+</code>)</li>
+<li><b><a name="pdf-LUA_OPSUB"><code>LUA_OPSUB</code></a>: </b> 减法 (<code>-</code>)</li>
+<li><b><a name="pdf-LUA_OPMUL"><code>LUA_OPMUL</code></a>: </b> 乘法 (<code>*</code>)</li>
+<li><b><a name="pdf-LUA_OPDIV"><code>LUA_OPDIV</code></a>: </b> 浮点除法 (<code>/</code>)</li>
+<li><b><a name="pdf-LUA_OPIDIV"><code>LUA_OPIDIV</code></a>: </b> 向下取整的除法 (<code>//</code>)</li>
+<li><b><a name="pdf-LUA_OPMOD"><code>LUA_OPMOD</code></a>: </b> 取模 (<code>%</code>)</li>
+<li><b><a name="pdf-LUA_OPPOW"><code>LUA_OPPOW</code></a>: </b> 乘方 (<code>^</code>)</li>
+<li><b><a name="pdf-LUA_OPUNM"><code>LUA_OPUNM</code></a>: </b> 取负 (一元 <code>-</code>)</li>
+<li><b><a name="pdf-LUA_OPBNOT"><code>LUA_OPBNOT</code></a>: </b> 按位取反 (<code>~</code>)</li>
+<li><b><a name="pdf-LUA_OPBAND"><code>LUA_OPBAND</code></a>: </b> 按位与 (<code>&amp;</code>)</li>
+<li><b><a name="pdf-LUA_OPBOR"><code>LUA_OPBOR</code></a>: </b> 按位或 (<code>|</code>)</li>
+<li><b><a name="pdf-LUA_OPBXOR"><code>LUA_OPBXOR</code></a>: </b> 按位异或 (<code>~</code>)</li>
+<li><b><a name="pdf-LUA_OPSHL"><code>LUA_OPSHL</code></a>: </b> 左移 (<code>&lt;&lt;</code>)</li>
+<li><b><a name="pdf-LUA_OPSHR"><code>LUA_OPSHR</code></a>: </b> 右移 (<code>&gt;&gt;</code>)</li>
 
 </ul>
 
@@ -2817,7 +2808,8 @@ The value of <code>op</code> must be one of the following constants:
 <pre>lua_CFunction lua_atpanic (lua_State *L, lua_CFunction panicf);</pre>
 
 <p>
-Sets a new panic function and returns the old one (see <a href="#4.6">&sect;4.6</a>).
+设置一个新的 panic 函数，并返回之前设置的那个。
+（参见 <a href="#4.6">&sect;4.6</a>）。
 
 
 
@@ -2828,42 +2820,35 @@ Sets a new panic function and returns the old one (see <a href="#4.6">&sect;4.6<
 <pre>void lua_call (lua_State *L, int nargs, int nresults);</pre>
 
 <p>
-Calls a function.
+调用一个函数。
 
 
 <p>
-To call a function you must use the following protocol:
-first, the function to be called is pushed onto the stack;
-then, the arguments to the function are pushed
-in direct order;
-that is, the first argument is pushed first.
-Finally you call <a href="#lua_call"><code>lua_call</code></a>;
-<code>nargs</code> is the number of arguments that you pushed onto the stack.
-All arguments and the function value are popped from the stack
-when the function is called.
-The function results are pushed onto the stack when the function returns.
-The number of results is adjusted to <code>nresults</code>,
-unless <code>nresults</code> is <a name="pdf-LUA_MULTRET"><code>LUA_MULTRET</code></a>.
-In this case, all results from the function are pushed.
-Lua takes care that the returned values fit into the stack space.
-The function results are pushed onto the stack in direct order
-(the first result is pushed first),
-so that after the call the last result is on the top of the stack.
-
+要调用一个函数请遵循以下协议：
+首先，要调用的函数应该被压入堆栈；
+接着，把需要传递给这个函数的参数按正序压栈；
+这是指第一个参数首先压栈。
+最后调用一下 <a href="#lua_call"><code>lua_call</code></a>；
+<code>nargs</code> 是你压入堆栈的参数个数。
+当函数调用完毕后，所有的参数以及函数本身都会出栈。
+而函数的返回值这时则被压入堆栈。
+返回值的个数将被调整为 <code>nresults</code> 个，
+除非 <code>nresults</code> 被设置成 <a name="pdf-LUA_MULTRET"><code>LUA_MULTRET</code></a>。
+在这种情况下，所有的返回值都被压入堆栈中。 
+Lua 会保证返回值都放入栈空间中。
+函数返回值将按正序压栈（第一个返回值首先压栈），
+因此在调用结束后，最后一个返回值将被放在栈顶。
 
 <p>
-Any error inside the called function is propagated upwards
-(with a <code>longjmp</code>).
-
+被调用函数内发生的错误将（通过 <code>longjmp</code> ）一直上抛。
 
 <p>
-The following example shows how the host program can do the
-equivalent to this Lua code:
+下面的例子中，这行 Lua 代码等价于在宿主程序中用 C 代码做一些工作：
 
 <pre>
      a = f("how", t.x, 14)
 </pre><p>
-Here it is in&nbsp;C:
+这里是 C 里的代码：
 
 <pre>
      lua_getglobal(L, "f");                  /* function to be called */
@@ -2875,10 +2860,9 @@ Here it is in&nbsp;C:
      lua_call(L, 3, 1);     /* call 'f' with 3 arguments and 1 result */
      lua_setglobal(L, "a");                         /* set global 'a' */
 </pre><p>
-Note that the code above is <em>balanced</em>:
-at its end, the stack is back to its original configuration.
-This is considered good programming practice.
-
+注意上面这段代码是 <em>平衡</em> 的：
+到了最后，堆栈恢复成原有的配置。
+这是一种良好的编程习惯。
 
 
 
@@ -2892,8 +2876,9 @@ This is considered good programming practice.
                 lua_KFunction k);</pre>
 
 <p>
-This function behaves exactly like <a href="#lua_call"><code>lua_call</code></a>,
-but allows the called function to yield (see <a href="#4.7">&sect;4.7</a>).
+这个函数的行为和 <a href="#lua_call"><code>lua_call</code></a>
+完全一致，只不过它还允许被调用的函数让出
+（参见 <a href="#4.7">&sect;4.7</a>）。
 
 
 
@@ -2903,35 +2888,31 @@ but allows the called function to yield (see <a href="#4.7">&sect;4.7</a>).
 <pre>typedef int (*lua_CFunction) (lua_State *L);</pre>
 
 <p>
-Type for C&nbsp;functions.
+C 函数的类型。
 
 
 <p>
-In order to communicate properly with Lua,
-a C&nbsp;function must use the following protocol,
-which defines the way parameters and results are passed:
-a C&nbsp;function receives its arguments from Lua in its stack
-in direct order (the first argument is pushed first).
-So, when the function starts,
-<code>lua_gettop(L)</code> returns the number of arguments received by the function.
-The first argument (if any) is at index 1
-and its last argument is at index <code>lua_gettop(L)</code>.
-To return values to Lua, a C&nbsp;function just pushes them onto the stack,
-in direct order (the first result is pushed first),
-and returns the number of results.
-Any other value in the stack below the results will be properly
-discarded by Lua.
-Like a Lua function, a C&nbsp;function called by Lua can also return
-many results.
-
+为了正确的和 Lua 通讯，
+C 函数必须使用下列协议。
+这个协议定义了参数以及返回值传递方法：
+C 函数通过 Lua 中的栈来接受参数，
+参数以正序入栈（第一个参数首先入栈）。
+因此，当函数开始的时候，
+<code>lua_gettop(L)</code> 可以返回函数收到的参数个数。
+第一个参数（如果有的话）在索引 1 的地方，
+而最后一个参数在索引 <code>lua_gettop(L)</code> 处。 
+当需要向 Lua 返回值的时候，
+C 函数只需要把它们以正序压到堆栈上（第一个返回值最先压入），
+然后返回这些返回值的个数。
+在这些返回值之下的，堆栈上的东西都会被 Lua 丢掉。
+和 Lua 函数一样，从 Lua 中调用 C 函数也可以有很多返回值。
 
 <p>
-As an example, the following function receives a variable number
-of numerical arguments and returns their average and their sum:
+下面这个例子中的函数将接收若干数字参数，并返回它们的平均数与和：
 
 <pre>
      static int foo (lua_State *L) {
-       int n = lua_gettop(L);    /* number of arguments */
+       int n = lua_gettop(L);    /* 参数的个数 */
        lua_Number sum = 0.0;
        int i;
        for (i = 1; i &lt;= n; i++) {
@@ -2941,9 +2922,9 @@ of numerical arguments and returns their average and their sum:
          }
          sum += lua_tonumber(L, i);
        }
-       lua_pushnumber(L, sum/n);        /* first result */
-       lua_pushnumber(L, sum);         /* second result */
-       return 2;                   /* number of results */
+       lua_pushnumber(L, sum/n);        /* 第一个返回值 */
+       lua_pushnumber(L, sum);         /* 第二个返回值 */
+       return 2;                   /* 返回值的个数 */
      }
 </pre>
 
@@ -2955,16 +2936,12 @@ of numerical arguments and returns their average and their sum:
 <pre>int lua_checkstack (lua_State *L, int n);</pre>
 
 <p>
-Ensures that the stack has space for at least <code>n</code> extra slots.
-It returns false if it cannot fulfill the request,
-either because it would cause the stack
-to be larger than a fixed maximum size
-(typically at least several thousand elements) or
-because it cannot allocate memory for the extra space.
-This function never shrinks the stack;
-if the stack is already larger than the new size,
-it is left unchanged.
-
+确保堆栈上至少有 <code>n</code> 个额外空位。
+如果不能把堆栈扩展到相应的尺寸，函数返回假。
+失败的原因包括将把栈扩展到比固定最大尺寸还大
+（至少是几千个元素）或分配内存失败。
+这个函数永远不会缩小堆栈；
+如果堆栈已经比需要的大了，那么就保持原样。
 
 
 
@@ -2974,15 +2951,13 @@ it is left unchanged.
 <pre>void lua_close (lua_State *L);</pre>
 
 <p>
-Destroys all objects in the given Lua state
-(calling the corresponding garbage-collection metamethods, if any)
-and frees all dynamic memory used by this state.
-On several platforms, you may not need to call this function,
-because all resources are naturally released when the host program ends.
-On the other hand, long-running programs that create multiple states,
-such as daemons or web servers,
-will probably need to close states as soon as they are not needed.
-
+销毁指定 Lua 状态机中的所有对象
+（如果有垃圾收集相关的元方法的话，会调用它们），
+并且释放状态机中使用的所有动态内存。
+在一些平台上，你可以不必调用这个函数， 
+因为当宿主程序结束的时候，所有的资源就自然被释放掉了。
+另一方面，长期运行的程序，比如一个后台程序或是一个网站服务器，
+会创建出多个 Lua 状态机。那么就应该在不需要时赶紧关闭它们。
 
 
 
@@ -2992,23 +2967,22 @@ will probably need to close states as soon as they are not needed.
 <pre>int lua_compare (lua_State *L, int index1, int index2, int op);</pre>
 
 <p>
-Compares two Lua values.
-Returns 1 if the value at index <code>index1</code> satisfies <code>op</code>
-when compared with the value at index <code>index2</code>,
-following the semantics of the corresponding Lua operator
-(that is, it may call metamethods).
-Otherwise returns&nbsp;0.
-Also returns&nbsp;0 if any of the indices is not valid.
+比较两个 Lua 值。
+当索引 <code>index1</code> 处的值通过 <code>op</code>
+和索引 <code>index2</code> 处的值做比较后条件满足，函数返回 1 。
+这个函数遵循 Lua 对应的操作规则（即有可能触发元方法）。
+反之，函数返回 0。
+当任何一个索引无效时，函数也会返回 0 。
 
 
 <p>
-The value of <code>op</code> must be one of the following constants:
+<code>op</code> 值必须是下列常量中的一个：
 
 <ul>
 
-<li><b><a name="pdf-LUA_OPEQ"><code>LUA_OPEQ</code></a>: </b> compares for equality (<code>==</code>)</li>
-<li><b><a name="pdf-LUA_OPLT"><code>LUA_OPLT</code></a>: </b> compares for less than (<code>&lt;</code>)</li>
-<li><b><a name="pdf-LUA_OPLE"><code>LUA_OPLE</code></a>: </b> compares for less or equal (<code>&lt;=</code>)</li>
+<li><b><a name="pdf-LUA_OPEQ"><code>LUA_OPEQ</code></a>: </b> 相等比较 (<code>==</code>)</li>
+<li><b><a name="pdf-LUA_OPLT"><code>LUA_OPLT</code></a>: </b> 小于比较 (<code>&lt;</code>)</li>
+<li><b><a name="pdf-LUA_OPLE"><code>LUA_OPLE</code></a>: </b> 小于等于比较 (<code>&lt;=</code>)</li>
 
 </ul>
 
@@ -3020,14 +2994,11 @@ The value of <code>op</code> must be one of the following constants:
 <pre>void lua_concat (lua_State *L, int n);</pre>
 
 <p>
-Concatenates the <code>n</code> values at the top of the stack,
-pops them, and leaves the result at the top.
-If <code>n</code>&nbsp;is&nbsp;1, the result is the single value on the stack
-(that is, the function does nothing);
-if <code>n</code> is 0, the result is the empty string.
-Concatenation is performed following the usual semantics of Lua
-(see <a href="#3.4.6">&sect;3.4.6</a>).
-
+连接栈顶的 <code>n</code> 个值，
+然后将这些值出栈，并把结果放在栈顶。
+如果 <code>n</code> 为 1 ，结果就是那个值放在栈上（即，函数什么都不做）；
+如果 <code>n</code> 为 0 ，结果是一个空串。 
+连接依照 Lua 中通常语义完成（参见 <a href="#3.4.6">&sect;3.4.6</a> ）。
 
 
 
@@ -3037,12 +3008,9 @@ Concatenation is performed following the usual semantics of Lua
 <pre>void lua_copy (lua_State *L, int fromidx, int toidx);</pre>
 
 <p>
-Copies the element at index <code>fromidx</code>
-into the valid index <code>toidx</code>,
-replacing the value at that position.
-Values at other positions are not affected.
-
-
+从索引 <code>fromidx</code> 处复制一个值到一个有效索引
+<code>toidx</code> 处，覆盖那里的原有值。
+不会影响其它位置的值。
 
 
 
@@ -3051,17 +3019,12 @@ Values at other positions are not affected.
 <pre>void lua_createtable (lua_State *L, int narr, int nrec);</pre>
 
 <p>
-Creates a new empty table and pushes it onto the stack.
-Parameter <code>narr</code> is a hint for how many elements the table
-will have as a sequence;
-parameter <code>nrec</code> is a hint for how many other elements
-the table will have.
-Lua may use these hints to preallocate memory for the new table.
-This pre-allocation is useful for performance when you know in advance
-how many elements the table will have.
-Otherwise you can use the function <a href="#lua_newtable"><code>lua_newtable</code></a>.
-
-
+创建一张新的空表压入堆栈。
+参数 <code>narr</code> 建议了这张表作为序列使用时会有多少个元素；
+参数 <code>nrec</code> 建议了这张表可能拥有多少序列之外的元素。
+Lua 会使用这些建议来预分配这张新表。
+如果你知道这张表的用途的更多信息，预分配可以提高性能。
+否则，你可以使用函数 <a href="#lua_newtable"><code>lua_newtable</code></a> 。
 
 
 
