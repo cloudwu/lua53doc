@@ -3023,7 +3023,7 @@ C 函数只需要把它们以正序压到堆栈上（第一个返回值最先压
 参数 <code>narr</code> 建议了这张表作为序列使用时会有多少个元素；
 参数 <code>nrec</code> 建议了这张表可能拥有多少序列之外的元素。
 Lua 会使用这些建议来预分配这张新表。
-如果你知道这张表的用途的更多信息，预分配可以提高性能。
+如果你知道这张表用途的更多信息，预分配可以提高性能。
 否则，你可以使用函数 <a href="#lua_newtable"><code>lua_newtable</code></a> 。
 
 
@@ -3036,33 +3036,29 @@ Lua 会使用这些建议来预分配这张新表。
                         int strip);</pre>
 
 <p>
-Dumps a function as a binary chunk.
-Receives a Lua function on the top of the stack
-and produces a binary chunk that,
-if loaded again,
-results in a function equivalent to the one dumped.
-As it produces parts of the chunk,
-<a href="#lua_dump"><code>lua_dump</code></a> calls function <code>writer</code> (see <a href="#lua_Writer"><code>lua_Writer</code></a>)
-with the given <code>data</code>
-to write them.
+把函数导出成二进制代码块 。
+函数接收栈顶的 Lua 函数做参数，
+然后生成它的二进制代码块。
+若被导出的东西被再次加载，
+加载的结果就相当于原来的函数。
+当它在产生代码块的时候，
+<a href="#lua_dump"><code>lua_dump</code></a>
+通过调用函数 <code>writer</code>
+（参见 <a href="#lua_Writer"><code>lua_Writer</code></a> ）
+来写入数据，后面的 <code>data</code> 参数会被传入 <code>writer</code> 。
+
+<p>
+如果 <code>strip</code> 为真，
+二进制代码块将不包含该函数的调试信息。
 
 
 <p>
-If <code>strip</code> is true,
-the binary representation is created without debug information
-about the function.
+最后一次由 <code>writer</code> 的返回值将作为这个函数的返回值返回；
+0 表示没有错误。
 
 
 <p>
-The value returned is the error code returned by the last
-call to the writer;
-0&nbsp;means no errors.
-
-
-<p>
-This function does not pop the Lua function from the stack.
-
-
+该函数不会把 Lua 函数弹出堆栈。
 
 
 
@@ -3071,12 +3067,9 @@ This function does not pop the Lua function from the stack.
 <pre>int lua_error (lua_State *L);</pre>
 
 <p>
-Generates a Lua error,
-using the value at the top of the stack as the error object.
-This function does a long jump,
-and therefore never returns
-(see <a href="#luaL_error"><code>luaL_error</code></a>).
-
+以栈顶的值作为错误对象，抛出一个 Lua 错误。
+这个函数将做一次长跳转，所以一定不会返回
+（参见 <a href="#luaL_error"><code>luaL_error</code></a>）。
 
 
 
@@ -3086,62 +3079,56 @@ and therefore never returns
 <pre>int lua_gc (lua_State *L, int what, int data);</pre>
 
 <p>
-Controls the garbage collector.
+控制垃圾收集器。
 
 
 <p>
-This function performs several tasks,
-according to the value of the parameter <code>what</code>:
+这个函数根据其参数 <code>what</code> 发起几种不同的任务：
 
 <ul>
 
 <li><b><code>LUA_GCSTOP</code>: </b>
-stops the garbage collector.
+停止垃圾收集器。
 </li>
 
 <li><b><code>LUA_GCRESTART</code>: </b>
-restarts the garbage collector.
+重启垃圾收集器。
 </li>
 
 <li><b><code>LUA_GCCOLLECT</code>: </b>
-performs a full garbage-collection cycle.
+发起一次完整的垃圾收集循环。
 </li>
 
 <li><b><code>LUA_GCCOUNT</code>: </b>
-returns the current amount of memory (in Kbytes) in use by Lua.
+返回 Lua 使用的内存总量（以 K 字节为单位）。
 </li>
 
 <li><b><code>LUA_GCCOUNTB</code>: </b>
-returns the remainder of dividing the current amount of bytes of
-memory in use by Lua by 1024.
+返回当前内存使用量除以 1024 的余数。
 </li>
 
 <li><b><code>LUA_GCSTEP</code>: </b>
-performs an incremental step of garbage collection.
+发起一步增量垃圾收集。
 </li>
 
 <li><b><code>LUA_GCSETPAUSE</code>: </b>
-sets <code>data</code> as the new value
-for the <em>pause</em> of the collector (see <a href="#2.5">&sect;2.5</a>)
-and returns the previous value of the pause.
+把 <code>data</code> 设为 <em>垃圾收集器间歇率</em> 
+（参见 <a href="#2.5">&sect;2.5</a>），并返回之前设置的值。
 </li>
 
 <li><b><code>LUA_GCSETSTEPMUL</code>: </b>
-sets <code>data</code> as the new value for the <em>step multiplier</em> of
-the collector (see <a href="#2.5">&sect;2.5</a>)
-and returns the previous value of the step multiplier.
+把 <code>data</code> 设为 <em>垃圾收集器步进倍率</em> 
+（参见 <a href="#2.5">&sect;2.5</a>），并返回之前设置的值。
 </li>
 
 <li><b><code>LUA_GCISRUNNING</code>: </b>
-returns a boolean that tells whether the collector is running
-(i.e., not stopped).
+返回收集器是否在运行（即没有停止）。
 </li>
 
 </ul>
 
 <p>
-For more details about these options,
-see <a href="#pdf-collectgarbage"><code>collectgarbage</code></a>.
+关于这些选项的细节，参见 <a href="#pdf-collectgarbage"><code>collectgarbage</code></a> 。
 
 
 
@@ -3152,10 +3139,9 @@ see <a href="#pdf-collectgarbage"><code>collectgarbage</code></a>.
 <pre>lua_Alloc lua_getallocf (lua_State *L, void **ud);</pre>
 
 <p>
-Returns the memory-allocation function of a given state.
-If <code>ud</code> is not <code>NULL</code>, Lua stores in <code>*ud</code> the
-opaque pointer given when the memory-allocator function was set.
-
+返回给定状态机的内存分配器函数。
+如果 <code>ud</code> 不是 <code>NULL</code> ，
+Lua 把设置内存分配函数时设置的那个指针置入 <code>*ud</code> 。
 
 
 
@@ -3165,15 +3151,14 @@ opaque pointer given when the memory-allocator function was set.
 <pre>int lua_getfield (lua_State *L, int index, const char *k);</pre>
 
 <p>
-Pushes onto the stack the value <code>t[k]</code>,
-where <code>t</code> is the value at the given index.
-As in Lua, this function may trigger a metamethod
-for the "index" event (see <a href="#2.4">&sect;2.4</a>).
+把 <code>t[k]</code> 的值压入堆栈，
+这里的 <code>t</code> 是索引指向的值。
+在 Lua 中，这个函数可能触发对应 "index" 事件对应的元方法
+（参见 <a href="#2.4">&sect;2.4</a> ）。
 
 
 <p>
-Returns the type of the pushed value.
-
+函数将返回压入值的类型。
 
 
 
@@ -3183,22 +3168,19 @@ Returns the type of the pushed value.
 <pre>void *lua_getextraspace (lua_State *L);</pre>
 
 <p>
-Returns a pointer to a raw memory area associated with the
-given Lua state.
-The application can use this area for any purpose;
-Lua does not use it for anything.
+返回一个 Lua 状态机中关联的内存块指针。
+程序可以把这块内存用于任何用途；而 Lua 不会使用它。
 
 
 <p>
-Each new thread has this area initialized with a copy
-of the area of the main thread.
+每一个新线程都会携带一块内存，
+初始化为主线程的这块内存的副本。
 
 
 <p>
-By default, this area has the size of a pointer to void,
-but you can recompile Lua with a different size for this area.
-(See <code>LUA_EXTRASPACE</code> in <code>luaconf.h</code>.)
-
+默认配置下，这块内存的大小为空指针的大小。
+不过你可以重新编译 Lua 设定这块内存不同的大小。
+（参见 <code>luaconf.h</code> 中的 <code>LUA_EXTRASPACE</code>。）
 
 
 
@@ -3208,8 +3190,7 @@ but you can recompile Lua with a different size for this area.
 <pre>int lua_getglobal (lua_State *L, const char *name);</pre>
 
 <p>
-Pushes onto the stack the value of the global <code>name</code>.
-Returns the type of that value.
+把全局变量 <name>name</name> 里的值压入栈，返回该值的类型。
 
 
 
@@ -3220,14 +3201,14 @@ Returns the type of that value.
 <pre>int lua_geti (lua_State *L, int index, lua_Integer i);</pre>
 
 <p>
-Pushes onto the stack the value <code>t[i]</code>,
-where <code>t</code> is the value at the given index.
-As in Lua, this function may trigger a metamethod
-for the "index" event (see <a href="#2.4">&sect;2.4</a>).
+把 <code>t[i]</code> 的值压入栈，
+这里的 <code>t</code> 指给定的索引指代的值。
+和在 Lua 里一样，这个函数可能会触发 "index" 事件的元方法
+（参见 <a href="#2.4">&sect;2.4</a>）。
 
 
 <p>
-Returns the type of the pushed value.
+返回压入值的类型。
 
 
 
@@ -3238,11 +3219,8 @@ Returns the type of the pushed value.
 <pre>int lua_getmetatable (lua_State *L, int index);</pre>
 
 <p>
-If the value at the given index has a metatable,
-the function pushes that metatable onto the stack and returns&nbsp;1.
-Otherwise,
-the function returns&nbsp;0 and pushes nothing on the stack.
-
+如果该索引处的值有元表，则将其元表压入栈，返回 1 。
+否则不会将任何东西入栈，返回 0 。
 
 
 
@@ -3252,21 +3230,20 @@ the function returns&nbsp;0 and pushes nothing on the stack.
 <pre>int lua_gettable (lua_State *L, int index);</pre>
 
 <p>
-Pushes onto the stack the value <code>t[k]</code>,
-where <code>t</code> is the value at the given index
-and <code>k</code> is the value at the top of the stack.
+把 <code>t[k]</code> 的值压入栈，
+这里的 <code>t</code> 是指索引指向的值，
+而 <code>k</code> 则是栈顶放的值。
 
 
 <p>
-This function pops the key from the stack,
-pushing the resulting value in its place.
-As in Lua, this function may trigger a metamethod
-for the "index" event (see <a href="#2.4">&sect;2.4</a>).
+这个函数会弹出堆栈上的键，把结果放在栈上相同位置。
+和在 Lua 中一样，
+这个函数可能触发对应 "index" 事件的元方法 
+（参见 <a href="#2.4">&sect;2.4</a> ）。
 
 
 <p>
-Returns the type of the pushed value.
-
+返回压入值的类型。
 
 
 
@@ -3276,12 +3253,10 @@ Returns the type of the pushed value.
 <pre>int lua_gettop (lua_State *L);</pre>
 
 <p>
-Returns the index of the top element in the stack.
-Because indices start at&nbsp;1,
-this result is equal to the number of elements in the stack;
-in particular, 0&nbsp;means an empty stack.
-
-
+返回栈顶元素的索引。 
+因为索引是从 1 开始编号的，
+所以这个结果等于栈上的元素个数；
+特别指出，0 表示栈为空。
 
 
 
@@ -3290,13 +3265,10 @@ in particular, 0&nbsp;means an empty stack.
 <pre>int lua_getuservalue (lua_State *L, int index);</pre>
 
 <p>
-Pushes onto the stack the Lua value associated with the userdata
-at the given index.
-
+将给定索引处的用户数据所关联的 Lua 值压入栈顶。
 
 <p>
-Returns the type of the pushed value.
-
+返回压入值的类型。
 
 
 
