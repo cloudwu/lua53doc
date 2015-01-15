@@ -2280,7 +2280,7 @@ Lua 语言有词法作用范围。
 但一部分简单的 API 是以宏的形式提供的。 
 除非另有说明，
 所有的这些宏都只使用它们的参数一次 
-（除了第一个参数，那一定是 Lua 状态机），
+（除了第一个参数，那一定是 Lua 状态），
 因此你不需担心这些宏的展开会引起一些副作用。
 
 
@@ -2404,178 +2404,163 @@ API 中的函数若需要传入栈索引，这个索引必须是
 
 
 
-<h2>4.4 &ndash; <a name="4.4">C Closures</a></h2>
+<h2>4.4 &ndash; <a name="4.4">C 闭包</a></h2>
 
 <p>
-When a C&nbsp;function is created,
-it is possible to associate some values with it,
-thus creating a <em>C&nbsp;closure</em>
-(see <a href="#lua_pushcclosure"><code>lua_pushcclosure</code></a>);
-these values are called <em>upvalues</em> and are
-accessible to the function whenever it is called.
-
-
-<p>
-Whenever a C&nbsp;function is called,
-its upvalues are located at specific pseudo-indices.
-These pseudo-indices are produced by the macro
-<a href="#lua_upvalueindex"><code>lua_upvalueindex</code></a>.
-The first value associated with a function is at position
-<code>lua_upvalueindex(1)</code>, and so on.
-Any access to <code>lua_upvalueindex(<em>n</em>)</code>,
-where <em>n</em> is greater than the number of upvalues of the
-current function (but not greater than 256),
-produces an acceptable but invalid index.
-
-
-
-
-
-<h2>4.5 &ndash; <a name="4.5">Registry</a></h2>
-
-<p>
-Lua provides a <em>registry</em>,
-a predefined table that can be used by any C&nbsp;code to
-store whatever Lua values it needs to store.
-The registry table is always located at pseudo-index
-<a name="pdf-LUA_REGISTRYINDEX"><code>LUA_REGISTRYINDEX</code></a>,
-which is a valid index.
-Any C&nbsp;library can store data into this table,
-but it must take care to choose keys
-that are different from those used
-by other libraries, to avoid collisions.
-Typically, you should use as key a string containing your library name,
-or a light userdata with the address of a C&nbsp;object in your code,
-or any Lua object created by your code.
-As with variable names,
-string keys starting with an underscore followed by
-uppercase letters are reserved for Lua.
+当 C 函数被创建出来，
+我们有可能会把一些值关联在一起，
+也就是创建一个 <em>C 闭包</em>
+（参见 <a href="#lua_pushcclosure"><code>lua_pushcclosure</code></a>）；
+这些被关联起来的值被叫做 <em>上值</em> ，
+它们可以在函数被调用的时候访问的到。 
 
 
 <p>
-The integer keys in the registry are used
-by the reference mechanism (see <a href="#luaL_ref"><code>luaL_ref</code></a>)
-and by some predefined values.
-Therefore, integer keys must not be used for other purposes.
+无论何时去调用 C 函数，
+函数的上值都可以用伪索引定位。
+我们可以用
+<a href="#lua_upvalueindex"><code>lua_upvalueindex</code></a>
+这个宏来生成这些伪索引。
+第一个关联到函数的值放在
+<code>lua_upvalueindex(1)</code> 位置处，依此类推。 
+使用 <code>lua_upvalueindex(<em>n</em>)</code> 时，
+若 <em>n</em> 大于当前函数的总上值个数
+（但不可以大于 256）会产生一个可接受的但无效的索引。
+
+
+
+
+<h2>4.5 &ndash; <a name="4.5">注册表</a></h2>
+
+<p>
+Lua 提供了一个 <em>注册表</em>，
+这是一个预定义出来的表，
+可以用来保存任何 C 代码想保存的 Lua 值。 
+这个表可以用有效伪索引 
+<a name="pdf-LUA_REGISTRYINDEX"><code>LUA_REGISTRYINDEX</code></a> 来定位。
+任何 C 库都可以在这张表里保存数据，
+为了防止冲突，你需要特别小心的选择键名。
+一般的用法是，你可以用一个包含你的库名的字符串做为键名，
+或者取你自己 C 对象的地址，以轻量用户数据的形式做键，
+还可以用你的代码创建出来的任意 Lua 对象做键。
+关于变量名，字符串键名中以下划线加大写字母的名字被 Lua 保留。
+
 
 
 <p>
-When you create a new Lua state,
-its registry comes with some predefined values.
-These predefined values are indexed with integer keys
-defined as constants in <code>lua.h</code>.
-The following constants are defined:
+注册表中的整数键用于引用机制
+（参见 <a href="#luaL_ref"><code>luaL_ref</code></a>），
+以及一些预定义的值。
+因此，整数键不要用于别的目的。
+
+
+<p>
+当你创建了一个新的 Lua 状态机，
+其中的注册表内就预定义好了几个值。
+这些预定义值可以用整数索引到，
+这些整数以常数形式定义在 <code>lua.h</code> 中。
+有下列常数：
 
 <ul>
-<li><b><a name="pdf-LUA_RIDX_MAINTHREAD"><code>LUA_RIDX_MAINTHREAD</code></a>: </b> At this index the registry has
-the main thread of the state.
-(The main thread is the one created together with the state.)
+<li><b><a name="pdf-LUA_RIDX_MAINTHREAD"><code>LUA_RIDX_MAINTHREAD</code></a>: </b>
+注册表中这个索引下是状态机的主线程。
+（主线程和状态机同时被创建出来。）
 </li>
 
-<li><b><a name="pdf-LUA_RIDX_GLOBALS"><code>LUA_RIDX_GLOBALS</code></a>: </b> At this index the registry has
-the global environment.
+<li><b><a name="pdf-LUA_RIDX_GLOBALS"><code>LUA_RIDX_GLOBALS</code></a>: </b> 
+注册表的这个索引下是全局环境。
 </li>
 </ul>
 
 
 
 
-<h2>4.6 &ndash; <a name="4.6">Error Handling in C</a></h2>
+<h2>4.6 &ndash; <a name="4.6">C 中的错误处理</a></h2>
 
 <p>
-Internally, Lua uses the C <code>longjmp</code> facility to handle errors.
-(Lua will use exceptions if you compile it as C++;
-search for <code>LUAI_THROW</code> in the source code for details.)
-When Lua faces any error
-(such as a memory allocation error, type errors, syntax errors,
-and runtime errors)
-it <em>raises</em> an error;
-that is, it does a long jump.
-A <em>protected environment</em> uses <code>setjmp</code>
-to set a recovery point;
-any error jumps to the most recent active recovery point.
-
-
-<p>
-If an error happens outside any protected environment,
-Lua calls a <em>panic function</em> (see <a href="#lua_atpanic"><code>lua_atpanic</code></a>)
-and then calls <code>abort</code>,
-thus exiting the host application.
-Your panic function can avoid this exit by
-never returning
-(e.g., doing a long jump to your own recovery point outside Lua).
+在内部实现中，Lua 使用了 C 的 <code>longjmp</code> 机制来处理错误。
+（如果你使用 C++ 编译，Lua 将换成异常；
+细节请在源代码中搜索 <code>LUAI_THROW</code>。）
+当 Lua 碰到任何错误
+（比如内存分配错误、类型错误、语法错误、还有运行时错误）
+它都会 <em>抛出</em>一个错误出去；
+也就是调用一次长跳转。
+在 <em>保护环境</em> 下，
+Lua 使用 <code>setjmp</code> 来设置一个恢复点；
+任何发生的错误都会跳转到最近的一个恢复点。
 
 
 <p>
-The panic function runs as if it were a message handler (see <a href="#2.3">&sect;2.3</a>);
-in particular, the error message is at the top of the stack.
-However, there is no guarantee about stack space.
-To push anything on the stack,
-the panic function must first check the available space (see <a href="#4.2">&sect;4.2</a>).
+如果错误发生在保护环境之外，
+Lua 会先调用 <em>panic 函数</em> （参见 <a href="#lua_atpanic"><code>lua_atpanic</code></a>）
+然后调用 <code>abort</code> 来退出宿主程序。
+你的 panic 函数只要不返回
+（例如：长跳转到你在 Lua 外你自己设置的恢复点）
+就可以必须退出程序。
 
 
 <p>
-Most functions in the API can raise an error,
-for instance due to a memory allocation error.
-The documentation for each function indicates whether
-it can raise errors.
+panic 函数以错误消息处理器（参见 <a href="#2.3">&sect;2.3</a>）的方式运行；
+错误消息在栈顶。
+不同的是，它不保证栈通奸。
+做任何压栈操作前，panic 函数都必须先检查是否有足够的空间
+（参见 <a href="#4.2">&sect;4.2</a>）。
 
 
 <p>
-Inside a C&nbsp;function you can raise an error by calling <a href="#lua_error"><code>lua_error</code></a>.
-
-
-
-
-
-<h2>4.7 &ndash; <a name="4.7">Handling Yields in C</a></h2>
-
-<p>
-Internally, Lua uses the C <code>longjmp</code> facility to yield a coroutine.
-Therefore, if a C function <code>foo</code> calls an API function
-and this API function yields
-(directly or indirectly by calling another function that yields),
-Lua cannot return to <code>foo</code> any more,
-because the <code>longjmp</code> removes its frame from the C stack.
+大多数 API 函数都有可能抛出错误，
+例如在内存分配错误时就会抛出。
+每个函数的文档都会注明它是否可能抛出错误。
 
 
 <p>
-To avoid this kind of problem,
-Lua raises an error whenever it tries to yield across an API call,
-except for three functions:
-<a href="#lua_yieldk"><code>lua_yieldk</code></a>, <a href="#lua_callk"><code>lua_callk</code></a>, and <a href="#lua_pcallk"><code>lua_pcallk</code></a>.
-All those functions receive a <em>continuation function</em>
-(as a parameter named <code>k</code>) to continue execution after a yield.
+在 C 函数内部，你可以通过调用 <a href="#lua_error"><code>lua_error</code></a>
+来抛出错误。
+
+
+
+
+
+<h2>4.7 &ndash; <a name="4.7">C 中的让出处理</a></h2>
+
+<p>
+Lua 内部使用 C 的 <code>longjmp</code> 机制让出一个协程。
+因此，如果一个 C 函数 <code>foo</code> 调用了一个 API 函数，
+而这个 API 函数让出了（直接或间接调用了让出函数）。
+由于 <code>longjmp</code> 会移除 C 栈的栈帧，
+Lua 就无法返回到 <code>foo</code> 里了。
 
 
 <p>
-We need to set some terminology to explain continuations.
-We have a C function called from Lua which we will call
-the <em>original function</em>.
-This original function then calls one of those three functions in the C API,
-which we will call the <em>callee function</em>,
-that then yields the current thread.
-(This can happen when the callee function is <a href="#lua_yieldk"><code>lua_yieldk</code></a>,
-or when the callee function is either <a href="#lua_callk"><code>lua_callk</code></a> or <a href="#lua_pcallk"><code>lua_pcallk</code></a>
-and the function called by them yields.)
+为了回避这类问题，
+碰到 API 调用中调用让出时，除了那些抛出错误的 API 外，还提供了三个函数：
+<a href="#lua_yieldk"><code>lua_yieldk</code></a>，
+<a href="#lua_callk"><code>lua_callk</code></a>，和 <a href="#lua_pcallk"><code>lua_pcallk</code></a> 。
+它们在让出发生时，可以从传入的 <em>延续函数</em>
+（名为 <code>k</code> 的参数）继续运行。
 
 
 <p>
-Suppose the running thread yields while executing the callee function.
-After the thread resumes,
-it eventually will finish running the callee function.
-However,
-the callee function cannot return to the original function,
-because its frame in the C stack was destroyed by the yield.
-Instead, Lua calls a <em>continuation function</em>,
-which was given as an argument to the callee function.
-As the name implies,
-the continuation function should continue the task
-of the original function.
+我们需要预设一些术语来解释延续点。
+对于从 Lua 中调用的 C 函数，我们称之为 <em>原函数</em>。
+从这个原函数中调用的上面所述的三个 C API 函数我们称之为 <em>被调函数</em>。
+被调函数可以使当前线程让出。
+（让出发生在被调函数是 <a href="#lua_yieldk"><code>lua_yieldk</code></a>，
+或传入 <a href="#lua_callk"><code>lua_callk</code></a> 或
+<a href="#lua_pcallk"><code>lua_pcallk</code></a> 的函数调用了让出时。）
 
 
 <p>
-As an illustration, consider the following function:
+假设正在运行的线程在执行被调函数时让出。
+当再次延续这条线程，它希望继续被调函数的运行。
+然而，被调函数不可能返回到原函数中。
+这是因为之前的让出操作破坏了 C 栈的栈帧。
+作为替代品，Lua 调用那个作为被调函数参数给出的 <em>延续函数</em> 。
+正如其名，延续函数将延续原函数的任务。
+
+
+<p>
+下面的函数会做一个说明：
 
 <pre>
      int original_function (lua_State *L) {
@@ -2584,9 +2569,10 @@ As an illustration, consider the following function:
        ...     /* code 2 */
      }
 </pre><p>
-Now we want to allow
-the Lua code being run by <a href="#lua_pcall"><code>lua_pcall</code></a> to yield.
-First, we can rewrite our function like here:
+现在我们想允许被
+<a href="#lua_pcall"><code>lua_pcall</code></a>
+运行的 Lua 代码让出。
+首先，我们把函数改写成这个样子：
 
 <pre>
      int k (lua_State *L, int status, lua_KContext ctx) {
@@ -2598,16 +2584,19 @@ First, we can rewrite our function like here:
        return k(L, lua_pcall(L, n, m, h), ctx);
      }
 </pre><p>
-In the above code,
-the new function <code>k</code> is a
-<em>continuation function</em> (with type <a href="#lua_KFunction"><code>lua_KFunction</code></a>),
-which should do all the work that the original function
-was doing after calling <a href="#lua_pcall"><code>lua_pcall</code></a>.
-Now, we must inform Lua that it must call <code>k</code> if the Lua code
-being executed by <a href="#lua_pcall"><code>lua_pcall</code></a> gets interrupted in some way
-(errors or yielding),
-so we rewrite the code as here,
-replacing <a href="#lua_pcall"><code>lua_pcall</code></a> by <a href="#lua_pcallk"><code>lua_pcallk</code></a>:
+上面的代码中，新函数 <code>k</code>
+就是一个 <em>延续函数</em>
+（函数类型为 <a href="#lua_KFunction"><code>lua_KFunction</code></a>）。
+它的工作就是原函数中调用 <a href="#lua_pcall"><code>lua_pcall</code></a>
+之后做的那些事情。
+现在我们必须通知 Lua 说，你必须在被
+<a href="#lua_pcall"><code>lua_pcall</code></a>
+执行得 Lua 代码发生过中断（错误或让出）后，
+还得继续调用 <code>k</code> 。
+所以我们还得继续改写这段代码，把
+<a href="#lua_pcall"><code>lua_pcall</code></a> 替换成
+<a href="#lua_pcallk"><code>lua_pcallk</code></a>：
+
 
 <pre>
      int original_function (lua_State *L) {
@@ -2615,51 +2604,49 @@ replacing <a href="#lua_pcall"><code>lua_pcall</code></a> by <a href="#lua_pcall
        return k(L, lua_pcallk(L, n, m, h, ctx2, k), ctx1);
      }
 </pre><p>
-Note the external, explicit call to the continuation:
-Lua will call the continuation only if needed, that is,
-in case of errors or resuming after a yield.
-If the called function returns normally without ever yielding,
-<a href="#lua_pcallk"><code>lua_pcallk</code></a> (and <a href="#lua_callk"><code>lua_callk</code></a>) will also return normally.
-(Of course, instead of calling the continuation in that case,
-you can do the equivalent work directly inside the original function.)
+注意这里那个额外的显式的对延续函数的调用：
+Lua 仅在需要时，这可能是由错误导致的也可能是发生了让出而需要继续运行，才会调用延续函数。
+如果没有发生过任何让出，调用的函数正常返回，
+那么 <a href="#lua_pcallk"><code>lua_pcallk</code></a>
+（以及 <a href="#lua_callk"><code>lua_callk</code></a>）也会正常返回。
+（当然，这个例子中你也可以不再之后调用延续函数，
+而是在原函数的调用后直接写上需要做的工作。）
 
 
 <p>
-Besides the Lua state,
-the continuation function has two other parameters:
-the final status of the call plus the context value (<code>ctx</code>) that
-was passed originally to <a href="#lua_pcallk"><code>lua_pcallk</code></a>.
-(Lua does not use this context value;
-it only passes this value from the original function to the
-continuation function.)
-For <a href="#lua_pcallk"><code>lua_pcallk</code></a>,
-the status is the same value that would be returned by <a href="#lua_pcallk"><code>lua_pcallk</code></a>,
-except that it is <a href="#pdf-LUA_YIELD"><code>LUA_YIELD</code></a> when being executed after a yield
-(instead of <a href="#pdf-LUA_OK"><code>LUA_OK</code></a>).
-For <a href="#lua_yieldk"><code>lua_yieldk</code></a> and <a href="#lua_callk"><code>lua_callk</code></a>,
-the status is always <a href="#pdf-LUA_YIELD"><code>LUA_YIELD</code></a> when Lua calls the continuation.
-(For these two functions,
-Lua will not call the continuation in case of errors,
-because they do not handle errors.)
-Similarly, when using <a href="#lua_callk"><code>lua_callk</code></a>,
-you should call the continuation function
-with <a href="#pdf-LUA_OK"><code>LUA_OK</code></a> as the status.
-(For <a href="#lua_yieldk"><code>lua_yieldk</code></a>, there is not much point in calling
-directly the continuation function,
-because <a href="#lua_yieldk"><code>lua_yieldk</code></a> usually does not return.)
+除了 Lua 状态，延续函数还有两个参数：
+一个是调用最后的状态码，另一个一开始由
+<a href="#lua_pcallk"><code>lua_pcallk</code></a> 传入的上下文
+（<code>ctx</code>）。
+（Lua 本身不使用这个值；它仅仅从原函数转发这个值给延续函数。）
+对于 <a href="#lua_pcallk"><code>lua_pcallk</code></a> 而言，
+状态码和 <a href="#lua_pcallk"><code>lua_pcallk</code></a>
+本应返回值相同，区别仅在于发生过让出后才执行完时，状态码为
+<a href="#pdf-LUA_YIELD"><code>LUA_YIELD</code></a>（而不是
+<a href="#pdf-LUA_OK"><code>LUA_OK</code></a>）。
+对于 <a href="#lua_yieldk"><code>lua_yieldk</code></a> 和
+<a href="#lua_callk"><code>lua_callk</code></a> 而言，
+调用延续函数传入的状态码一定是
+<a href="#pdf-LUA_YIELD"><code>LUA_YIELD</code></a>。
+（对这两个函数，Lua 不会因任何错误而调用延续函数。
+因为它们并不处理错误。）
+同样，当你使用 <a href="#lua_callk"><code>lua_callk</code></a> 时，
+你应该用 <a href="#pdf-LUA_OK"><code>LUA_OK</code></a>
+作为状态码来调用延续函数。
+（对于 <a href="#lua_yieldk"><code>lua_yieldk</code></a>，
+几乎没有什么地方需要直接调用延续函数，
+因为 <a href="#lua_yieldk"><code>lua_yieldk</code></a> 本身并不会返回。）
 
 
 <p>
-Lua treats the continuation function as if it were the original function.
-The continuation function receives the same Lua stack
-from the original function,
-in the same state it would be if the callee function had returned.
-(For instance,
-after a <a href="#lua_callk"><code>lua_callk</code></a> the function and its arguments are
-removed from the stack and replaced by the results from the call.)
-It also has the same upvalues.
-Whatever it returns is handled by Lua as if it were the return
-of the original function.
+Lua 会把延续函数看作原函数。
+延续函数将接收到和原函数相同的 Lua 栈，其接收到的 lua 状态也和
+被调函数若返回后应该有的状态一致。
+（例如，
+<a href="#lua_callk"><code>lua_callk</code></a> 调用之后，
+栈中之前压入的函数和调用参数都被调用产生的返回值所替代。）
+这时也有相同的上值。
+它的返回时机是由 Lua 去处理的，Lua 会按原函数返回那样去操作。
 
 
 
