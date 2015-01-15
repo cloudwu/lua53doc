@@ -2646,39 +2646,36 @@ Lua 会把延续函数看作原函数。
 <a href="#lua_callk"><code>lua_callk</code></a> 调用之后，
 栈中之前压入的函数和调用参数都被调用产生的返回值所替代。）
 这时也有相同的上值。
-它的返回时机是由 Lua 去处理的，Lua 会按原函数返回那样去操作。
+等到它返回的时候，Lua 会将其看待成原函数的返回去操作。
 
 
 
 
 
-<h2>4.8 &ndash; <a name="4.8">Functions and Types</a></h2>
+<h2>4.8 &ndash; <a name="4.8">函数和类型</a></h2>
 
 <p>
-Here we list all functions and types from the C&nbsp;API in
-alphabetical order.
-Each function has an indicator like this:
+这里按字母次序列出了所有 C API 中的函数和类型。
+每个函数都有一个这样的提示：
 <span class="apii">[-o, +p, <em>x</em>]</span>
 
 
 <p>
-The first field, <code>o</code>,
-is how many elements the function pops from the stack.
-The second field, <code>p</code>,
-is how many elements the function pushes onto the stack.
-(Any function always pushes its results after popping its arguments.)
-A field in the form <code>x|y</code> means the function can push (or pop)
-<code>x</code> or <code>y</code> elements,
-depending on the situation;
-an interrogation mark '<code>?</code>' means that
-we cannot know how many elements the function pops/pushes
-by looking only at its arguments
-(e.g., they may depend on what is on the stack).
-The third field, <code>x</code>,
-tells whether the function may raise errors:
-'<code>-</code>' means the function never raises any error;
-'<code>e</code>' means the function may raise errors;
-'<code>v</code>' means the function may raise an error on purpose.
+对于第一个域，<code>o</code>，
+指的是该函数会从栈上弹出多少个元素。
+第二个域，<code>p</code>，
+指该函数会将多少个元素压栈。
+（所有函数都会在弹出参数后再把结果压栈。）
+<code>x|y</code> 这种形式的域表示该函数根据具体情况可能压入（或弹出）
+<code>x</code> 或 <code>y</code> 个元素；
+问号 '<code>?</code>' 表示
+我们无法仅通过参数来了解该函数会弹出/压入多少元素
+（比如，数量取决于栈上有些什么）。
+第三个域，<code>x</code>，
+解释了该函数是否会抛出错误：
+'<code>-</code>' 表示该函数绝对不会抛出错误；
+'<code>e</code>' 表示该函数可能抛出错误；
+'<code>v</code>' 表示该函数可能抛出有意义的错误。
 
 
 
