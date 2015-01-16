@@ -5232,59 +5232,47 @@ Lua 把这些事件定义为以下常量：
 
 
 
-<h1>5 &ndash; <a name="5">The Auxiliary Library</a></h1>
+<h1>5 &ndash; <a name="5">辅助库</a></h1>
 
 <p>
-
-The <em>auxiliary library</em> provides several convenient functions
-to interface C with Lua.
-While the basic API provides the primitive functions for all
-interactions between C and Lua,
-the auxiliary library provides higher-level functions for some
-common tasks.
+<em>辅助库</em> 提供了一些便捷函数，方便在 C 中为 Lua 编程。
+基础 API 提供了 C 和 Lua 交互用的主要函数，
+而辅助库则为一些常见的任务提供了高阶函数。
 
 
 <p>
-All functions and types from the auxiliary library
-are defined in header file <code>lauxlib.h</code> and
-have a prefix <code>luaL_</code>.
+所有辅助库中的函数和类型都定义在头文件 <code>lauxlib.h</code> 中，
+它们均带有前缀 <code>luaL_</code>。
 
 
 <p>
-All functions in the auxiliary library are built on
-top of the basic API,
-and so they provide nothing that cannot be done with that API.
-Nevertheless, the use of the auxiliary library ensures
-more consistency to your code.
+辅助库中的所有函数都基于基础 API 实现。
+故而它们并没有提供任何基础 API 实现不了的功能。
+虽然如此，使用辅助库可以让你的代码更为健壮。
 
 
 <p>
-Several functions in the auxiliary library use internally some
-extra stack slots.
-When a function in the auxiliary library uses less than five slots,
-it does not check the stack size;
-it simply assumes that there are enough slots.
+一些辅助库函数会在内部使用一些额外的栈空间。
+当辅助库使用的栈空间少于五个时，
+它们不去检查栈大小；而是简单的假设栈够用。
 
 
 <p>
-Several functions in the auxiliary library are used to
-check C&nbsp;function arguments.
-Because the error message is formatted for arguments
-(e.g., "<code>bad argument #1</code>"),
-you should not use these functions for other stack values.
-
+一些辅助库中的函数用于检查 C 函数的参数。
+因为错误信息格式化为指代参数
+（例如，"<code>bad argument #1</code>"），
+你就不要把这些函数用于参数之外的值了。
 
 <p>
-Functions called <code>luaL_check*</code>
-always raise an error if the check is not satisfied.
+如果检查无法通过，
+<code>luaL_check*</code> 这些函数一定会抛出错误。
 
 
 
-<h2>5.1 &ndash; <a name="5.1">Functions and Types</a></h2>
+<h2>5.1 &ndash; <a name="5.1">函数和类型</a></h2>
 
 <p>
-Here we list all functions and types from the auxiliary library
-in alphabetical order.
+这里我们按字母表次序列出了辅助库中的所有函数和类型。
 
 
 
@@ -5293,9 +5281,8 @@ in alphabetical order.
 <pre>void luaL_addchar (luaL_Buffer *B, char c);</pre>
 
 <p>
-Adds the byte <code>c</code> to the buffer <code>B</code>
-(see <a href="#luaL_Buffer"><code>luaL_Buffer</code></a>).
-
+向缓存 <code>B</code> （参见 <a href="#luaL_Buffer"><code>luaL_Buffer</code></a> ）
+添加一个字节 <code>c</code>。
 
 
 
@@ -5305,11 +5292,9 @@ Adds the byte <code>c</code> to the buffer <code>B</code>
 <pre>void luaL_addlstring (luaL_Buffer *B, const char *s, size_t l);</pre>
 
 <p>
-Adds the string pointed to by <code>s</code> with length <code>l</code> to
-the buffer <code>B</code>
-(see <a href="#luaL_Buffer"><code>luaL_Buffer</code></a>).
-The string can contain embedded zeros.
-
+向缓存 <code>B</code> （参见 <a href="#luaL_Buffer"><code>luaL_Buffer</code></a> ）
+添加一个长度为 <code>l</code> 的字符串 <code>s</code>。
+这个字符串可以包含零。
 
 
 
@@ -5319,10 +5304,9 @@ The string can contain embedded zeros.
 <pre>void luaL_addsize (luaL_Buffer *B, size_t n);</pre>
 
 <p>
-Adds to the buffer <code>B</code> (see <a href="#luaL_Buffer"><code>luaL_Buffer</code></a>)
-a string of length <code>n</code> previously copied to the
-buffer area (see <a href="#luaL_prepbuffer"><code>luaL_prepbuffer</code></a>).
-
+向缓存 <code>B</code> （参见 <a href="#luaL_Buffer"><code>luaL_Buffer</code></a> ）
+添加一个已在之前复制到缓冲区（参见 <a href="#luaL_prepbuffer"><code>luaL_prepbuffer</code></a>）
+的长度为 <code>n</code> 的字符串。
 
 
 
@@ -5332,10 +5316,8 @@ buffer area (see <a href="#luaL_prepbuffer"><code>luaL_prepbuffer</code></a>).
 <pre>void luaL_addstring (luaL_Buffer *B, const char *s);</pre>
 
 <p>
-Adds the zero-terminated string pointed to by <code>s</code>
-to the buffer <code>B</code>
-(see <a href="#luaL_Buffer"><code>luaL_Buffer</code></a>).
-
+向缓存 <code>B</code> （参见 <a href="#luaL_Buffer"><code>luaL_Buffer</code></a> ）
+添加一个零结尾的字符串 <code>s</code>。
 
 
 
@@ -5345,17 +5327,13 @@ to the buffer <code>B</code>
 <pre>void luaL_addvalue (luaL_Buffer *B);</pre>
 
 <p>
-Adds the value at the top of the stack
-to the buffer <code>B</code>
-(see <a href="#luaL_Buffer"><code>luaL_Buffer</code></a>).
-Pops the value.
+向缓存 <code>B</code> （参见 <a href="#luaL_Buffer"><code>luaL_Buffer</code></a> ）
+添加栈顶的一个值，随后将其弹出。
 
 
 <p>
-This is the only function on string buffers that can (and must)
-be called with an extra element on the stack,
-which is the value to be added to the buffer.
-
+这个函数是操作字符串缓存的函数中，唯一一个会（且必须）在栈上放置额外元素的。
+这个元素将被加入缓存。
 
 
 
@@ -5368,8 +5346,9 @@ which is the value to be added to the buffer.
                     const char *extramsg);</pre>
 
 <p>
-Checks whether <code>cond</code> is true.
-If it is not, raises an error with a standard message (see <a href="#luaL_argerror"><code>luaL_argerror</code></a>).
+检查 <code>cond</code> 是否为真。
+如果不为真，以标准信息形式抛出一个错误
+（参见 <a href="#luaL_argerror"><code>luaL_argerror</code></a>）。
 
 
 
@@ -5380,15 +5359,13 @@ If it is not, raises an error with a standard message (see <a href="#luaL_argerr
 <pre>int luaL_argerror (lua_State *L, int arg, const char *extramsg);</pre>
 
 <p>
-Raises an error reporting a problem with argument <code>arg</code>
-of the C function that called it,
-using a standard message
-that includes <code>extramsg</code> as a comment:
+抛出一个错误报告调用的 C 函数的第 <code>arg</code> 个参数的问题。
+它使用下列标准信息并包含了一段 <code>extramsg</code> 作为注解：
 
 <pre>
      bad argument #<em>arg</em> to '<em>funcname</em>' (<em>extramsg</em>)
 </pre><p>
-This function never returns.
+这个函数永远不会返回。
 
 
 
@@ -5398,68 +5375,57 @@ This function never returns.
 <pre>typedef struct luaL_Buffer luaL_Buffer;</pre>
 
 <p>
-Type for a <em>string buffer</em>.
+<em>字符串缓存</em> 的类型。
 
 
 <p>
-A string buffer allows C&nbsp;code to build Lua strings piecemeal.
-Its pattern of use is as follows:
+字符串缓存可以让 C 代码分段构造一个 Lua 字符串。
+使用模式如下：
 
 <ul>
 
-<li>First declare a variable <code>b</code> of type <a href="#luaL_Buffer"><code>luaL_Buffer</code></a>.</li>
+<li>首先定义一个类型为 <a href="#luaL_Buffer"><code>luaL_Buffer</code></a> 的变量 <code>b</code>。</li>
 
-<li>Then initialize it with a call <code>luaL_buffinit(L, &amp;b)</code>.</li>
+<li>调用 <code>luaL_buffinit(L, &amp;b)</code> 初始化它。</li>
 
 <li>
-Then add string pieces to the buffer calling any of
-the <code>luaL_add*</code> functions.
+然后调用 <code>luaL_add*</code> 这组函数向其添加字符串片断。
 </li>
 
 <li>
-Finish by calling <code>luaL_pushresult(&amp;b)</code>.
-This call leaves the final string on the top of the stack.
+最后调用 <code>luaL_pushresult(&amp;b)</code> 。
+最后这次调用会在栈顶留下最终的字符串。
 </li>
 
 </ul>
 
 <p>
-If you know beforehand the total size of the resulting string,
-you can use the buffer like this:
+如果你预先知道结果串的长度，
+你可以这样使用缓存：
 
 <ul>
 
-<li>First declare a variable <code>b</code> of type <a href="#luaL_Buffer"><code>luaL_Buffer</code></a>.</li>
+<li>首先定义一个类型为 <a href="#luaL_Buffer"><code>luaL_Buffer</code></a> 的变量 <code>b</code>。</li>
 
-<li>Then initialize it and preallocate a space of
-size <code>sz</code> with a call <code>luaL_buffinitsize(L, &amp;b, sz)</code>.</li>
+<li>然后调用 <code>luaL_buffinitsize(L, &amp;b, sz)</code> 预分配 <code>sz</code> 大小的空间。</li>
 
-<li>Then copy the string into that space.</li>
+<li>接着将字符串复制入这个空间。</li>
 
 <li>
-Finish by calling <code>luaL_pushresultsize(&amp;b, sz)</code>,
-where <code>sz</code> is the total size of the resulting string
-copied into that space.
+最后调用 <code>luaL_pushresultsize(&amp;b, sz)</code>，
+这里的 <code>sz</code> 指已经复制到缓存内的字符串长度。
 </li>
 
 </ul>
 
 <p>
-During its normal operation,
-a string buffer uses a variable number of stack slots.
-So, while using a buffer, you cannot assume that you know where
-the top of the stack is.
-You can use the stack between successive calls to buffer operations
-as long as that use is balanced;
-that is,
-when you call a buffer operation,
-the stack is at the same level
-it was immediately after the previous buffer operation.
-(The only exception to this rule is <a href="#luaL_addvalue"><code>luaL_addvalue</code></a>.)
-After calling <a href="#luaL_pushresult"><code>luaL_pushresult</code></a> the stack is back to its
-level when the buffer was initialized,
-plus the final string on its top.
-
+一般的操作过程中，字符串缓存会使用不定量的栈槽。
+因此，在使用缓存中，你不能假定目前栈顶在哪。
+在对缓存操作的函数调用间，你都可以使用栈，只需要保证栈平衡即可；
+即，在你做一次缓存操作调用时，当时的栈位置和上次调用缓存操作后的位置相同。
+（对于 <a href="#luaL_addvalue"><code>luaL_addvalue</code></a> 是个唯一的例外。）
+在调用完 <a href="#luaL_pushresult"><code>luaL_pushresult</code></a> 后，
+栈会恢复到缓存初始化时的位置上，并在顶部压入最终的字符串。
 
 
 
@@ -5469,10 +5435,10 @@ plus the final string on its top.
 <pre>void luaL_buffinit (lua_State *L, luaL_Buffer *B);</pre>
 
 <p>
-Initializes a buffer <code>B</code>.
-This function does not allocate any space;
-the buffer must be declared as a variable
-(see <a href="#luaL_Buffer"><code>luaL_Buffer</code></a>).
+初始化缓存 <code>B</code>。
+这个函数不会分配任何空间；
+缓存必须以一个变量的形式声明
+（参见 <a href="#luaL_Buffer"><code>luaL_Buffer</code></a>）。
 
 
 
@@ -5483,8 +5449,9 @@ the buffer must be declared as a variable
 <pre>char *luaL_buffinitsize (lua_State *L, luaL_Buffer *B, size_t sz);</pre>
 
 <p>
-Equivalent to the sequence
-<a href="#luaL_buffinit"><code>luaL_buffinit</code></a>, <a href="#luaL_prepbuffsize"><code>luaL_prepbuffsize</code></a>.
+等价于调用序列
+<a href="#luaL_buffinit"><code>luaL_buffinit</code></a>，
+<a href="#luaL_prepbuffsize"><code>luaL_prepbuffsize</code></a>。
 
 
 
@@ -5495,18 +5462,16 @@ Equivalent to the sequence
 <pre>int luaL_callmeta (lua_State *L, int obj, const char *e);</pre>
 
 <p>
-Calls a metamethod.
+调用一个元方法。
 
 
 <p>
-If the object at index <code>obj</code> has a metatable and this
-metatable has a field <code>e</code>,
-this function calls this field passing the object as its only argument.
-In this case this function returns true and pushes onto the
-stack the value returned by the call.
-If there is no metatable or no metamethod,
-this function returns false (without pushing any value on the stack).
-
+如果在索引 <code>obj</code> 处的对象有元表，
+且元表有域 <code>e</code> 。
+这个函数会以该对象为参数调用这个域。
+这种情况下，函数返回真并将调用返回值压栈。
+如果那个位置没有元表，或没有对应的元方法，
+此函数返回假（并不会将任何东西压栈）。
 
 
 
@@ -5516,9 +5481,7 @@ this function returns false (without pushing any value on the stack).
 <pre>void luaL_checkany (lua_State *L, int arg);</pre>
 
 <p>
-Checks whether the function has an argument
-of any type (including <b>nil</b>) at position <code>arg</code>.
-
+检查函数在 <code>arg</code> 位置是否有任何类型（包括 <b>nil</b>）的参数。
 
 
 
@@ -5528,11 +5491,9 @@ of any type (including <b>nil</b>) at position <code>arg</code>.
 <pre>lua_Integer luaL_checkinteger (lua_State *L, int arg);</pre>
 
 <p>
-Checks whether the function argument <code>arg</code> is an integer
-(or can be converted to an integer)
-and returns this integer cast to a <a href="#lua_Integer"><code>lua_Integer</code></a>.
-
-
+检查函数的第 <code>arg</code> 个参数是否是一个
+整数（或是可以被转换为一个整数）
+并以  <a href="#lua_Integer"><code>lua_Integer</code></a> 类型返回这个整数值。
 
 
 
@@ -5541,16 +5502,15 @@ and returns this integer cast to a <a href="#lua_Integer"><code>lua_Integer</cod
 <pre>const char *luaL_checklstring (lua_State *L, int arg, size_t *l);</pre>
 
 <p>
-Checks whether the function argument <code>arg</code> is a string
-and returns this string;
-if <code>l</code> is not <code>NULL</code> fills <code>*l</code>
-with the string's length.
+检查函数的第 <code>arg</code> 个参数是否是一个
+字符串，并返回该字符串；
+如果 <code>l</code> 不为 <code>NULL</code> ，
+将字符串的长度填入 <code>*l</code>。
 
 
 <p>
-This function uses <a href="#lua_tolstring"><code>lua_tolstring</code></a> to get its result,
-so all conversions and caveats of that function apply here.
-
+这个函数使用 <a href="#lua_tolstring"><code>lua_tolstring</code></a> 来获取结果。
+所以该函数有可能引发的转换都同样有效。
 
 
 
@@ -5560,9 +5520,8 @@ so all conversions and caveats of that function apply here.
 <pre>lua_Number luaL_checknumber (lua_State *L, int arg);</pre>
 
 <p>
-Checks whether the function argument <code>arg</code> is a number
-and returns this number.
-
+检查函数的第 <code>arg</code> 个参数是否是一个
+数字，并返回这个数字。
 
 
 
@@ -5575,26 +5534,23 @@ and returns this number.
                       const char *const lst[]);</pre>
 
 <p>
-Checks whether the function argument <code>arg</code> is a string and
-searches for this string in the array <code>lst</code>
-(which must be NULL-terminated).
-Returns the index in the array where the string was found.
-Raises an error if the argument is not a string or
-if the string cannot be found.
+检查函数的第 <code>arg</code> 个参数是否是一个
+字符串，并在数组 <code>lst</code> 
+（比如是零结尾的字符串数组）
+中查找这个字符串。
+返回匹配到的字符串在数组中的索引号。
+如果参数不是字符串，或是字符串在数组中匹配到到，都将抛出错误。
 
 
 <p>
-If <code>def</code> is not <code>NULL</code>,
-the function uses <code>def</code> as a default value when
-there is no argument <code>arg</code> or when this argument is <b>nil</b>.
+如果 <code>def</code> 不为 <code>NULL</code>，
+函数就把 <code>def</code> 当作默认值。
+默认值在参数 <code>arg</code> 不存在，或该参数是 <b>nil</b> 时生效。
 
 
 <p>
-This is a useful function for mapping strings to C&nbsp;enums.
-(The usual convention in Lua libraries is
-to use strings instead of numbers to select options.)
-
-
+这个函数通常用于将字符串映射为 C 枚举量。
+（在 Lua 库中做这个转换可以让其使用字符串，而不是数字来做一些选项。）
 
 
 
@@ -5603,10 +5559,10 @@ to use strings instead of numbers to select options.)
 <pre>void luaL_checkstack (lua_State *L, int sz, const char *msg);</pre>
 
 <p>
-Grows the stack size to <code>top + sz</code> elements,
-raising an error if the stack cannot grow to that size.
-<code>msg</code> is an additional text to go into the error message
-(or <code>NULL</code> for no additional text).
+将栈空间扩展到 <code>top + sz</code> 个元素。
+如果扩展不了，则抛出一个错误。
+<code>msg</code> 是用于错误消息的额外文本
+（<code>NULL</code> 表示不需要额外文本）。
 
 
 
@@ -5617,14 +5573,13 @@ raising an error if the stack cannot grow to that size.
 <pre>const char *luaL_checkstring (lua_State *L, int arg);</pre>
 
 <p>
-Checks whether the function argument <code>arg</code> is a string
-and returns this string.
+检查函数的第 <code>arg</code> 个参数是否是一个
+字符串并返回这个字符串。
 
 
 <p>
-This function uses <a href="#lua_tolstring"><code>lua_tolstring</code></a> to get its result,
-so all conversions and caveats of that function apply here.
-
+这个函数使用 <a href="#lua_tolstring"><code>lua_tolstring</code></a> 来获取结果。
+所以该函数有可能引发的转换都同样有效。
 
 
 
@@ -5634,8 +5589,8 @@ so all conversions and caveats of that function apply here.
 <pre>void luaL_checktype (lua_State *L, int arg, int t);</pre>
 
 <p>
-Checks whether the function argument <code>arg</code> has type <code>t</code>.
-See <a href="#lua_type"><code>lua_type</code></a> for the encoding of types for <code>t</code>.
+检查函数的第 <code>arg</code> 个参数的类型是否是 <code>t</code>。
+参见 <a href="#lua_type"><code>lua_type</code></a> 查阅类型 <code>t</code> 的编码。
 
 
 
@@ -5646,10 +5601,11 @@ See <a href="#lua_type"><code>lua_type</code></a> for the encoding of types for 
 <pre>void *luaL_checkudata (lua_State *L, int arg, const char *tname);</pre>
 
 <p>
-Checks whether the function argument <code>arg</code> is a userdata
-of the type <code>tname</code> (see <a href="#luaL_newmetatable"><code>luaL_newmetatable</code></a>) and
-returns the userdata address (see <a href="#lua_touserdata"><code>lua_touserdata</code></a>).
-
+检查函数的第 <code>arg</code> 个参数是否是一个类型为
+<code>tname</code> 的用户数据
+（参见 <a href="#luaL_newmetatable"><code>luaL_newmetatable</code></a> )。
+它会返回该用户数据的地址
+（参见 <a href="#lua_touserdata"><code>lua_touserdata</code></a>）。
 
 
 
@@ -5659,13 +5615,10 @@ returns the userdata address (see <a href="#lua_touserdata"><code>lua_touserdata
 <pre>void luaL_checkversion (lua_State *L);</pre>
 
 <p>
-Checks whether the core running the call,
-the core that created the Lua state,
-and the code making the call are all using the same version of Lua.
-Also checks whether the core running the call
-and the core that created the Lua state
-are using the same address space.
-
+检查调用它的内核是否是创建这个 Lua 状态机的内核。
+以及调用它的代码是否使用了相同的 Lua 版本。
+同时也检查调用它的内核与创建该 Lua  状态机的内核
+是否使用了同一片地址空间。
 
 
 
@@ -5675,15 +5628,14 @@ are using the same address space.
 <pre>int luaL_dofile (lua_State *L, const char *filename);</pre>
 
 <p>
-Loads and runs the given file.
-It is defined as the following macro:
+加载并运行指定的文件。
+它是用下列宏定义出来：
 
 <pre>
      (luaL_loadfile(L, filename) || lua_pcall(L, 0, LUA_MULTRET, 0))
 </pre><p>
-It returns false if there are no errors
-or true in case of errors.
-
+如果没有错误，函数返回假；
+有错则返回真。
 
 
 
@@ -5693,14 +5645,14 @@ or true in case of errors.
 <pre>int luaL_dostring (lua_State *L, const char *str);</pre>
 
 <p>
-Loads and runs the given string.
-It is defined as the following macro:
+加载并运行指定的字符串。
+它是用下列宏定义出来：
 
 <pre>
      (luaL_loadstring(L, str) || lua_pcall(L, 0, LUA_MULTRET, 0))
 </pre><p>
-It returns false if there are no errors
-or true in case of errors.
+如果没有错误，函数返回假；
+有错则返回真。
 
 
 
@@ -5711,19 +5663,17 @@ or true in case of errors.
 <pre>int luaL_error (lua_State *L, const char *fmt, ...);</pre>
 
 <p>
-Raises an error.
-The error message format is given by <code>fmt</code>
-plus any extra arguments,
-following the same rules of <a href="#lua_pushfstring"><code>lua_pushfstring</code></a>.
-It also adds at the beginning of the message the file name and
-the line number where the error occurred,
-if this information is available.
+抛出一个错误。
+错误消息的格式由 <code>fmt</code> 给出。
+后面需提供若干参数，
+这些参数遵循 <a href="#lua_pushfstring"><code>lua_pushfstring</code></a> 中的规则。
+如果能获得相关信息，它还会在消息前面加上错误发生时的文件名及行号。
 
 
 <p>
-This function never returns,
-but it is an idiom to use it in C&nbsp;functions
-as <code>return luaL_error(<em>args</em>)</code>.
+这个函数永远不会返回。
+但是在 C 函数中通常遵循惯用法：
+<code>return luaL_error(<em>args</em>)</code> 。
 
 
 
@@ -5734,10 +5684,8 @@ as <code>return luaL_error(<em>args</em>)</code>.
 <pre>int luaL_execresult (lua_State *L, int stat);</pre>
 
 <p>
-This function produces the return values for
-process-related functions in the standard library
-(<a href="#pdf-os.execute"><code>os.execute</code></a> and <a href="#pdf-io.close"><code>io.close</code></a>).
-
+这个函数用于生成标准库中和进程相关函数的返回值。
+（指 <a href="#pdf-os.execute"><code>os.execute</code></a> 和 <a href="#pdf-io.close"><code>io.close</code></a>）。
 
 
 
@@ -5747,9 +5695,10 @@ process-related functions in the standard library
 <pre>int luaL_fileresult (lua_State *L, int stat, const char *fname);</pre>
 
 <p>
-This function produces the return values for
-file-related functions in the standard library
-(<a href="#pdf-io.open"><code>io.open</code></a>, <a href="#pdf-os.rename"><code>os.rename</code></a>, <a href="#pdf-file:seek"><code>file:seek</code></a>, etc.).
+这个函数用于生成标准库中和文件相关的函数的返回值。
+（指 (<a href="#pdf-io.open"><code>io.open</code></a>，
+<a href="#pdf-os.rename"><code>os.rename</code></a>，
+<a href="#pdf-file:seek"><code>file:seek</code></a>，等。)。
 
 
 
@@ -5760,11 +5709,9 @@ file-related functions in the standard library
 <pre>int luaL_getmetafield (lua_State *L, int obj, const char *e);</pre>
 
 <p>
-Pushes onto the stack the field <code>e</code> from the metatable
-of the object at index <code>obj</code> and returns the type of pushed value.
-If the object does not have a metatable,
-or if the metatable does not have this field,
-pushes nothing and returns <code>LUA_TNIL</code>.
+将索引 <code>obj</code> 处对象的元表中 <code>e</code> 域的值压栈。
+如果该对象没有元表，或是该元表没有相关域，
+此函数什么也不会压栈并返回 <code>LUA_TNIL</code>。
 
 
 
@@ -5775,11 +5722,9 @@ pushes nothing and returns <code>LUA_TNIL</code>.
 <pre>int luaL_getmetatable (lua_State *L, const char *tname);</pre>
 
 <p>
-Pushes onto the stack the metatable associated with name <code>tname</code>
-in the registry (see <a href="#luaL_newmetatable"><code>luaL_newmetatable</code></a>).
-If there is no metatable associated with <code>tname</code>,
-returns false and pushes <b>nil</b>.
-
+将注册表中 <code>tname</code> 对应的元表
+（参见 <a href="#luaL_newmetatable"><code>luaL_newmetatable</code></a>）压栈。
+如果没有 <code>tname</code> 对应的元表，则将 <b>nil</b> 压栈并返回假。
 
 
 
@@ -5789,13 +5734,10 @@ returns false and pushes <b>nil</b>.
 <pre>int luaL_getsubtable (lua_State *L, int idx, const char *fname);</pre>
 
 <p>
-Ensures that the value <code>t[fname]</code>,
-where <code>t</code> is the value at index <code>idx</code>,
-is a table,
-and pushes that table onto the stack.
-Returns true if it finds a previous table there
-and false if it creates a new table.
-
+确保 <code>t[fname]</code> 是一张表，并将这张表压栈。
+这里的 <code>t</code> 指索引 <code>idx</code> 处的值。
+如果它原来就是一张表，返回真；
+否则为它创建一张新表，返回假。
 
 
 
@@ -5808,11 +5750,10 @@ and false if it creates a new table.
                        const char *r);</pre>
 
 <p>
-Creates a copy of string <code>s</code> by replacing
-any occurrence of the string <code>p</code>
-with the string <code>r</code>.
-Pushes the resulting string on the stack and returns it.
-
+将字符串 <code>s</code> 生成一个副本，
+并将其中的所有字符串 <code>p</code>
+都替换为字符串 <code>r</code> 。
+将结果串压栈并返回它。
 
 
 
@@ -5822,12 +5763,11 @@ Pushes the resulting string on the stack and returns it.
 <pre>lua_Integer luaL_len (lua_State *L, int index);</pre>
 
 <p>
-Returns the "length" of the value at the given index
-as a number;
-it is equivalent to the '<code>#</code>' operator in Lua (see <a href="#3.4.7">&sect;3.4.7</a>).
-Raises an error if the result of the operation is not an integer.
-(This case only can happen through metamethods.)
-
+以数字形式返回给定索引处值的“长度”；
+它等价于在 Lua 中调用 '<code>#</code>' 的操作
+（参见 <a href="#3.4.7">&sect;3.4.7</a>）。
+如果操作结果不是一个整数，则抛出一个错误。
+（这种情况只发生在触发元方法时。）
 
 
 
@@ -5840,7 +5780,8 @@ Raises an error if the result of the operation is not an integer.
                      const char *name);</pre>
 
 <p>
-Equivalent to <a href="#luaL_loadbufferx"><code>luaL_loadbufferx</code></a> with <code>mode</code> equal to <code>NULL</code>.
+等价于 <a href="#luaL_loadbufferx"><code>luaL_loadbufferx</code></a>，
+其 <code>mode</code> 参数等于 <code>NULL</code>。
 
 
 
@@ -5855,16 +5796,15 @@ Equivalent to <a href="#luaL_loadbufferx"><code>luaL_loadbufferx</code></a> with
                       const char *mode);</pre>
 
 <p>
-Loads a buffer as a Lua chunk.
-This function uses <a href="#lua_load"><code>lua_load</code></a> to load the chunk in the
-buffer pointed to by <code>buff</code> with size <code>sz</code>.
+把一段缓存加载为一个 Lua 代码块。
+这个函数使用 <a href="#lua_load"><code>lua_load</code></a> 
+来加载 <code>buff</code> 指向的长度为 <code>sz</code> 的内存区。
 
 
 <p>
-This function returns the same results as <a href="#lua_load"><code>lua_load</code></a>.
-<code>name</code> is the chunk name,
-used for debug information and error messages.
-The string <code>mode</code> works as in function <a href="#lua_load"><code>lua_load</code></a>.
+这个函数和 <a href="#lua_load"><code>lua_load</code></a> 返回值相同。
+<code>name</code> 作为代码块的名字，用于调试信息和错误消息。
+<code>mode</code> 字符串的作用同函数 <a href="#lua_load"><code>lua_load</code></a>。
 
 
 
@@ -5875,7 +5815,8 @@ The string <code>mode</code> works as in function <a href="#lua_load"><code>lua_
 <pre>int luaL_loadfile (lua_State *L, const char *filename);</pre>
 
 <p>
-Equivalent to <a href="#luaL_loadfilex"><code>luaL_loadfilex</code></a> with <code>mode</code> equal to <code>NULL</code>.
+等价于 <a href="#luaL_loadfilex"><code>luaL_loadfilex</code></a>，
+其 <code>mode</code> 参数等于 <code>NULL</code>。
 
 
 
@@ -5887,28 +5828,25 @@ Equivalent to <a href="#luaL_loadfilex"><code>luaL_loadfilex</code></a> with <co
                                             const char *mode);</pre>
 
 <p>
-Loads a file as a Lua chunk.
-This function uses <a href="#lua_load"><code>lua_load</code></a> to load the chunk in the file
-named <code>filename</code>.
-If <code>filename</code> is <code>NULL</code>,
-then it loads from the standard input.
-The first line in the file is ignored if it starts with a <code>#</code>.
+把一个文件加载为 Lua 代码块。
+这个函数使用 <a href="#lua_load"><code>lua_load</code></a> 加载文件中的数据。
+代码块的名字被命名为 <code>filename</code>。
+如果 <code>filename</code> 为 <code>NULL</code>，
+它从标准输入加载。
+如果文件的第一行以 <code>#</code> 打头，则忽略这一行。
+
+<p>
+<code>mode</code> 字符串的作用同函数 <a href="#lua_load"><code>lua_load</code></a>。
 
 
 <p>
-The string <code>mode</code> works as in function <a href="#lua_load"><code>lua_load</code></a>.
+此函数的返回值和 <a href="#lua_load"><code>lua_load</code></a> 相同，
+不过它还可能产生一个叫做 <a name="pdf-LUA_ERRFILE"><code>LUA_ERRFILE</code></a>
+的出错码。这种错误发生于无法打开或读入文件时，或是文件的模式错误。
 
 
 <p>
-This function returns the same results as <a href="#lua_load"><code>lua_load</code></a>,
-but it has an extra error code <a name="pdf-LUA_ERRFILE"><code>LUA_ERRFILE</code></a>
-if it cannot open/read the file or the file has a wrong mode.
-
-
-<p>
-As <a href="#lua_load"><code>lua_load</code></a>, this function only loads the chunk;
-it does not run it.
-
+和 <a href="#lua_load"><code>lua_load</code></a> 一样，这个函数仅加载代码块不运行。
 
 
 
@@ -5918,19 +5856,17 @@ it does not run it.
 <pre>int luaL_loadstring (lua_State *L, const char *s);</pre>
 
 <p>
-Loads a string as a Lua chunk.
-This function uses <a href="#lua_load"><code>lua_load</code></a> to load the chunk in
-the zero-terminated string <code>s</code>.
+将一个字符串加载为 Lua 代码块。
+这个函数使用 <a href="#lua_load"><code>lua_load</code></a> 加载一个零结尾的字符串
+<code>s</code>。
 
 
 <p>
-This function returns the same results as <a href="#lua_load"><code>lua_load</code></a>.
+此函数的返回值和 <a href="#lua_load"><code>lua_load</code></a> 相同。
 
 
 <p>
-Also as <a href="#lua_load"><code>lua_load</code></a>, this function only loads the chunk;
-it does not run it.
-
+也和 <a href="#lua_load"><code>lua_load</code></a> 一样，这个函数仅加载代码块不运行。
 
 
 
@@ -5940,18 +5876,16 @@ it does not run it.
 <pre>void luaL_newlib (lua_State *L, const luaL_Reg l[]);</pre>
 
 <p>
-Creates a new table and registers there
-the functions in list <code>l</code>.
+创建一张新的表，并把列表 <code>l</code> 中的函数注册进去。
 
 
 <p>
-It is implemented as the following macro:
+它是用下列宏实现的：
 
 <pre>
      (luaL_newlibtable(L,l), luaL_setfuncs(L,l,0))
 </pre><p>
-The array <code>l</code> must be the actual array,
-not a pointer to it.
+数组 <code>l</code> 必须是一个数组，而不能是一个指针。
 
 
 
@@ -5962,18 +5896,16 @@ not a pointer to it.
 <pre>void luaL_newlibtable (lua_State *L, const luaL_Reg l[]);</pre>
 
 <p>
-Creates a new table with a size optimized
-to store all entries in the array <code>l</code>
-(but does not actually store them).
-It is intended to be used in conjunction with <a href="#luaL_setfuncs"><code>luaL_setfuncs</code></a>
-(see <a href="#luaL_newlib"><code>luaL_newlib</code></a>).
+创建一张新的表，并预分配足够保存下数组 <code>l</code>
+内容的空间（但不填充）。
+这是给 <a href="#luaL_setfuncs"><code>luaL_setfuncs</code></a>
+一起用的
+（参见 <a href="#luaL_newlib"><code>luaL_newlib</code></a>）。
 
 
 <p>
-It is implemented as a macro.
-The array <code>l</code> must be the actual array,
-not a pointer to it.
-
+它以宏形式实现，
+数组 <code>l</code> 必须是一个数组，而不能是一个指针。
 
 
 
@@ -5983,20 +5915,17 @@ not a pointer to it.
 <pre>int luaL_newmetatable (lua_State *L, const char *tname);</pre>
 
 <p>
-If the registry already has the key <code>tname</code>,
-returns 0.
-Otherwise,
-creates a new table to be used as a metatable for userdata,
-adds to this new table the pair <code>__name = tname</code>,
-adds to the registry the pair <code>[tname] = new table</code>,
-and returns 1.
-(The entry <code>__name</code> is used by some error-reporting functions.)
+如果注册表中已存在键 <code>tname</code>，返回 0 。
+否则，
+为用户数据的元表创建一张新表。
+向这张表加入 <code>__name = tname</code> 键值对，
+并将 <code>[tname] = new table</code> 添加到注册表中，
+返回 1 。
+（<code>__name</code>项可用于一些错误输出函数。）
 
 
 <p>
-In both cases pushes onto the stack the final value associated
-with <code>tname</code> in the registry.
-
+这两种情况都会把最终的注册表中关联 <code>tname</code> 的值压栈。
 
 
 
@@ -6006,17 +5935,16 @@ with <code>tname</code> in the registry.
 <pre>lua_State *luaL_newstate (void);</pre>
 
 <p>
-Creates a new Lua state.
-It calls <a href="#lua_newstate"><code>lua_newstate</code></a> with an
-allocator based on the standard&nbsp;C <code>realloc</code> function
-and then sets a panic function (see <a href="#4.6">&sect;4.6</a>) that prints
-an error message to the standard error output in case of fatal
-errors.
+创建一个新的 Lua 状态机。
+它以一个基于标准 C 的 <code>realloc</code> 函数实现的内存分配器
+调用 <a href="#lua_newstate"><code>lua_newstate</code></a> 。
+并把可打印一些出错信息到标准错误输出的 panic 函数（参见 <a href="#4.6">&sect;4.6</a>）
+设置好，用于处理致命错误。
 
 
 <p>
-Returns the new state,
-or <code>NULL</code> if there is a memory allocation error.
+返回新的状态机。
+如果内存分配失败，则返回 <code>NULL</code> 。
 
 
 
@@ -6027,7 +5955,7 @@ or <code>NULL</code> if there is a memory allocation error.
 <pre>void luaL_openlibs (lua_State *L);</pre>
 
 <p>
-Opens all standard Lua libraries into the given state.
+打开指定状态机中的所有 Lua 标准库。
 
 
 
@@ -6040,13 +5968,12 @@ Opens all standard Lua libraries into the given state.
                              lua_Integer d);</pre>
 
 <p>
-If the function argument <code>arg</code> is an integer
-(or convertible to an integer),
-returns this integer.
-If this argument is absent or is <b>nil</b>,
-returns <code>d</code>.
-Otherwise, raises an error.
-
+如果函数的第 <code>arg</code> 个参数是一个
+整数（或可以转换为一个整数），
+返回该整数。
+若该参数不存在或是 <b>nil</b>，
+返回 <code>d</code>。
+除此之外的情况，抛出错误。
 
 
 
@@ -6059,16 +5986,16 @@ Otherwise, raises an error.
                              size_t *l);</pre>
 
 <p>
-If the function argument <code>arg</code> is a string,
-returns this string.
-If this argument is absent or is <b>nil</b>,
-returns <code>d</code>.
-Otherwise, raises an error.
+如果函数的第 <code>arg</code> 个参数是一个
+字符串，返回该字符串。
+若该参数不存在或是 <b>nil</b>，
+返回 <code>d</code>。
+除此之外的情况，抛出错误。
 
 
 <p>
-If <code>l</code> is not <code>NULL</code>,
-fills the position <code>*l</code> with the result's length.
+若 <code>l</code> 不为 <code>NULL</code>，
+将结果的长度填入 <code>*l</code> 。
 
 
 
@@ -6079,12 +6006,11 @@ fills the position <code>*l</code> with the result's length.
 <pre>lua_Number luaL_optnumber (lua_State *L, int arg, lua_Number d);</pre>
 
 <p>
-If the function argument <code>arg</code> is a number,
-returns this number.
-If this argument is absent or is <b>nil</b>,
-returns <code>d</code>.
-Otherwise, raises an error.
-
+如果函数的第 <code>arg</code> 个参数是一个
+数字，返回该数字。
+若该参数不存在或是 <b>nil</b>，
+返回 <code>d</code>。
+除此之外的情况，抛出错误。
 
 
 
@@ -6096,13 +6022,11 @@ Otherwise, raises an error.
                             const char *d);</pre>
 
 <p>
-If the function argument <code>arg</code> is a string,
-returns this string.
-If this argument is absent or is <b>nil</b>,
-returns <code>d</code>.
-Otherwise, raises an error.
-
-
+如果函数的第 <code>arg</code> 个参数是一个
+字符串，返回该字符串。
+若该参数不存在或是 <b>nil</b>，
+返回 <code>d</code>。
+除此之外的情况，抛出错误。
 
 
 
@@ -6111,8 +6035,8 @@ Otherwise, raises an error.
 <pre>char *luaL_prepbuffer (luaL_Buffer *B);</pre>
 
 <p>
-Equivalent to <a href="#luaL_prepbuffsize"><code>luaL_prepbuffsize</code></a>
-with the predefined size <a name="pdf-LUAL_BUFFERSIZE"><code>LUAL_BUFFERSIZE</code></a>.
+等价于 <a href="#luaL_prepbuffsize"><code>luaL_prepbuffsize</code></a>，
+其预定义大小为 <a name="pdf-LUAL_BUFFERSIZE"><code>LUAL_BUFFERSIZE</code></a>。
 
 
 
@@ -6123,12 +6047,11 @@ with the predefined size <a name="pdf-LUAL_BUFFERSIZE"><code>LUAL_BUFFERSIZE</co
 <pre>char *luaL_prepbuffsize (luaL_Buffer *B, size_t sz);</pre>
 
 <p>
-Returns an address to a space of size <code>sz</code>
-where you can copy a string to be added to buffer <code>B</code>
-(see <a href="#luaL_Buffer"><code>luaL_Buffer</code></a>).
-After copying the string into this space you must call
-<a href="#luaL_addsize"><code>luaL_addsize</code></a> with the size of the string to actually add
-it to the buffer.
+返回一段大小为 <code>sz</code> 的空间地址。
+你可以将字符串复制其中以加到缓存 <code>B</code> 内
+（参见 <a href="#luaL_Buffer"><code>luaL_Buffer</code></a>）。
+将字符串复制其中后，你必须调用 <a href="#luaL_addsize"><code>luaL_addsize</code></a>
+传入字符串的大小，才会真正把它加入缓存。
 
 
 
@@ -6139,9 +6062,7 @@ it to the buffer.
 <pre>void luaL_pushresult (luaL_Buffer *B);</pre>
 
 <p>
-Finishes the use of buffer <code>B</code> leaving the final string on
-the top of the stack.
-
+结束对缓存 <code>B</code> 的使用，将最终的字符串留在栈顶。
 
 
 
@@ -6151,7 +6072,7 @@ the top of the stack.
 <pre>void luaL_pushresultsize (luaL_Buffer *B, size_t sz);</pre>
 
 <p>
-Equivalent to the sequence <a href="#luaL_addsize"><code>luaL_addsize</code></a>, <a href="#luaL_pushresult"><code>luaL_pushresult</code></a>.
+等价于 <a href="#luaL_addsize"><code>luaL_addsize</code></a>，<a href="#luaL_pushresult"><code>luaL_pushresult</code></a>。
 
 
 
@@ -6162,26 +6083,25 @@ Equivalent to the sequence <a href="#luaL_addsize"><code>luaL_addsize</code></a>
 <pre>int luaL_ref (lua_State *L, int t);</pre>
 
 <p>
-Creates and returns a <em>reference</em>,
-in the table at index <code>t</code>,
-for the object at the top of the stack (and pops the object).
+针对栈顶的对象，创建并返回一个在索引 <code>t</code> 指向的表中的 <em>引用</em>
+（最后会弹出栈顶对象）。
 
 
 <p>
-A reference is a unique integer key.
-As long as you do not manually add integer keys into table <code>t</code>,
-<a href="#luaL_ref"><code>luaL_ref</code></a> ensures the uniqueness of the key it returns.
-You can retrieve an object referred by reference <code>r</code>
-by calling <code>lua_rawgeti(L, t, r)</code>.
-Function <a href="#luaL_unref"><code>luaL_unref</code></a> frees a reference and its associated object.
+此引用是一个唯一的整数键。
+只要你不向表 <code>t</code> 手工添加整数键，
+<a href="#luaL_ref"><code>luaL_ref</code></a> 可以保证它返回的键的唯一性。
+你可以通过调用 <code>lua_rawgeti(L, t, r)</code> 来找回由
+<code>r</code> 引用的对象。
+函数 <a href="#luaL_unref"><code>luaL_unref</code></a> 用来释放一个引用关联的对象
 
 
 <p>
-If the object at the top of the stack is <b>nil</b>,
-<a href="#luaL_ref"><code>luaL_ref</code></a> returns the constant <a name="pdf-LUA_REFNIL"><code>LUA_REFNIL</code></a>.
-The constant <a name="pdf-LUA_NOREF"><code>LUA_NOREF</code></a> is guaranteed to be different
-from any reference returned by <a href="#luaL_ref"><code>luaL_ref</code></a>.
-
+如果栈顶的对象是 <b>nil</b>，
+<a href="#luaL_ref"><code>luaL_ref</code></a> 将返回常量
+<a name="pdf-LUA_REFNIL"><code>LUA_REFNIL</code></a>。
+常量 <a name="pdf-LUA_NOREF"><code>LUA_NOREF</code></a> 可以保证和
+<a href="#luaL_ref"><code>luaL_ref</code></a> 能返回的其它引用值不同。
 
 
 
@@ -6193,13 +6113,11 @@ from any reference returned by <a href="#luaL_ref"><code>luaL_ref</code></a>.
 } luaL_Reg;</pre>
 
 <p>
-Type for arrays of functions to be registered by
-<a href="#luaL_setfuncs"><code>luaL_setfuncs</code></a>.
-<code>name</code> is the function name and <code>func</code> is a pointer to
-the function.
-Any array of <a href="#luaL_Reg"><code>luaL_Reg</code></a> must end with a sentinel entry
-in which both <code>name</code> and <code>func</code> are <code>NULL</code>.
-
+用于 <a href="#luaL_setfuncs"><code>luaL_setfuncs</code></a>
+注册函数的数组类型。
+<code>name</code> 指函数名，<code>func</code> 是函数指针。
+任何 <a href="#luaL_Reg"><code>luaL_Reg</code></a> 数组必须以一对
+<code>name</code> 与 <code>func</code> 皆为 <code>NULL</code> 结束。
 
 
 
@@ -6210,20 +6128,19 @@ in which both <code>name</code> and <code>func</code> are <code>NULL</code>.
                     lua_CFunction openf, int glb);</pre>
 
 <p>
-If <code>modname</code> is not already present in <a href="#pdf-package.loaded"><code>package.loaded</code></a>,
-calls function <code>openf</code> with string <code>modname</code> as an argument
-and sets the call result in <code>package.loaded[modname]</code>,
-as if that function has been called through <a href="#pdf-require"><code>require</code></a>.
+如果 <code>modname</code> 不在 <a href="#pdf-package.loaded"><code>package.loaded</code></a> 中，
+则调用函数 <code>openf</code> ，并传入字符串 <code>modname</code>。
+将其返回值置入 <code>package.loaded[modname]</code>。
+这个行为好似该函数通过 <a href="#pdf-require"><code>require</code></a> 调用过一样。
 
 
 <p>
-If <code>glb</code> is true,
-also stores the module into global <code>modname</code>.
+如果 <code>glb</code> 为真，
+同时也讲模块设到全局变量 <code>modname</code> 里。
 
 
 <p>
-Leaves a copy of the module on the stack.
-
+在栈上留下该模块的副本。
 
 
 
@@ -6233,18 +6150,15 @@ Leaves a copy of the module on the stack.
 <pre>void luaL_setfuncs (lua_State *L, const luaL_Reg *l, int nup);</pre>
 
 <p>
-Registers all functions in the array <code>l</code>
-(see <a href="#luaL_Reg"><code>luaL_Reg</code></a>) into the table on the top of the stack
-(below optional upvalues, see next).
-
+把数组 <code>l</code> 中的所有函数
+（参见 <a href="#luaL_Reg"><code>luaL_Reg</code></a>）
+注册到栈顶的表中（该表在可选的上值之下，见下面的解说）。
 
 <p>
-When <code>nup</code> is not zero,
-all functions are created sharing <code>nup</code> upvalues,
-which must be previously pushed on the stack
-on top of the library table.
-These values are popped from the stack after the registration.
-
+若 <code>nup</code> 不为零，
+所有的函数都共享 <code>nup</code> 个上值。
+这些值必须在调用之前，压在表之上。
+这些值在注册完毕后都会从栈弹出。
 
 
 
@@ -6254,10 +6168,9 @@ These values are popped from the stack after the registration.
 <pre>void luaL_setmetatable (lua_State *L, const char *tname);</pre>
 
 <p>
-Sets the metatable of the object at the top of the stack
-as the metatable associated with name <code>tname</code>
-in the registry (see <a href="#luaL_newmetatable"><code>luaL_newmetatable</code></a>).
-
+将注册表中 <code>tname</code> 关联元表
+（参见 <a href="#luaL_newmetatable"><code>luaL_newmetatable</code></a>）
+设为栈顶对象的元表。
 
 
 
@@ -6269,33 +6182,26 @@ in the registry (see <a href="#luaL_newmetatable"><code>luaL_newmetatable</code>
 } luaL_Stream;</pre>
 
 <p>
-The standard representation for file handles,
-which is used by the standard I/O library.
+标准输入输出库中用到的标准文件句柄结构。
+
+<p>
+文件句柄实现为一个完全用户数据，
+其元表被称为 <code>LUA_FILEHANDLE</code>
+（<code>LUA_FILEHANDLE</code> 是一个代表真正元表的名字的宏）。
+这张元表右标准输入输出库（参见 <a href="#luaL_newmetatable"><code>luaL_newmetatable</code></a>）创建。
 
 
 <p>
-A file handle is implemented as a full userdata,
-with a metatable called <code>LUA_FILEHANDLE</code>
-(where <code>LUA_FILEHANDLE</code> is a macro with the actual metatable's name).
-The metatable is created by the I/O library
-(see <a href="#luaL_newmetatable"><code>luaL_newmetatable</code></a>).
-
-
-<p>
-This userdata must start with the structure <code>luaL_Stream</code>;
-it can contain other data after this initial structure.
-Field <code>f</code> points to the corresponding C stream
-(or it can be <code>NULL</code> to indicate an incompletely created handle).
-Field <code>closef</code> points to a Lua function
-that will be called to close the stream
-when the handle is closed or collected;
-this function receives the file handle as its sole argument and
-must return either <b>true</b> (in case of success)
-or <b>nil</b> plus an error message (in case of error).
-Once Lua calls this field,
-the field value is changed to <code>NULL</code>
-to signal that the handle is closed.
-
+用户数据必须以结构 <code>luaL_Stream</code> 开头；
+此结构其后可以包含任何其它数据。
+<code>f</code> 域指向一个 C 数据流
+（如果它为 <code>NULL</code> 表示一个没有创建好的句柄）。
+<code>closef</code> 域指向一个在关闭或回收该流时需要调用的 Lua 函数。
+该函数将收到一个参数，即文件句柄。
+它需要返回 <b>true</b>（操作成功）或
+<b>nil</b> 加错误消息（出错的时候）。
+一旦 Lua 调用过这个域，该域的值就会修改为 <code>NULL</code>
+以提示这个句柄已经被关闭了。
 
 
 
@@ -6305,9 +6211,8 @@ to signal that the handle is closed.
 <pre>void *luaL_testudata (lua_State *L, int arg, const char *tname);</pre>
 
 <p>
-This function works like <a href="#luaL_checkudata"><code>luaL_checkudata</code></a>,
-except that, when the test fails,
-it returns <code>NULL</code> instead of raising an error.
+此函数和 <a href="#luaL_checkudata"><code>luaL_checkudata</code></a> 类似。
+但它在测试失败时会返回 <code>NULL</code> 而不是抛出错误。
 
 
 
@@ -6318,21 +6223,16 @@ it returns <code>NULL</code> instead of raising an error.
 <pre>const char *luaL_tolstring (lua_State *L, int idx, size_t *len);</pre>
 
 <p>
-Converts any Lua value at the given index to a C&nbsp;string
-in a reasonable format.
-The resulting string is pushed onto the stack and also
-returned by the function.
-If <code>len</code> is not <code>NULL</code>,
-the function also sets <code>*len</code> with the string length.
+将给定索引处的 Lua 值转换为一个相应格式的 C 字符串。
+结果串不仅会压栈，还会由函数返回。
+如果 <code>len</code> 不为 <code>NULL</code> ，
+它还把字符串长度设到 <code>*len</code> 中。
 
 
 <p>
-If the value has a metatable with a <code>"__tostring"</code> field,
-then <code>luaL_tolstring</code> calls the corresponding metamethod
-with the value as argument,
-and uses the result of the call as its result.
-
-
+如果该值有一个带 <code>"__tostring"</code> 域的原表，
+<code>luaL_tolstring</code> 会以该值为参数去调用对应的元方法，
+并将其返回值作为结果。
 
 
 
@@ -6342,12 +6242,9 @@ and uses the result of the call as its result.
                      int level);</pre>
 
 <p>
-Creates and pushes a traceback of the stack <code>L1</code>.
-If <code>msg</code> is not <code>NULL</code> it is appended
-at the beginning of the traceback.
-The <code>level</code> parameter tells at which level
-to start the traceback.
-
+将栈 <code>L1</code> 的栈回溯信息压栈。
+如果 <code>msg</code> 不为 <code>NULL</code> ，它会附加到栈回溯信息之前。
+<code>level</code> 参数指明从第几层开始做栈回溯。
 
 
 
@@ -6357,7 +6254,7 @@ to start the traceback.
 <pre>const char *luaL_typename (lua_State *L, int index);</pre>
 
 <p>
-Returns the name of the type of the value at the given index.
+返回给定索引处值的类型名。
 
 
 
@@ -6368,16 +6265,16 @@ Returns the name of the type of the value at the given index.
 <pre>void luaL_unref (lua_State *L, int t, int ref);</pre>
 
 <p>
-Releases reference <code>ref</code> from the table at index <code>t</code>
-(see <a href="#luaL_ref"><code>luaL_ref</code></a>).
-The entry is removed from the table,
-so that the referred object can be collected.
-The reference <code>ref</code> is also freed to be used again.
+释放索引 <code>t</code> 处表的 <code>ref</code> 引用对象
+（参见 <a href="#luaL_ref"><code>luaL_ref</code></a> ）。
+此条目会从表中移除以让其引用的对象可被垃圾收集。
+而引用 <code>ref</code> 也被回收再次使用。
 
 
 <p>
-If <code>ref</code> is <a href="#pdf-LUA_NOREF"><code>LUA_NOREF</code></a> or <a href="#pdf-LUA_REFNIL"><code>LUA_REFNIL</code></a>,
-<a href="#luaL_unref"><code>luaL_unref</code></a> does nothing.
+如果 <code>ref</code> 为 <a href="#pdf-LUA_NOREF"><code>LUA_NOREF</code></a> 
+或 <a href="#pdf-LUA_REFNIL"><code>LUA_REFNIL</code></a>，
+<a href="#luaL_unref"><code>luaL_unref</code></a> 什么也不做。
 
 
 
@@ -6388,21 +6285,19 @@ If <code>ref</code> is <a href="#pdf-LUA_NOREF"><code>LUA_NOREF</code></a> or <a
 <pre>void luaL_where (lua_State *L, int lvl);</pre>
 
 <p>
-Pushes onto the stack a string identifying the current position
-of the control at level <code>lvl</code> in the call stack.
-Typically this string has the following format:
+将一个用于表示 <code>lvl</code> 层栈的控制点位置的字符串压栈。
+这个字符串遵循下面的格式：
 
 <pre>
      <em>chunkname</em>:<em>currentline</em>:
 </pre><p>
-Level&nbsp;0 is the running function,
-level&nbsp;1 is the function that called the running function,
-etc.
+0 层指当前正在运行的函数，
+1 层指调用正在运行函数的函数，
+依次类推。
 
 
 <p>
-This function is used to build a prefix for error messages.
-
+这个函数用于构建错误消息的前缀。
 
 
 
