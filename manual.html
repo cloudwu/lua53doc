@@ -4756,16 +4756,13 @@ Lua 会使协程让出，一旦协程再次被延续，
 
 
 
-<h2>4.9 &ndash; <a name="4.9">The Debug Interface</a></h2>
+<h2>4.9 &ndash; <a name="4.9">调试接口</a></h2>
 
 <p>
-Lua has no built-in debugging facilities.
-Instead, it offers a special interface
-by means of functions and <em>hooks</em>.
-This interface allows the construction of different
-kinds of debuggers, profilers, and other tools
-that need "inside information" from the interpreter.
-
+Lua 没有内置的调试机制。
+但是它提供了一组特殊的函数接口以及 <em>钩子</em>。
+这组接口可用于构件出不同的调试器、性能剖析器、
+或是其它需要从解释器获取“内部信息”的工具。
 
 
 <hr><h3><a name="lua_Debug"><code>lua_Debug</code></a></h3>
@@ -4778,103 +4775,97 @@ that need "inside information" from the interpreter.
   int currentline;            /* (l) */
   int linedefined;            /* (S) */
   int lastlinedefined;        /* (S) */
-  unsigned char nups;         /* (u) number of upvalues */
-  unsigned char nparams;      /* (u) number of parameters */
+  unsigned char nups;         /* (u) 上值的数量 */
+  unsigned char nparams;      /* (u) 参数的数量 */
   char isvararg;              /* (u) */
   char istailcall;            /* (t) */
   char short_src[LUA_IDSIZE]; /* (S) */
-  /* private part */
-  <em>other fields</em>
+  /* 私有部分 */
+  <em>其它域</em>
 } lua_Debug;</pre>
 
 <p>
-A structure used to carry different pieces of
-information about a function or an activation record.
-<a href="#lua_getstack"><code>lua_getstack</code></a> fills only the private part
-of this structure, for later use.
-To fill the other fields of <a href="#lua_Debug"><code>lua_Debug</code></a> with useful information,
-call <a href="#lua_getinfo"><code>lua_getinfo</code></a>.
+这是一个携带有有关函数或活动记录的各种信息的结构。
+<a href="#lua_getstack"><code>lua_getstack</code></a> 只会填充结构的私有部分供后面使用。
+调用 <a href="#lua_getinfo"><code>lua_getinfo</code></a> 可以在
+<a href="#lua_Debug"><code>lua_Debug</code></a> 中填充那些可被使用的信息域。
 
 
 <p>
-The fields of <a href="#lua_Debug"><code>lua_Debug</code></a> have the following meaning:
+下面对 <a href="#lua_Debug"><code>lua_Debug</code></a> 的各个域做一个说明：
 
 <ul>
 
 <li><b><code>source</code>: </b>
-the name of the chunk that created the function.
-If <code>source</code> starts with a '<code>@</code>',
-it means that the function was defined in a file where
-the file name follows the '<code>@</code>'.
-If <code>source</code> starts with a '<code>=</code>',
-the remainder of its contents describe the source in a user-dependent manner.
-Otherwise,
-the function was defined in a string where
-<code>source</code> is that string.
+创建这个函数的代码块的名字。
+如果 <code>source</code> 以 '<code>@</code>' 打头，
+指这个函数定义在一个文件中，而 '<code>@</code>' 之后的部分就是文件名。
+若 <code>source</code> 以 '<code>=</code>' 打头，
+剩余的部分由用户行为来决定如何表示源码。
+其它的情况下，这个函数定义在一个字符串中，
+而 <code>source</code> 正是那个字符串。
 </li>
 
 <li><b><code>short_src</code>: </b>
-a "printable" version of <code>source</code>, to be used in error messages.
+一个“可打印版本”的 <code>source</code> ，用于出错信息。
 </li>
 
 <li><b><code>linedefined</code>: </b>
-the line number where the definition of the function starts.
+函数定义开始处的行号。
 </li>
 
 <li><b><code>lastlinedefined</code>: </b>
-the line number where the definition of the function ends.
+函数定义结束处的行号。
 </li>
 
 <li><b><code>what</code>: </b>
-the string <code>"Lua"</code> if the function is a Lua function,
-<code>"C"</code> if it is a C&nbsp;function,
-<code>"main"</code> if it is the main part of a chunk.
+如果函数是一个 Lua 函数，则为一个字符串 <code>"Lua"</code> ；
+如果是一个 C 函数，则为 <code>"C"</code>；
+如果它是一个代码块的主体部分，则为 <code>"main"</code>。
 </li>
 
 <li><b><code>currentline</code>: </b>
-the current line where the given function is executing.
-When no line information is available,
-<code>currentline</code> is set to -1.
+给定函数正在执行的那一行。 
+当提供不了行号信息的时候， <code>currentline</code> 被设为 -1 。
 </li>
 
 <li><b><code>name</code>: </b>
-a reasonable name for the given function.
-Because functions in Lua are first-class values,
-they do not have a fixed name:
-some functions can be the value of multiple global variables,
-while others can be stored only in a table field.
-The <code>lua_getinfo</code> function checks how the function was
-called to find a suitable name.
-If it cannot find a name,
-then <code>name</code> is set to <code>NULL</code>.
+给定函数的一个合理的名字。
+因为 Lua 中的函数是一等公民，
+所以它们没有固定的名字：
+一些函数可能是全局复合变量的值，
+另一些可能仅仅只是被保存在一张表的某个域中。
+<code>lua_getinfo</code> 函数会检查函数是怎样被调用的，
+以此来找到一个适合的名字。 
+如果它找不到名字，
+<code>name</code> 就被设置为 <code>NULL</code> 。
 </li>
 
 <li><b><code>namewhat</code>: </b>
-explains the <code>name</code> field.
-The value of <code>namewhat</code> can be
-<code>"global"</code>, <code>"local"</code>, <code>"method"</code>,
-<code>"field"</code>, <code>"upvalue"</code>, or <code>""</code> (the empty string),
-according to how the function was called.
-(Lua uses the empty string when no other option seems to apply.)
+用于解释 <code>name</code> 域。
+<code>namewhat</code> 的值可以是
+<code>"global"</code>, <code>"local"</code>, <code>"method"</code>, <code>"field"</code>, <code>"upvalue"</code>, 或是 <code>""</code> （空串）。
+这取决于函数怎样被调用。
+（Lua 用空串表示其它选项都不符合。）
 </li>
 
 <li><b><code>istailcall</code>: </b>
-true if this function invocation was called by a tail call.
-In this case, the caller of this level is not in the stack.
+如果函数以尾调用形式调用，这个值就为真。
+在这种情况下，当层的调用者不在栈中。
 </li>
 
 <li><b><code>nups</code>: </b>
-the number of upvalues of the function.
+函数的上值个数。
 </li>
 
 <li><b><code>nparams</code>: </b>
-the number of fixed parameters of the function
-(always 0&nbsp;for C&nbsp;functions).
+函数固定行参个数
+（对于 C 函数永远是 0 ）。
 </li>
 
 <li><b><code>isvararg</code>: </b>
-true if the function is a vararg function
-(always true for C&nbsp;functions).
+如果函数是一个可变参数函数则为真
+（对于 C 函数永远为真）。
 </li>
 
 </ul>
@@ -4887,7 +4878,7 @@ true if the function is a vararg function
 <pre>lua_Hook lua_gethook (lua_State *L);</pre>
 
 <p>
-Returns the current hook function.
+返回当前的钩子函数。
 
 
 
@@ -4898,8 +4889,7 @@ Returns the current hook function.
 <pre>int lua_gethookcount (lua_State *L);</pre>
 
 <p>
-Returns the current hook count.
-
+返回当前的钩子计数。
 
 
 
@@ -4909,7 +4899,7 @@ Returns the current hook count.
 <pre>int lua_gethookmask (lua_State *L);</pre>
 
 <p>
-Returns the current hook mask.
+返回当前的钩子掩码。
 
 
 
@@ -4920,81 +4910,72 @@ Returns the current hook mask.
 <pre>int lua_getinfo (lua_State *L, const char *what, lua_Debug *ar);</pre>
 
 <p>
-Gets information about a specific function or function invocation.
+返回一个指定的函数或函数调用的信息。
 
 
 <p>
-To get information about a function invocation,
-the parameter <code>ar</code> must be a valid activation record that was
-filled by a previous call to <a href="#lua_getstack"><code>lua_getstack</code></a> or
-given as argument to a hook (see <a href="#lua_Hook"><code>lua_Hook</code></a>).
+当用于取得一次函数调用的信息时，
+参数 <code>ar</code> 必须是一个有效的活动的记录。
+这条记录可以是前一次调用 <a href="#lua_getstack"><code>lua_getstack</code></a> 得到的，
+或是一个钩子 （参见 <a href="#lua_Hook"><code>lua_Hook</code></a> ）得到的参数。
 
 
 <p>
-To get information about a function you push it onto the stack
-and start the <code>what</code> string with the character '<code>&gt;</code>'.
-(In that case,
-<code>lua_getinfo</code> pops the function from the top of the stack.)
-For instance, to know in which line a function <code>f</code> was defined,
-you can write the following code:
+用于获取一个函数的信息时，
+可以把这个函数压入堆栈， 
+然后把 <code>what</code> 字符串以字符 '<code>&gt;</code>' 起头。
+（这会让 <code>lua_getinfo</code> 从栈顶上弹出函数。）
+例如，想知道函数 <code>f</code> 是在哪一行定义的，
+你可以使用下列代码：
 
 <pre>
      lua_Debug ar;
-     lua_getglobal(L, "f");  /* get global 'f' */
+     lua_getglobal(L, "f");  /* 取得全局变量 'f' */
      lua_getinfo(L, "&gt;S", &amp;ar);
      printf("%d\n", ar.linedefined);
 </pre>
 
 <p>
-Each character in the string <code>what</code>
-selects some fields of the structure <code>ar</code> to be filled or
-a value to be pushed on the stack:
+<code>what</code> 字符串中的每个字符都筛选出结构
+<code>ar</code> 结构中一些域用于填充，
+或是把一个值压入堆栈：
 
 <ul>
 
-<li><b>'<code>n</code>': </b> fills in the field <code>name</code> and <code>namewhat</code>;
+<li><b>'<code>n</code>': </b> 填充 <code>name</code> 及 <code>namewhat</code> 域；
 </li>
 
 <li><b>'<code>S</code>': </b>
-fills in the fields <code>source</code>, <code>short_src</code>,
-<code>linedefined</code>, <code>lastlinedefined</code>, and <code>what</code>;
+填充 <code>source</code> ， <code>short_src</code> ， <code>linedefined</code> ， <code>lastlinedefined</code> ，以及 <code>what</code> 域；
 </li>
 
-<li><b>'<code>l</code>': </b> fills in the field <code>currentline</code>;
+<li><b>'<code>l</code>': </b> 填充 <code>currentline</code> 域；
 </li>
 
-<li><b>'<code>t</code>': </b> fills in the field <code>istailcall</code>;
+<li><b>'<code>t</code>': </b> 填充 <code>istailcall</code> 域；
 </li>
 
-<li><b>'<code>u</code>': </b> fills in the fields
-<code>nups</code>, <code>nparams</code>, and <code>isvararg</code>;
+<li><b>'<code>u</code>': </b> 填充 <code>nups</code>， <code>nparams</code>，及 <code>isvararg</code> 域；
 </li>
 
 <li><b>'<code>f</code>': </b>
-pushes onto the stack the function that is
-running at the given level;
+把正在运行中指定层次处函数压栈；
 </li>
 
 <li><b>'<code>L</code>': </b>
-pushes onto the stack a table whose indices are the
-numbers of the lines that are valid on the function.
-(A <em>valid line</em> is a line with some associated code,
-that is, a line where you can put a break point.
-Non-valid lines include empty lines and comments.)
+将一张表压栈，这张表中的整数索引用于描述函数中哪些行是有效行。
+（<em>有效行</em>指有实际代码的行，即你可以置入断点的行。 无效行包括空行和只有注释的行。）
 
 
 <p>
-If this option is given together with option '<code>f</code>',
-its table is pushed after the function.
+如果这个选项和选项 '<code>f</code>' 同时使用，
+这张表在函数之后压栈。
 </li>
 
 </ul>
 
 <p>
-This function returns 0 on error
-(for instance, an invalid option in <code>what</code>).
-
-
+这个函数出错会返回 0 （例如，<code>what</code> 中有一个无效选项）。
 
 
 
@@ -5003,38 +4984,37 @@ This function returns 0 on error
 <pre>const char *lua_getlocal (lua_State *L, const lua_Debug *ar, int n);</pre>
 
 <p>
-Gets information about a local variable of
-a given activation record or a given function.
+从给定活动记录或从一个函数中获取一个局部变量的信息。
 
 
 <p>
-In the first case,
-the parameter <code>ar</code> must be a valid activation record that was
-filled by a previous call to <a href="#lua_getstack"><code>lua_getstack</code></a> or
-given as argument to a hook (see <a href="#lua_Hook"><code>lua_Hook</code></a>).
-The index <code>n</code> selects which local variable to inspect;
-see <a href="#pdf-debug.getlocal"><code>debug.getlocal</code></a> for details about variable indices
-and names.
+对于第一种情况，
+参数 <code>ar</code> 必须是一个有效的活动的记录。 
+这条记录可以是前一次调用 <a href="#lua_getstack"><code>lua_getstack</code></a> 得到的，
+或是一个钩子 （参见 <a href="#lua_Hook"><code>lua_Hook</code></a> ）的参数。
+索引 <code>n</code> 用于选择要检阅哪个局部变量；
+参见 <a href="#pdf-debug.getlocal"><code>debug.getlocal</code></a> 
+中关于变量的索引和名字的介绍。
 
 
 <p>
-<a href="#lua_getlocal"><code>lua_getlocal</code></a> pushes the variable's value onto the stack
-and returns its name.
+<a href="#lua_getlocal"><code>lua_getlocal</code></a> 将变量的值压栈，并返回其名字。
 
 
 <p>
-In the second case, <code>ar</code> must be <code>NULL</code> and the function
-to be inspected must be at the top of the stack.
+对于第二种情况，<code>ar</code> 必须填 <code>NULL</code> 。
+需要探知的函数必须放在栈顶。
+对于这种情况，只有 Lua 函数的形参是可见的
+（没有关于还有哪些活动变量的信息）
+也不会有任何值压栈。
 In this case, only parameters of Lua functions are visible
 (as there is no information about what variables are active)
 and no values are pushed onto the stack.
 
 
 <p>
-Returns <code>NULL</code> (and pushes nothing)
-when the index is greater than
-the number of active local variables.
-
+当索引大于活动的局部变量的数量，
+返回 <code>NULL</code> （无任何压栈）
 
 
 
@@ -5044,20 +5024,18 @@ the number of active local variables.
 <pre>int lua_getstack (lua_State *L, int level, lua_Debug *ar);</pre>
 
 <p>
-Gets information about the interpreter runtime stack.
+获取解释器的运行时栈的信息。
 
 
 <p>
-This function fills parts of a <a href="#lua_Debug"><code>lua_Debug</code></a> structure with
-an identification of the <em>activation record</em>
-of the function executing at a given level.
-Level&nbsp;0 is the current running function,
-whereas level <em>n+1</em> is the function that has called level <em>n</em>
-(except for tail calls, which do not count on the stack).
-When there are no errors, <a href="#lua_getstack"><code>lua_getstack</code></a> returns 1;
-when called with a level greater than the stack depth,
-it returns 0.
-
+这个函数用正在运行中的指定层次处函数的 <em>活动记录</em> 来填写
+<a href="#lua_Debug"><code>lua_Debug</code></a> 结构的一部分。
+0 层表示当前运行的函数，
+<em>n+1</em> 层的函数就是调用第 <em>n</em> 层
+（尾调用例外，它不算在栈层次中）
+函数的那一个。
+如果没有错误， <a href="#lua_getstack"><code>lua_getstack</code></a> 返回 1 ；
+当调用传入的层次大于堆栈深度的时候，返回 0 。
 
 
 
@@ -5067,26 +5045,21 @@ it returns 0.
 <pre>const char *lua_getupvalue (lua_State *L, int funcindex, int n);</pre>
 
 <p>
-Gets information about a closure's upvalue.
-(For Lua functions,
-upvalues are the external local variables that the function uses,
-and that are consequently included in its closure.)
-<a href="#lua_getupvalue"><code>lua_getupvalue</code></a> gets the index <code>n</code> of an upvalue,
-pushes the upvalue's value onto the stack,
-and returns its name.
-<code>funcindex</code> points to the closure in the stack.
-(Upvalues have no particular order,
-as they are active through the whole function.
-So, they are numbered in an arbitrary order.)
+获取一个闭包的上值信息。
+（对于 Lua 函数，上值是函数需要使用的外部局部变量，
+因此这些变量被包含在闭包中。）
+<a href="#lua_getupvalue"><code>lua_getupvalue</code></a> 获取第 <code>n</code> 个上值，
+把这个上值的值压栈，
+并且返回它的名字。 
+<code>funcindex</code> 指向闭包在栈上的位置。
+（ 因为上值在整个函数中都有效，所以它们没有特别的次序。
+因此，它们以字母次序来编号。）
 
 
 <p>
-Returns <code>NULL</code> (and pushes nothing)
-when the index is greater than the number of upvalues.
-For C&nbsp;functions, this function uses the empty string <code>""</code>
-as a name for all upvalues.
-
-
+当索引号比上值数量大的时候，
+返回 <code>NULL</code>（而且不会压入任何东西）。
+对于 C 函数，所有上值的名字都是空串 <code>""</code>。
 
 
 
@@ -5094,47 +5067,44 @@ as a name for all upvalues.
 <pre>typedef void (*lua_Hook) (lua_State *L, lua_Debug *ar);</pre>
 
 <p>
-Type for debugging hook functions.
+用于调试的钩子函数类型。
 
 
 <p>
-Whenever a hook is called, its <code>ar</code> argument has its field
-<code>event</code> set to the specific event that triggered the hook.
-Lua identifies these events with the following constants:
-<a name="pdf-LUA_HOOKCALL"><code>LUA_HOOKCALL</code></a>, <a name="pdf-LUA_HOOKRET"><code>LUA_HOOKRET</code></a>,
-<a name="pdf-LUA_HOOKTAILCALL"><code>LUA_HOOKTAILCALL</code></a>, <a name="pdf-LUA_HOOKLINE"><code>LUA_HOOKLINE</code></a>,
-and <a name="pdf-LUA_HOOKCOUNT"><code>LUA_HOOKCOUNT</code></a>.
-Moreover, for line events, the field <code>currentline</code> is also set.
-To get the value of any other field in <code>ar</code>,
-the hook must call <a href="#lua_getinfo"><code>lua_getinfo</code></a>.
+无论何时钩子被调用，它的参数 <code>ar</code> 
+中的 <code>event</code> 域都被设为触发钩子的事件。
+Lua 把这些事件定义为以下常量：
+<a name="pdf-LUA_HOOKCALL"><code>LUA_HOOKCALL</code></a>，<a name="pdf-LUA_HOOKRET"><code>LUA_HOOKRET</code></a>，
+<a name="pdf-LUA_HOOKTAILCALL"><code>LUA_HOOKTAILCALL</code></a>，<a name="pdf-LUA_HOOKLINE"><code>LUA_HOOKLINE</code></a>，
+<a name="pdf-LUA_HOOKCOUNT"><code>LUA_HOOKCOUNT</code></a>。
+除此之外，对于 line 事件， <code>currentline</code> 域也被设置。
+要想获得 <code>ar</code> 中的其他域，
+钩子必须调用 <a href="#lua_getinfo"><code>lua_getinfo</code></a> 。
+
+<p>
+对于 call 事件，<code>event</code> 可以是 <code>LUA_HOOKCALL</code> 这个通常值，
+或是 <code>LUA_HOOKTAILCALL</code> 表示尾调用；
+后一种情况，没有对应的返回事件。
 
 
 <p>
-For call events, <code>event</code> can be <code>LUA_HOOKCALL</code>,
-the normal value, or <code>LUA_HOOKTAILCALL</code>, for a tail call;
-in this case, there will be no corresponding return event.
+当 Lua 运行在一个钩子内部时，
+它将屏蔽掉其它对钩子的调用。
+也就是说，如果一个钩子函数内再调回 Lua 来执行一个函数或是一个代码块 ，
+这个执行操作不会触发任何的钩子。
 
 
 <p>
-While Lua is running a hook, it disables other calls to hooks.
-Therefore, if a hook calls back Lua to execute a function or a chunk,
-this execution occurs without any calls to hooks.
-
-
-<p>
-Hook functions cannot have continuations,
-that is, they cannot call <a href="#lua_yieldk"><code>lua_yieldk</code></a>,
-<a href="#lua_pcallk"><code>lua_pcallk</code></a>, or <a href="#lua_callk"><code>lua_callk</code></a> with a non-null <code>k</code>.
-
+钩子函数不能有延续点，
+即不能用一个非空的 <code>k</code> 调用
+<a href="#lua_yieldk"><code>lua_yieldk</code></a>，
+<a href="#lua_pcallk"><code>lua_pcallk</code></a>，或 <a href="#lua_callk"><code>lua_callk</code></a>。
 
 <p>
-Hook functions can yield under the following conditions:
-Only count and line events can yield
-and they cannot yield any value;
-to yield a hook function must finish its execution
-calling <a href="#lua_yield"><code>lua_yield</code></a> with <code>nresults</code> equal to zero.
-
-
+钩子函数可以在满足下列条件时让出：
+只有行计数事件可以让出，且不能在让出时传出任何值；
+从钩子里让出必须用 <a href="#lua_yield"><code>lua_yield</code></a>
+来结束钩子的运行，且 <code>nresults</code> 必须为零。
 
 
 
@@ -5143,50 +5113,49 @@ calling <a href="#lua_yield"><code>lua_yield</code></a> with <code>nresults</cod
 <pre>void lua_sethook (lua_State *L, lua_Hook f, int mask, int count);</pre>
 
 <p>
-Sets the debugging hook function.
+设置一个调试用钩子函数。
 
 
 <p>
-Argument <code>f</code> is the hook function.
-<code>mask</code> specifies on which events the hook will be called:
-it is formed by a bitwise or of the constants
-<a name="pdf-LUA_MASKCALL"><code>LUA_MASKCALL</code></a>,
-<a name="pdf-LUA_MASKRET"><code>LUA_MASKRET</code></a>,
-<a name="pdf-LUA_MASKLINE"><code>LUA_MASKLINE</code></a>,
-and <a name="pdf-LUA_MASKCOUNT"><code>LUA_MASKCOUNT</code></a>.
-The <code>count</code> argument is only meaningful when the mask
-includes <code>LUA_MASKCOUNT</code>.
-For each event, the hook is called as explained below:
+参数 <code>f</code> 是钩子函数。
+<code>mask</code> 指定在哪些事件时会调用：
+它由下列一组位常量构成
+<a name="pdf-LUA_MASKCALL"><code>LUA_MASKCALL</code></a>，
+<a name="pdf-LUA_MASKRET"><code>LUA_MASKRET</code></a>，
+<a name="pdf-LUA_MASKLINE"><code>LUA_MASKLINE</code></a>，
+<a name="pdf-LUA_MASKCOUNT"><code>LUA_MASKCOUNT</code></a>。
+参数 <code>count</code> 只在掩码中中包含有 <code>LUA_MASKCOUNT</code> 才有意义。
+对于每个事件，钩子被调用的情况解释如下：
 
 <ul>
 
-<li><b>The call hook: </b> is called when the interpreter calls a function.
-The hook is called just after Lua enters the new function,
-before the function gets its arguments.
+<li><b>call hook: </b>
+在解释器调用一个函数时被调用。
+钩子将于 Lua 进入一个新函数后，
+函数获取参数前被调用。
 </li>
 
-<li><b>The return hook: </b> is called when the interpreter returns from a function.
-The hook is called just before Lua leaves the function.
-There is no standard way to access the values
-to be returned by the function.
+<li><b>return hook: </b>
+在解释器从一个函数中返回时调用。
+钩子将于 Lua 离开函数之前的那一刻被调用。
+没有标准方法来访问被函数返回的那些值。
 </li>
 
-<li><b>The line hook: </b> is called when the interpreter is about to
-start the execution of a new line of code,
-or when it jumps back in the code (even to the same line).
-(This event only happens while Lua is executing a Lua function.)
+<li><b>line hook: </b>
+在解释器准备开始执行新的一行代码时，
+或是跳转到这行代码中时（即使在同一行内跳转）被调用。
+（这个事件仅仅在 Lua 执行一个 Lua 函数时发生。）
 </li>
 
-<li><b>The count hook: </b> is called after the interpreter executes every
-<code>count</code> instructions.
-(This event only happens while Lua is executing a Lua function.)
+<li><b>count hook: </b>
+在解释器每执行 <code>count</code> 条指令后被调用。
+（这个事件仅仅在 Lua 执行一个 Lua 函数时发生。）
 </li>
 
 </ul>
 
 <p>
-A hook is disabled by setting <code>mask</code> to zero.
-
+钩子可以通过设置 <code>mask</code> 为零屏蔽。
 
 
 
@@ -5196,19 +5165,17 @@ A hook is disabled by setting <code>mask</code> to zero.
 <pre>const char *lua_setlocal (lua_State *L, const lua_Debug *ar, int n);</pre>
 
 <p>
-Sets the value of a local variable of a given activation record.
-Parameters <code>ar</code> and <code>n</code> are as in <a href="#lua_getlocal"><code>lua_getlocal</code></a>
-(see <a href="#lua_getlocal"><code>lua_getlocal</code></a>).
-<a href="#lua_setlocal"><code>lua_setlocal</code></a> assigns the value at the top of the stack
-to the variable and returns its name.
-It also pops the value from the stack.
+设置给定活动记录中的局部变量的值。
+参数 <code>ar</code> 与 <code>n</code> 和
+<a href="#lua_getlocal"><code>lua_getlocal</code></a> 中的一样 
+（参见 <a href="#lua_getlocal"><code>lua_getlocal</code></a> ）。
+<a href="#lua_setlocal"><code>lua_setlocal</code></a> 把栈顶的值赋给变量然后返回变量的名字。
+它会将值从栈顶弹出。
+
 
 
 <p>
-Returns <code>NULL</code> (and pops nothing)
-when the index is greater than
-the number of active local variables.
-
+当索引大于活动局部变量的数量时，返回 <code>NULL</code> （什么也不弹出）。
 
 
 
@@ -5218,18 +5185,15 @@ the number of active local variables.
 <pre>const char *lua_setupvalue (lua_State *L, int funcindex, int n);</pre>
 
 <p>
-Sets the value of a closure's upvalue.
-It assigns the value at the top of the stack
-to the upvalue and returns its name.
-It also pops the value from the stack.
-Parameters <code>funcindex</code> and <code>n</code> are as in the <a href="#lua_getupvalue"><code>lua_getupvalue</code></a>
-(see <a href="#lua_getupvalue"><code>lua_getupvalue</code></a>).
+设置闭包上值的值。
+它把栈顶的值弹出并赋于上值并返回上值的名字。
+参数 <code>funcindex</code> 与 <code>n</code> 和
+<a href="#lua_getupvalue"><code>lua_getupvalue</code></a> 中的一样
+（参见 <a href="#lua_getupvalue"><code>lua_getupvalue</code></a> ）。
 
 
 <p>
-Returns <code>NULL</code> (and pops nothing)
-when the index is greater than the number of upvalues.
-
+当索引大于上值的数量时，返回 <code>NULL</code> （什么也不弹出）。
 
 
 
@@ -5239,20 +5203,18 @@ when the index is greater than the number of upvalues.
 <pre>void *lua_upvalueid (lua_State *L, int funcindex, int n);</pre>
 
 <p>
-Returns a unique identifier for the upvalue numbered <code>n</code>
-from the closure at index <code>funcindex</code>.
-Parameters <code>funcindex</code> and <code>n</code> are as in the <a href="#lua_getupvalue"><code>lua_getupvalue</code></a>
-(see <a href="#lua_getupvalue"><code>lua_getupvalue</code></a>)
-(but <code>n</code> cannot be greater than the number of upvalues).
+返回索引 <code>funcindex</code> 处的闭包中
+编号为 <code>n</code> 的上值的一个唯一标识符。
+参数 <code>funcindex</code> 与 <code>n</code> 和
+<a href="#lua_getupvalue"><code>lua_getupvalue</code></a> 中的一样
+（参见 <a href="#lua_getupvalue"><code>lua_getupvalue</code></a> ）。
+（但 <code>n</code> 不可以大于上值的数量）。
 
 
 <p>
-These unique identifiers allow a program to check whether different
-closures share upvalues.
-Lua closures that share an upvalue
-(that is, that access a same external local variable)
-will return identical ids for those upvalue indices.
-
+这些唯一标识符可用于检测不同的闭包是否共享了相同的上值。
+共享同一个上值的 Lua 闭包（即它们指的同一个外部局部变量）
+会针对这个上值返回相同的标识。
 
 
 
@@ -5263,10 +5225,8 @@ will return identical ids for those upvalue indices.
                                     int funcindex2, int n2);</pre>
 
 <p>
-Make the <code>n1</code>-th upvalue of the Lua closure at index <code>funcindex1</code>
-refer to the <code>n2</code>-th upvalue of the Lua closure at index <code>funcindex2</code>.
-
-
+让索引 <code>funcindex1</code> 处的 Lua 闭包的第 <code>n1</code> 个上值
+引用索引 <code>funcindex2</code> 处的 Lua 闭包的第 <code>n2</code> 个上值。
 
 
 
