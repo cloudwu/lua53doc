@@ -4058,7 +4058,7 @@ Lua 对这个字符串做一个内部副本（或是复用一个副本），
 
 <p>
 把 <code>t[k]</code> 的值压栈，
-这里的 <code>t</code> 是指给定索引处的表，、
+这里的 <code>t</code> 是指给定索引处的表，
 <code>k</code> 是指针 <code>p</code> 对应的轻量用户数据。
 这是一次直接访问；就是说，它不会触发元方法。
 
@@ -4202,7 +4202,7 @@ Lua 对这个字符串做一个内部副本（或是复用一个副本），
 然后调用 <a href="#lua_resume"><code>lua_resume</code></a> ，
 把 <code>nargs</code> 设为参数的个数。
 这次调用会在协程挂起时或是结束运行后返回。
-当函数返回时，堆栈中会有传给 href="#lua_yield"><code>lua_yield</code></a> 的所有值，
+当函数返回时，堆栈中会有传给 <a href="#lua_yield"><code>lua_yield</code></a> 的所有值，
 或是主函数的所有返回值。
 当协程让出， <a href="#lua_resume"><code>lua_resume</code></a>
 返回 <a href="#pdf-LUA_YIELD"><code>LUA_YIELD</code></a> ，
@@ -4761,7 +4761,7 @@ Lua 会使协程让出，一旦协程再次被延续，
 <p>
 Lua 没有内置的调试机制。
 但是它提供了一组特殊的函数接口以及 <em>钩子</em>。
-这组接口可用于构件出不同的调试器、性能剖析器、
+这组接口可用于构建出不同的调试器、性能剖析器、
 或是其它需要从解释器获取“内部信息”的工具。
 
 
@@ -5007,9 +5007,6 @@ Lua 没有内置的调试机制。
 对于这种情况，只有 Lua 函数的形参是可见的
 （没有关于还有哪些活动变量的信息）
 也不会有任何值压栈。
-In this case, only parameters of Lua functions are visible
-(as there is no information about what variables are active)
-and no values are pushed onto the stack.
 
 
 <p>
@@ -5124,7 +5121,7 @@ Lua 把这些事件定义为以下常量：
 <a name="pdf-LUA_MASKRET"><code>LUA_MASKRET</code></a>，
 <a name="pdf-LUA_MASKLINE"><code>LUA_MASKLINE</code></a>，
 <a name="pdf-LUA_MASKCOUNT"><code>LUA_MASKCOUNT</code></a>。
-参数 <code>count</code> 只在掩码中中包含有 <code>LUA_MASKCOUNT</code> 才有意义。
+参数 <code>count</code> 只在掩码中包含有 <code>LUA_MASKCOUNT</code> 才有意义。
 对于每个事件，钩子被调用的情况解释如下：
 
 <ul>
