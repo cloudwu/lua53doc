@@ -6462,12 +6462,12 @@ Lua 使用的准确字节数（除非溢出）。
 <hr><h3><a name="pdf-error"><code>error (message [, level])</code></a></h3>
 中止上一次保护函数调用，
 将错误对象 <code>message</code> 返回。
-返回 <code>error</code> 永远不会返回。
+函数 <code>error</code> 永远不会返回。
 
 
 <p>
 当 message 是一个字符串时，通常 <code>error</code> 会把一些有关出错位置的信息附加在消息的前头。
-<code>level</code> 参数知名了怎样获得出错位置。
+<code>level</code> 参数指明了怎样获得出错位置。
 对于 level 1 （默认值），出错位置指 <code>error</code> 函数调用的位置。
 Level 2 将出错位置指向调用 <code>error</code>的函数的函数；以此类推。
 传入 level 0 可以避免在消息前添加出错位置信息。
@@ -6585,7 +6585,7 @@ Lua 不会对二进制代码块做健壮性检查。
 运行程序来遍历表中的所有域。
 第一个参数是要遍历的表，第二个参数是表中的某个键。
 <code>next</code> 返回该键的下一个键及其关联的值。
-如果用 <b>nil</b> 作为第二个参俗话调用 <code>next</code>
+如果用 <b>nil</b> 作为第二个参数调用 <code>next</code>
 将返回初始键及其关联值。
 当以最后一个键去调用，或是以 <b>nil</b> 调用一张空表时，
 <code>next</code> 返回 <b>nil</b>。
@@ -6664,7 +6664,7 @@ Lua 不会对二进制代码块做健壮性检查。
 <hr><h3><a name="pdf-rawequal"><code>rawequal (v1, v2)</code></a></h3>
 在不触发任何元方法的情况下
 检查 <code>v1</code> 是否和 <code>v2</code> 相等。
-返回一个布尔两。
+返回一个布尔量。
 
 
 
@@ -7054,7 +7054,7 @@ Lua 用和初始化 Lua 路径 <a href="#pdf-package.path"><code>package.path</c
 
 
 <p>
-让数组程序动态链接 C 库 <code>libname</code> 。
+让宿主程序动态链接 C 库 <code>libname</code> 。
 
 
 <p>
