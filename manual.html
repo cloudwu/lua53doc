@@ -5536,7 +5536,7 @@ Lua 把这些事件定义为以下常量：
 （比如是零结尾的字符串数组）
 中查找这个字符串。
 返回匹配到的字符串在数组中的索引号。
-如果参数不是字符串，或是字符串在数组中匹配到到，都将抛出错误。
+如果参数不是字符串，或是字符串在数组中匹配不到，都将抛出错误。
 
 
 <p>
@@ -6185,7 +6185,7 @@ Lua 把这些事件定义为以下常量：
 文件句柄实现为一个完全用户数据，
 其元表被称为 <code>LUA_FILEHANDLE</code>
 （<code>LUA_FILEHANDLE</code> 是一个代表真正元表的名字的宏）。
-这张元表右标准输入输出库（参见 <a href="#luaL_newmetatable"><code>luaL_newmetatable</code></a>）创建。
+这张元表由标准输入输出库（参见 <a href="#luaL_newmetatable"><code>luaL_newmetatable</code></a>）创建。
 
 
 <p>
@@ -6227,7 +6227,7 @@ Lua 把这些事件定义为以下常量：
 
 
 <p>
-如果该值有一个带 <code>"__tostring"</code> 域的原表，
+如果该值有一个带 <code>"__tostring"</code> 域的元表，
 <code>luaL_tolstring</code> 会以该值为参数去调用对应的元方法，
 并将其返回值作为结果。
 
