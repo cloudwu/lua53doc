@@ -7230,59 +7230,51 @@ Lua 用四个查找器函数初始化这张表。
 
 
 
-<h2>6.4 &ndash; <a name="6.4">String Manipulation</a></h2>
+<h2>6.4 &ndash; <a name="6.4">字符串处理</a></h2>
 
 <p>
-This library provides generic functions for string manipulation,
-such as finding and extracting substrings, and pattern matching.
-When indexing a string in Lua, the first character is at position&nbsp;1
-(not at&nbsp;0, as in C).
-Indices are allowed to be negative and are interpreted as indexing backwards,
-from the end of the string.
-Thus, the last character is at position -1, and so on.
+这个库提供了字符串处理的通用函数。
+例如字符串查找、子串、模式匹配等。
+当在 Lua 中对字符串做索引时，第一个字符从 1 开始计算（而不是 C 里的 0 ）。
+索引可以是负数，它指从字符串末尾反向解析。
+即，最后一个字符在 -1 位置处，等等。
 
 
 <p>
-The string library provides all its functions inside the table
-<a name="pdf-string"><code>string</code></a>.
-It also sets a metatable for strings
-where the <code>__index</code> field points to the <code>string</code> table.
-Therefore, you can use the string functions in object-oriented style.
-For instance, <code>string.byte(s,i)</code>
-can be written as <code>s:byte(i)</code>.
+字符串库中的所有函数都在表 <a name="pdf-string"><code>string</code></a> 中。
+它还将其设置为字符串元表的 <code>__index</code> 域。
+因此，你可以以面向对象的形式使用字符串函数。
+例如，<code>string.byte(s,i)</code> 可以写成 <code>s:byte(i)</code>。
 
 
 <p>
-The string library assumes one-byte character encodings.
+字符串库假定采用单字节字符编码。
 
 
 <p>
 <hr><h3><a name="pdf-string.byte"><code>string.byte (s [, i [, j]])</code></a></h3>
-Returns the internal numerical codes of the characters <code>s[i]</code>,
-<code>s[i+1]</code>, ..., <code>s[j]</code>.
-The default value for <code>i</code> is&nbsp;1;
-the default value for <code>j</code> is&nbsp;<code>i</code>.
-These indices are corrected
-following the same rules of function <a href="#pdf-string.sub"><code>string.sub</code></a>.
+返回字符 <code>s[i]</code>，
+<code>s[i+1]</code>， ...　，<code>s[j]</code>
+的内部数字编码。
+<code>i</code> 的默认值是 1 ；
+<code>j</code> 的默认值是 <code>i</code>。
+这些索引以函数 <a href="#pdf-string.sub"><code>string.sub</code></a> 的规则修正。
 
 
 <p>
-Numerical codes are not necessarily portable across platforms.
+数字编码没有必要跨平台。
 
 
 
 
 <p>
 <hr><h3><a name="pdf-string.char"><code>string.char (&middot;&middot;&middot;)</code></a></h3>
-Receives zero or more integers.
-Returns a string with length equal to the number of arguments,
-in which each character has the internal numerical code equal
-to its corresponding argument.
-
+接收零或更多的整数。
+返回和参数数量相同长度的字符串。
+其中每个字符的内部编码值等于对应的参数值。
 
 <p>
-Numerical codes are not necessarily portable across platforms.
-
+数字编码没有必要跨平台。
 
 
 
@@ -7291,25 +7283,18 @@ Numerical codes are not necessarily portable across platforms.
 
 
 <p>
-Returns a string containing a binary representation
-(a <em>binary chunk</em>)
-of the given function,
-so that a later <a href="#pdf-load"><code>load</code></a> on this string returns
-a copy of the function (but with new upvalues).
-If <code>strip</code> is a true value,
-the binary representation is created without debug information
-about the function
-(local variable names, lines, etc.).
+返回包含有以二进制方式表示的（一个 <em>二进制代码块</em> ）指定函数的字符串。
+之后可以用 <a href="#pdf-load"><code>load</code></a> 调用这个字符串获得
+该函数的副本（但是绑定新的上值）。
+如果　<code>strip</code> 为真值，
+二进制代码块不携带该函数的调试信息
+（局部变量名，行号，等等。）。
 
 
 <p>
-Functions with upvalues have only their number of upvalues saved.
-When (re)loaded,
-those upvalues receive fresh instances containing <b>nil</b>.
-(You can use the debug library to serialize
-and reload the upvalues of a function
-in a way adequate to your needs.)
-
+带上值的函数只保存上值的数目。
+当（再次）加载时，这些上值被更新为 <b>nil</b> 的实例。
+（你可以使用调试库按你需要的方式来序列化上值，并重载到函数中）
 
 
 
@@ -7318,27 +7303,23 @@ in a way adequate to your needs.)
 
 
 <p>
-Looks for the first match of
-<code>pattern</code> (see <a href="#6.4.1">&sect;6.4.1</a>) in the string <code>s</code>.
-If it finds a match, then <code>find</code> returns the indices of&nbsp;<code>s</code>
-where this occurrence starts and ends;
-otherwise, it returns <b>nil</b>.
-A third, optional numerical argument <code>init</code> specifies
-where to start the search;
-its default value is&nbsp;1 and can be negative.
-A value of <b>true</b> as a fourth, optional argument <code>plain</code>
-turns off the pattern matching facilities,
-so the function does a plain "find substring" operation,
-with no characters in <code>pattern</code> being considered magic.
-Note that if <code>plain</code> is given, then <code>init</code> must be given as well.
+查找第一个字符串 <code>s</code> 中匹配到的 <code>pattern</code>
+（参见 <a href="#6.4.1">&sect;6.4.1</a>）。
+如果找到一个匹配，<code>find</code> 会返回 <code>s</code>
+中关于它起始及终点位置的索引；
+否则，返回 <b>nil</b>。
+第三个可选数字参数 <code>init</code>
+指明才哪里开始搜索；
+默认值为 1 ，同时可以是负值。
+第四个可选参数 <code>plain</code> 为 <b>true</b> 时，
+关闭模式匹配机制。
+此时函数仅做直接的 “查找子串”的操作，
+而 <code>pattern</code> 中没有字符被看作魔法字符。
+注意，如果给定了 <code>plain</code>　，就必须写上 <code>init</code> 。
 
 
 <p>
-If the pattern has captures,
-then in a successful match
-the captured values are also returned,
-after the two indices.
-
+如果匹配到一个模式，匹配到的字符串也会在两个索引之后返回。
 
 
 
@@ -7347,22 +7328,21 @@ after the two indices.
 
 
 <p>
-Returns a formatted version of its variable number of arguments
-following the description given in its first argument (which must be a string).
-The format string follows the same rules as the ISO&nbsp;C function <code>sprintf</code>.
-The only differences are that the options/modifiers
+返回不定数量参数的格式化版本，
+格式化串为第一个参数（必须是一个字符串）。
+格式化字符串遵循 ISO C 函数 <code>sprintf</code> 的规则。
+不同点在于选项
 <code>*</code>, <code>h</code>, <code>L</code>, <code>l</code>, <code>n</code>,
-and <code>p</code> are not supported
-and that there is an extra option, <code>q</code>.
-The <code>q</code> option formats a string between double quotes,
-using escape sequences when necessary to ensure that
-it can safely be read back by the Lua interpreter.
-For instance, the call
+<code>p</code> 不支持，
+另外还增加了一个选项 <code>q</code>。
+<code>q</code> 选项将一个字符串格式化为两个双引号括起，对内部字符做恰当的转义处理的字符串。
+该字符串可以安全的被 Lua 解释器读回来。
+例如，调用
 
 <pre>
      string.format('%q', 'a string with "quotes" and \n new line')
 </pre><p>
-may produce the string:
+会产生字符串：
 
 <pre>
      "a string with \"quotes\" and \
@@ -7370,35 +7350,33 @@ may produce the string:
 </pre>
 
 <p>
-Options
-<code>A</code> and <code>a</code> (when available),
+选项
+<code>A</code> and <code>a</code> （如果有的话），
 <code>E</code>, <code>e</code>, <code>f</code>,
-<code>G</code>, and <code>g</code> all expect a number as argument.
-Options <code>c</code>, <code>d</code>,
+<code>G</code>, and <code>g</code> 都期待一个对应的数字参数。
+选项 <code>c</code>, <code>d</code>,
 <code>i</code>, <code>o</code>, <code>u</code>, <code>X</code>, and <code>x</code>
-expect an integer.
-Option <code>q</code> expects a string;
-option <code>s</code> expects a string without embedded zeros.
-If the argument to option <code>s</code> is not a string,
-it is converted to one following the same rules of <a href="#pdf-tostring"><code>tostring</code></a>.
-
+则期待一个整数。
+选项 <code>q</code> 期待一个字符串；
+选项 <code>s</code> 期待一个没有内嵌零的字符串。
+如果选项 <code>s</code> 对应的参数不是字符串，它会用和
+<a href="#pdf-tostring"><code>tostring</code></a> 一致的规则转换成字符串。
 
 
 
 <p>
 <hr><h3><a name="pdf-string.gmatch"><code>string.gmatch (s, pattern)</code></a></h3>
-Returns an iterator function that,
-each time it is called,
-returns the next captures from <code>pattern</code> (see <a href="#6.4.1">&sect;6.4.1</a>)
-over the string <code>s</code>.
-If <code>pattern</code> specifies no captures,
-then the whole match is produced in each call.
+返回一个迭代器函数。
+每次调用这个函数都会返回
+<code>s</code> 中以 <code>pattern</code> 得到的下一处捕获串
+（参见　<a href="#6.4.1">&sect;6.4.1</a>）里需要匹配的部分。
+如果 <code>pattern</code> 没有指定需要匹配的部分，
+则每次都匹配整个 <code>pattern</code>。
 
 
 <p>
-As an example, the following loop
-will iterate over all the words from string <code>s</code>,
-printing one per line:
+下面这个例子会循环迭代字符串 <code>s</code> 中所有的单词，
+并逐行打印：
 
 <pre>
      s = "hello world from Lua"
@@ -7406,8 +7384,9 @@ printing one per line:
        print(w)
      end
 </pre><p>
-The next example collects all pairs <code>key=value</code> from the
-given string into a table:
+下一个例子从制定的字符串中收集所有的键值对
+<code>key=value</code>
+置入一张表：
 
 <pre>
      t = {}
@@ -7418,62 +7397,51 @@ given string into a table:
 </pre>
 
 <p>
-For this function, a caret '<code>^</code>' at the start of a pattern does not
-work as an anchor, as this would prevent the iteration.
-
+对这个函数来说，在模板前放一个 '<code>^</code>' 不会按锚点形式使用。因为它会破坏迭代。
 
 
 
 <p>
 <hr><h3><a name="pdf-string.gsub"><code>string.gsub (s, pattern, repl [, n])</code></a></h3>
-Returns a copy of <code>s</code>
-in which all (or the first <code>n</code>, if given)
-occurrences of the <code>pattern</code> (see <a href="#6.4.1">&sect;6.4.1</a>) have been
-replaced by a replacement string specified by <code>repl</code>,
-which can be a string, a table, or a function.
-<code>gsub</code> also returns, as its second value,
-the total number of matches that occurred.
-The name <code>gsub</code> comes from <em>Global SUBstitution</em>.
+将字符串 <code>s</code> 中，所有的（或是在 <code>n</code> 给出时的前 <code>n</code> 个）
+<code>pattern</code> （参见
+ <a href="#6.4.1">&sect;6.4.1</a>）都替换成 <code>repl</code> ，并返回其副本。
+<code>repl</code> 可以是字符串、表、或函数。
+<code>gsub</code> 还会在第二个返回值返回一共发生了多少次匹配。
+<code>gsub</code> 这个名字来源于 <em>Global SUBstitution</em> 。
 
 
 <p>
-If <code>repl</code> is a string, then its value is used for replacement.
-The character&nbsp;<code>%</code> works as an escape character:
-any sequence in <code>repl</code> of the form <code>%<em>d</em></code>,
-with <em>d</em> between 1 and 9,
-stands for the value of the <em>d</em>-th captured substring.
-The sequence <code>%0</code> stands for the whole match.
-The sequence <code>%%</code> stands for a single&nbsp;<code>%</code>.
+如果 <code>repl</code> 是一个字符串，那么把这个字符串作为替换品。
+字符 <code>%</code> 是一个转义符：
+<code>repl</code> 中的所有形式为 <code>%<em>d</em></code> 的串表示
+第 <em>d</em> 个捕获到的子串，<em>d</em> 可以是 1 到 9 。
+串 <code>%0</code> 表示整个匹配。
+串 <code>%%</code> 表示单个 <code>%</code>。
 
 
 <p>
-If <code>repl</code> is a table, then the table is queried for every match,
-using the first capture as the key.
+如果 <code>repl</code> 是张表，每次匹配时都会用第一个捕获串作为键去查这张表。
 
 
 <p>
-If <code>repl</code> is a function, then this function is called every time a
-match occurs, with all captured substrings passed as arguments,
-in order.
+如果 <code>repl</code> 是个函数，则在每次匹配发生时都会调用这个函数。
+所有捕获到的子串依次作为传输传入。
 
 
 <p>
-In any case,
-if the pattern specifies no captures,
-then it behaves as if the whole pattern was inside a capture.
+任何情况下，模板中没有指定捕获区都看成是捕获整个模板。
 
 
 <p>
-If the value returned by the table query or by the function call
-is a string or a number,
-then it is used as the replacement string;
-otherwise, if it is <b>false</b> or <b>nil</b>,
-then there is no replacement
-(that is, the original match is kept in the string).
+如果表的查询结果或函数的返回结果是一个字符串或是个数字，
+都将其作为替换用串；
+否则在返回 <b>false</b> 或 <b>nil</b>　时不作替换
+（即保留匹配前的原始串）。
 
 
 <p>
-Here are some examples:
+这里有一些用例：
 
 <pre>
      x = string.gsub("hello world", "(%w+)", "%1 %1")
@@ -7502,37 +7470,34 @@ Here are some examples:
 
 <p>
 <hr><h3><a name="pdf-string.len"><code>string.len (s)</code></a></h3>
-Receives a string and returns its length.
-The empty string <code>""</code> has length 0.
-Embedded zeros are counted,
-so <code>"a\000bc\000"</code> has length 5.
+接收一个字符串，返回其长度。
+空串 <code>""</code> 的长度为 0 。
+内嵌零也统计在内，因此
+<code>"a\000bc\000"</code> 的长度为 5 。
 
 
 
 
 <p>
 <hr><h3><a name="pdf-string.lower"><code>string.lower (s)</code></a></h3>
-Receives a string and returns a copy of this string with all
-uppercase letters changed to lowercase.
-All other characters are left unchanged.
-The definition of what an uppercase letter is depends on the current locale.
-
+接收一个字符串，将其中的大写字符都转为小写后返回其副本。
+其它的字符串不会更改。
+对大写字符的定义取决于当前的区域设置。
 
 
 
 <p>
 <hr><h3><a name="pdf-string.match"><code>string.match (s, pattern [, init])</code></a></h3>
-Looks for the first <em>match</em> of
-<code>pattern</code> (see <a href="#6.4.1">&sect;6.4.1</a>) in the string <code>s</code>.
-If it finds one, then <code>match</code> returns
-the captures from the pattern;
-otherwise it returns <b>nil</b>.
-If <code>pattern</code> specifies no captures,
-then the whole match is returned.
-A third, optional numerical argument <code>init</code> specifies
-where to start the search;
-its default value is&nbsp;1 and can be negative.
-
+用 <code>pattern</code>
+（参见 <a href="#6.4.1">&sect;6.4.1</a>) in the string <code>s</code>）
+查找第一个 <em>匹配</em> 。
+如果能找到一个，<code>match</code> 返回模板中捕获到的部分；
+否则返回 <b>nil</b> 。
+如果 <code>pattern</code> 中未指定捕获区，
+返回整个 <code>pattern</code> 捕获到的串。
+第三个可选数字参数 <code>init</code>
+指明从哪里开始搜索；
+它默认为 1 且可以是负数。
 
 
 
@@ -7541,9 +7506,8 @@ its default value is&nbsp;1 and can be negative.
 
 
 <p>
-Returns a binary string containing the values <code>v1</code>, <code>v2</code>, etc.
-packed (that is, serialized in binary form)
-according to the format string <code>fmt</code> (see <a href="#6.4.2">&sect;6.4.2</a>). 
+返回一个打包了（即以二进制形式序列化） <code>v1</code>, <code>v2</code> 等值的二进制字符串。
+字符串 <code>fmt</code> 为打包格式（参见 <a href="#6.4.2">&sect;6.4.2</a>）。
 
 
 
@@ -7553,56 +7517,49 @@ according to the format string <code>fmt</code> (see <a href="#6.4.2">&sect;6.4.
 
 
 <p>
-Returns the size of a string resulting from <a href="#pdf-string.pack"><code>string.pack</code></a>
-with the given format.
-The format string cannot have the variable-length options
-'<code>s</code>' or '<code>z</code>' (see <a href="#6.4.2">&sect;6.4.2</a>).
+返回以指定格式用 <a href="#pdf-string.pack"><code>string.pack</code></a>
+打包的字符串的长度。
+格式化字符串中不可以有变长选项 '<code>s</code>' 或 '<code>z</code>'
+（参见 <a href="#6.4.2">&sect;6.4.2</a>）。
 
 
 
 
 <p>
 <hr><h3><a name="pdf-string.rep"><code>string.rep (s, n [, sep])</code></a></h3>
-Returns a string that is the concatenation of <code>n</code> copies of
-the string <code>s</code> separated by the string <code>sep</code>.
-The default value for <code>sep</code> is the empty string
-(that is, no separator).
-Returns the empty string if <code>n</code> is not positive.
-
+返回 <code>n</code> 个字符串 <code>s</code> 以字符串 <code>sep</code>
+为分割符连在一起的字符串。
+默认的 <code>sep</code> 值为空字符串（即没有分割符）。
+如果 <code>n</code> 不是正数则返回空串。
 
 
 
 <p>
 <hr><h3><a name="pdf-string.reverse"><code>string.reverse (s)</code></a></h3>
-Returns a string that is the string <code>s</code> reversed.
+返回字符串 <code>s</code> 的翻转串。
 
 
 
 
 <p>
 <hr><h3><a name="pdf-string.sub"><code>string.sub (s, i [, j])</code></a></h3>
-Returns the substring of <code>s</code> that
-starts at <code>i</code>  and continues until <code>j</code>;
-<code>i</code> and <code>j</code> can be negative.
-If <code>j</code> is absent, then it is assumed to be equal to -1
-(which is the same as the string length).
-In particular,
-the call <code>string.sub(s,1,j)</code> returns a prefix of <code>s</code>
-with length <code>j</code>,
-and <code>string.sub(s, -i)</code> returns a suffix of <code>s</code>
-with length <code>i</code>.
+返回 <code>s</code> 的子串，
+该子串从 <code>i</code> 开始到 <code>j</code> 为止；
+<code>i</code> 和 <code>j</code> 都可以为负数。
+如果不给出 <code>j</code> ，就当它是 -1 
+（和字符串长度相同）。
+特别是，
+调用 <code>string.sub(s,1,j)</code> 可以返回 <code>s</code>
+的长度为 <code>j</code> 的前缀串，
+而 <code>string.sub(s, -i)</code> 返回长度为 <code>i</code>
+的后缀串。
 
 
 <p>
-If, after the translation of negative indices,
-<code>i</code> is less than 1,
-it is corrected to 1.
-If <code>j</code> is greater than the string length,
-it is corrected to that length.
-If, after these corrections,
-<code>i</code> is greater than <code>j</code>,
-the function returns the empty string.
-
+如果在对负数索引转义后 <code>i</code> 小于 1 的话，就修正回 1 。
+如果 <code>j</code> 比字符串的长度还大，就修正为字符串长度。
+如果在修正之后，<code>i</code> 大于 <code>j</code>，
+函数返回空串。
 
 
 
@@ -7611,186 +7568,175 @@ the function returns the empty string.
 
 
 <p>
-Returns the values packed in string <code>s</code> (see <a href="#pdf-string.pack"><code>string.pack</code></a>)
-according to the format string <code>fmt</code> (see <a href="#6.4.2">&sect;6.4.2</a>).
-An optional <code>pos</code> marks where
-to start reading in <code>s</code> (default is 1).
-After the read values,
-this function also returns the index of the first unread byte in <code>s</code>.
-
+返回以格式 <code>fmt</code> （参见 <a href="#6.4.2">&sect;6.4.2</a>）
+打包在字符串 <code>s</code> （参见 <a href="#pdf-string.pack"><code>string.pack</code></a>）
+中的值。
+选项 <code>pos</code>（默认为 1 ）标记了从 <code>s</code>
+中哪里开始读起。
+读完所有的值后，函数返回 <code>s</code> 中第一个未读字节的位置。
 
 
 
 <p>
 <hr><h3><a name="pdf-string.upper"><code>string.upper (s)</code></a></h3>
-Receives a string and returns a copy of this string with all
-lowercase letters changed to uppercase.
-All other characters are left unchanged.
-The definition of what a lowercase letter is depends on the current locale.
+接收一个字符串，将其中的小写字符都转为大写后返回其副本。
+其它的字符串不会更改。
+对小写字符的定义取决于当前的区域设置。
 
 
 
 
-
-<h3>6.4.1 &ndash; <a name="6.4.1">Patterns</a></h3>
+<h3>6.4.1 &ndash; <a name="6.4.1">匹配模式</a></h3>
 
 <p>
-Patterns in Lua are described by regular strings,
-which are interpreted as patterns by the pattern-matching functions
+Lua 中的匹配模式直接用常规的字符串来描述。
+它用于模式匹配函数
 <a href="#pdf-string.find"><code>string.find</code></a>,
 <a href="#pdf-string.gmatch"><code>string.gmatch</code></a>,
 <a href="#pdf-string.gsub"><code>string.gsub</code></a>,
-and <a href="#pdf-string.match"><code>string.match</code></a>.
-This section describes the syntax and the meaning
-(that is, what they match) of these strings.
+<a href="#pdf-string.match"><code>string.match</code></a>。
+这一节表述了这些字符串的语法及含义（即它能匹配到什么）。
 
 
 
-<h4>Character Class:</h4><p>
-A <em>character class</em> is used to represent a set of characters.
-The following combinations are allowed in describing a character class:
+<h4>字符类：</h4><p>
+<em>字符类</em> 用于表示一个字符集合。
+下列组合可用于字符类：
 
 <ul>
 
 <li><b><em>x</em>: </b>
-(where <em>x</em> is not one of the <em>magic characters</em>
-<code>^$()%.[]*+-?</code>)
-represents the character <em>x</em> itself.
+（这里 <em>x</em> 不能是 <em>魔法字符</em> <code>^$()%.[]*+-?</code> 中的一元）
+表示字符 <em>x</em> 自身。
 </li>
 
-<li><b><code>.</code>: </b> (a dot) represents all characters.</li>
+<li><b><code>.</code>: </b> （一个点）可表示任何字符。</li>
 
-<li><b><code>%a</code>: </b> represents all letters.</li>
+<li><b><code>%a</code>: </b> 表示任何字母。</li>
 
-<li><b><code>%c</code>: </b> represents all control characters.</li>
+<li><b><code>%c</code>: </b> 表示任何控制字符。</li>
 
-<li><b><code>%d</code>: </b> represents all digits.</li>
+<li><b><code>%d</code>: </b> 表示任何数字。</li>
 
-<li><b><code>%g</code>: </b> represents all printable characters except space.</li>
+<li><b><code>%g</code>: </b> 表示任何处空白符外的任何可打印字符。</li>
 
-<li><b><code>%l</code>: </b> represents all lowercase letters.</li>
+<li><b><code>%l</code>: </b> 表示所有小写字母。</li>
 
-<li><b><code>%p</code>: </b> represents all punctuation characters.</li>
+<li><b><code>%p</code>: </b> 表示所有标点符号。</li>
 
-<li><b><code>%s</code>: </b> represents all space characters.</li>
+<li><b><code>%s</code>: </b> 表示所有空白字符。</li>
 
-<li><b><code>%u</code>: </b> represents all uppercase letters.</li>
+<li><b><code>%u</code>: </b> 表示所有大写字母。</li>
 
-<li><b><code>%w</code>: </b> represents all alphanumeric characters.</li>
+<li><b><code>%w</code>: </b> 表示所有字母及数字。</li>
 
-<li><b><code>%x</code>: </b> represents all hexadecimal digits.</li>
+<li><b><code>%x</code>: </b> 表示所有 16 进制符号。</li>
 
-<li><b><code>%<em>x</em></code>: </b> (where <em>x</em> is any non-alphanumeric character)
-represents the character <em>x</em>.
-This is the standard way to escape the magic characters.
-Any non-alphanumeric character
-(including all punctuations, even the non-magical)
-can be preceded by a '<code>%</code>'
-when used to represent itself in a pattern.
+<li><b><code>%<em>x</em></code>: </b> 
+（这里的 <em>x</em> 是任意非字母或数字的字符）
+表示字符 <em>x</em>。
+这是对魔法字符转义的标准方法。
+所有非字母或数字的字符
+（包括所有标点，也包括非魔法字符）
+都可以用前置一个 '<code>%</code>' 放在模式串中表示自身。
 </li>
 
 <li><b><code>[<em>set</em>]</code>: </b>
-represents the class which is the union of all
-characters in <em>set</em>.
-A range of characters can be specified by
-separating the end characters of the range,
-in ascending order, with a '<code>-</code>'.
-All classes <code>%</code><em>x</em> described above can also be used as
-components in <em>set</em>.
-All other characters in <em>set</em> represent themselves.
-For example, <code>[%w_]</code> (or <code>[_%w]</code>)
-represents all alphanumeric characters plus the underscore,
-<code>[0-7]</code> represents the octal digits,
-and <code>[0-7%l%-]</code> represents the octal digits plus
-the lowercase letters plus the '<code>-</code>' character.
+表示 <em>set</em>　中所有字符的联合。
+可以以 '<code>-</code>' 连接，正序书写两端的字符来表示一个范围的字符集。
+上面提到的 <code>%</code><em>x</em> 形式也可以在 <em>set</em> 中使用
+表示其中的一个元素。
+其它出现在 <em>set</em> 中的字符代表它们自己。
+例如，<code>[%w_]</code> （或 <code>[_%w]</code>）
+表示所有的字母数字加下划线），
+<code>[0-7]</code> 表示 8 进制数字，
+<code>[0-7%l%-]</code>　表示 8 进制数字加小写字母加 '<code>-</code>' 字符。
 
 
 <p>
-The interaction between ranges and classes is not defined.
-Therefore, patterns like <code>[%a-z]</code> or <code>[a-%%]</code>
-have no meaning.
+交叉使用类和范围的行为未定义。
+因此，像 <code>[%a-z]</code> 或 <code>[a-%%]</code>
+这样的模式串没有意义。
 </li>
 
 <li><b><code>[^<em>set</em>]</code>: </b>
-represents the complement of <em>set</em>,
-where <em>set</em> is interpreted as above.
+表示 <em>set</em> 的补集，
+其中 <em>set</em> 如上面的解释。
 </li>
 
 </ul><p>
-For all classes represented by single letters (<code>%a</code>, <code>%c</code>, etc.),
-the corresponding uppercase letter represents the complement of the class.
-For instance, <code>%S</code> represents all non-space characters.
+所有单个字母表示的类别（<code>%a</code>，<code>%c</code>，等），
+若将其字母改为大写，均表示对应的补集。
+例如，<code>%S</code> 表示所有非空格的字符。
 
 
 <p>
-The definitions of letter, space, and other character groups
-depend on the current locale.
-In particular, the class <code>[a-z]</code> may not be equivalent to <code>%l</code>.
+如何定义字母、空格、或是其他字符组取决于当前的区域设置。
+特别注意：<code>[a-z]</code>　未必等价于 <code>%l</code> 。
 
 
 
 
-
-<h4>Pattern Item:</h4><p>
-A <em>pattern item</em> can be
+<h4>模式条目：</h4><p>
+<em>模式条目</em> 可以是
 
 <ul>
 
 <li>
-a single character class,
-which matches any single character in the class;
+单个字符类匹配该类别中任意单个字符；
 </li>
 
 <li>
-a single character class followed by '<code>*</code>',
-which matches zero or more repetitions of characters in the class.
-These repetition items will always match the longest possible sequence;
+单个字符类跟一个 '<code>*</code>'，
+将匹配零或多个该类的字符。
+这个条目总是匹配尽可能长的串；
 </li>
 
 <li>
-a single character class followed by '<code>+</code>',
-which matches one or more repetitions of characters in the class.
-These repetition items will always match the longest possible sequence;
+单个字符类跟一个 '<code>+</code>'，
+将匹配一或更多个该类的字符。
+这个条目总是匹配尽可能长的串；
 </li>
 
 <li>
-a single character class followed by '<code>-</code>',
-which also matches zero or more repetitions of characters in the class.
-Unlike '<code>*</code>',
-these repetition items will always match the shortest possible sequence;
+单个字符类跟一个 '<code>-</code>'，
+将匹配零或更多个该类的字符。
+和 '<code>*</code> 不同，
+这个条目总是匹配尽可能短的串；
 </li>
 
 <li>
-a single character class followed by '<code>?</code>',
-which matches zero or one occurrence of a character in the class.
-It always matches one occurrence if possible;
+单个字符类跟一个 '<code>?</code>'，
+将匹配零或一个该类的字符。
+只要有可能，它会匹配一个；
 </li>
 
 <li>
-<code>%<em>n</em></code>, for <em>n</em> between 1 and 9;
-such item matches a substring equal to the <em>n</em>-th captured string
-(see below);
+<code>%<em>n</em></code>，
+这里的 <em>n</em> 可以从 1 到 9；
+这个条目匹配一个等于第 <em>n</em> 个到的字符串的子串。
+（后面有描述）；
 </li>
 
 <li>
-<code>%b<em>xy</em></code>, where <em>x</em> and <em>y</em> are two distinct characters;
-such item matches strings that start with&nbsp;<em>x</em>, end with&nbsp;<em>y</em>,
-and where the <em>x</em> and <em>y</em> are <em>balanced</em>.
-This means that, if one reads the string from left to right,
-counting <em>+1</em> for an <em>x</em> and <em>-1</em> for a <em>y</em>,
-the ending <em>y</em> is the first <em>y</em> where the count reaches 0.
-For instance, the item <code>%b()</code> matches expressions with
-balanced parentheses.
+<code>%b<em>xy</em></code>，
+这里的 <em>x</em> 和 <em>y</em> 是两个明确的字符；
+这个条目匹配以 <em>x</em> 开始 <em>y</em> 结束，
+且其中 <em>x</em> 和 <em>y</em> 保持 <em>平衡</em> 的字符串。
+意思是，如果从左到右读这个字符串，对每次读到一个
+<em>x</em> 就 <em>+1</em> ，读到一个 <em>y</em> 就 <em>y</em>，
+最终结束处的那个 <em>y</em> 是第一个记数到 0 的 <em>y</em>。
+举个例子，条目 <code>%b()</code> 可以匹配到括号平衡的表达式。
 </li>
 
 <li>
-<code>%f[<em>set</em>]</code>, a <em>frontier pattern</em>;
-such item matches an empty string at any position such that
-the next character belongs to <em>set</em>
-and the previous character does not belong to <em>set</em>.
-The set <em>set</em> is interpreted as previously described.
-The beginning and the end of the subject are handled as if
-they were the character '<code>\0</code>'.
+<code>%f[<em>set</em>]</code>，
+指 <em>边境模式</em>；
+这个条目会匹配到一个位于 <em>set</em> 内字符之前的一个空串，
+这个位置的前一个字符不属于 <em>set</em> 。
+集合 <em>set</em> 的含义如前面所述。
+匹配出的那个空串之开始和结束点的计算就当成该处有个字符
+'<code>\0</code>' 一样。
 </li>
 
 </ul>
@@ -7798,38 +7744,33 @@ they were the character '<code>\0</code>'.
 
 
 
-<h4>Pattern:</h4><p>
-A <em>pattern</em> is a sequence of pattern items.
-A caret '<code>^</code>' at the beginning of a pattern anchors the match at the
-beginning of the subject string.
-A '<code>$</code>' at the end of a pattern anchors the match at the
-end of the subject string.
-At other positions,
-'<code>^</code>' and '<code>$</code>' have no special meaning and represent themselves.
+<h4>模式：</h4><p>
+<em>模式</em> 指一个模式条目的序列。
+在模式最前面加上符号 '<code>^</code>' 将锚定从字符串的开始处做匹配。
+在模式最后面加上符号 '<code>$</code>' 将锚定匹配到字符串的结尾。
+在其它位置， '<code>^</code>' 和 '<code>$</code>' 均没有特殊函数，只表示它们自身。
 
 
 
 
 
-<h4>Captures:</h4><p>
-A pattern can contain sub-patterns enclosed in parentheses;
-they describe <em>captures</em>.
-When a match succeeds, the substrings of the subject string
-that match captures are stored (<em>captured</em>) for future use.
-Captures are numbered according to their left parentheses.
-For instance, in the pattern <code>"(a*(.)%w(%s*))"</code>,
-the part of the string matching <code>"a*(.)%w(%s*)"</code> is
-stored as the first capture (and therefore has number&nbsp;1);
-the character matching "<code>.</code>" is captured with number&nbsp;2,
-and the part matching "<code>%s*</code>" has number&nbsp;3.
+<h4>捕获：</h4><p>
+模式可以在内部用小括号括起一个子模式；
+这些子模式被称为 <em>捕获物</em>。
+当匹配成功时，由 <em>捕获物</em> 匹配到的字符串中的子串被保存起来用于未来的用途。
+捕获物以它们左括号的次序来编号。
+例如，对于模式 <code>"(a*(.)%w(%s*))"</code> ，
+字符串中匹配到 <code>"a*(.)%w(%s*)"</code> 的部分保存在第一个捕获物中
+（因此是数字 1 ）；
+由 "<code>.</code>" 匹配到的字符是 2 号捕获物，
+匹配到 "<code>%s*</code>" 的那部分是 3 号。
 
 
 <p>
-As a special case, the empty capture <code>()</code> captures
-the current string position (a number).
-For instance, if we apply the pattern <code>"()aa()"</code> on the
-string <code>"flaaap"</code>, there will be two captures: 3&nbsp;and&nbsp;5.
-
+作为一个特例，空的捕获 <code>()</code> 将捕获到当前字符串的位置（它是一个数字）。
+例如，如果将模式 <code>"()aa()"</code> 作用到字符串
+<code>"flaaap"</code> 上，将产生两个捕获物：
+3 和 5 。
 
 
 
