@@ -7773,89 +7773,78 @@ Lua 中的匹配模式直接用常规的字符串来描述。
 
 
 
-<h3>6.4.2 &ndash; <a name="6.4.2">Format Strings for Pack and Unpack</a></h3>
+<h3>6.4.2 &ndash; <a name="6.4.2">打包和解包用到的格式串</a></h3>
 
 <p>
-The first argument to <a href="#pdf-string.pack"><code>string.pack</code></a>,
-<a href="#pdf-string.packsize"><code>string.packsize</code></a>, and <a href="#pdf-string.unpack"><code>string.unpack</code></a>
-is a format string,
-which describes the layout of the structure being created or read.
+用于 <a href="#pdf-string.pack"><code>string.pack</code></a>，
+<a href="#pdf-string.packsize"><code>string.packsize</code></a>，
+<a href="#pdf-string.unpack"><code>string.unpack</code></a>
+的第一个参数。
+它是一个描述了需要创建或读取的结构之布局。
 
 
 <p>
-A format string is a sequence of conversion options.
-The conversion options are as follows:
+格式串是由转换选项构成的序列。
+这些转换选项列在后面：
 
 <ul>
-<li><b><code>&lt;</code>: </b>sets little endian</li>
-<li><b><code>&gt;</code>: </b>sets big endian</li>
-<li><b><code>=</code>: </b>sets native endian</li>
-<li><b><code>![<em>n</em>]</code>: </b>sets maximum alignment to <code>n</code>
-(default is native alignment)</li>
-<li><b><code>b</code>: </b>a signed byte (<code>char</code>)</li>
-<li><b><code>B</code>: </b>an unsigned byte (<code>char</code>)</li>
-<li><b><code>h</code>: </b>a signed <code>short</code> (native size)</li>
-<li><b><code>H</code>: </b>an unsigned <code>short</code> (native size)</li>
-<li><b><code>l</code>: </b>a signed <code>long</code> (native size)</li>
-<li><b><code>L</code>: </b>an unsigned <code>long</code> (native size)</li>
-<li><b><code>j</code>: </b>a <code>lua_Integer</code></li>
-<li><b><code>J</code>: </b>a <code>lua_Unsigned</code></li>
-<li><b><code>T</code>: </b>a <code>size_t</code> (native size)</li>
-<li><b><code>i[<em>n</em>]</code>: </b>a signed <code>int</code> with <code>n</code> bytes
-(default is native size)</li>
-<li><b><code>I[<em>n</em>]</code>: </b>an unsigned <code>int</code> with <code>n</code> bytes
-(default is native size)</li>
-<li><b><code>f</code>: </b>a <code>float</code> (native size)</li>
-<li><b><code>d</code>: </b>a <code>double</code> (native size)</li>
-<li><b><code>n</code>: </b>a <code>lua_Number</code></li>
-<li><b><code>c<em>n</em></code>: </b>a fixed-sized string with <code>n</code> bytes</li>
-<li><b><code>z</code>: </b>a zero-terminated string</li>
-<li><b><code>s[<em>n</em>]</code>: </b>a string preceded by its length
-coded as an unsigned integer with <code>n</code> bytes
-(default is a <code>size_t</code>)</li>
-<li><b><code>x</code>: </b>one byte of padding</li>
-<li><b><code>X<em>op</em></code>: </b>an empty item that aligns
-according to option <code>op</code>
-(which is otherwise ignored)</li>
-<li><b>'<code> </code>': </b>(empty space) ignored</li>
+<li><b><code>&lt;</code>: </b>设为小端编码</li>
+<li><b><code>&gt;</code>: </b>设为大端编码</li>
+<li><b><code>=</code>: </b>大小端遵循本地设置</li>
+<li><b><code>![<em>n</em>]</code>: </b>将最大对齐数设为 <code>n</code>
+（默认遵循本地对齐设置）</li>
+<li><b><code>b</code>: </b>一个有符号字节 (<code>char</code>)</li>
+<li><b><code>B</code>: </b>一个无符号字节 (<code>char</code>)</li>
+<li><b><code>h</code>: </b>一个有符号 <code>short</code> （本地大小）</li>
+<li><b><code>H</code>: </b>一个无符号 <code>short</code> （本地大小）</li>
+<li><b><code>l</code>: </b>一个有符号 <code>long</code> （本地大小）</li>
+<li><b><code>L</code>: </b>一个无符号 <code>long</code> （本地大小）</li>
+<li><b><code>j</code>: </b>一个 <code>lua_Integer</code></li>
+<li><b><code>J</code>: </b>一个 <code>lua_Unsigned</code></li>
+<li><b><code>T</code>: </b>一个 <code>size_t</code> （本地大小）</li>
+<li><b><code>i[<em>n</em>]</code>: </b>一个 <code>n</code> 字节长（默认为本地大小）的有符号 <code>int</code></li>
+<li><b><code>I[<em>n</em>]</code>: </b>一个 <code>n</code> 字节长（默认为本地大小）的无符号 <code>int</code></li>
+<li><b><code>f</code>: </b>一个 <code>float</code> （本地大小）</li>
+<li><b><code>d</code>: </b>一个 <code>double</code> （本地大小）</li>
+<li><b><code>n</code>: </b>一个 <code>lua_Number</code></li>
+<li><b><code>c<em>n</em></code>: </b><code>n</code>字节固定长度的字符串</li>
+<li><b><code>z</code>: </b>零结尾的字符串</li>
+<li><b><code>s[<em>n</em>]</code>: </b>长度加内容的字符串，其长度编码为一个 <code>n</code> 字节（默认是个 <code>size_t</code>） 长的无符号整数。</li>
+<li><b><code>x</code>: </b>一个字节的填充</li>
+<li><b><code>X<em>op</em></code>: </b>按选项 <code>op</code> 的方式对齐（忽略它的其它方面）的一个空条目</li>
+<li><b>'<code> </code>': </b>（空格）忽略</li>
 </ul><p>
-(A "<code>[<em>n</em>]</code>" means an optional integral numeral.)
-Except for padding, spaces, and configurations
-(options "<code>xX &lt;=&gt;!</code>"),
-each option corresponds to an argument (in <a href="#pdf-string.pack"><code>string.pack</code></a>)
-or a result (in <a href="#pdf-string.unpack"><code>string.unpack</code></a>).
+（ "<code>[<em>n</em>]</code>" 表示一个可选的整数。）
+除填充、空格、配置项（选项 "<code>xX &lt;=&gt;!</code>"）外，
+每个选项都关联一个参数（对于 <a href="#pdf-string.pack"><code>string.pack</code></a>）
+或结果（对于 <a href="#pdf-string.unpack"><code>string.unpack</code></a>）。
 
 
 <p>
-For options "<code>!<em>n</em></code>", "<code>s<em>n</em></code>", "<code>i<em>n</em></code>", and "<code>I<em>n</em></code>",
-<code>n</code> can be any integer between 1 and 16.
-All integral options check overflows;
-<a href="#pdf-string.pack"><code>string.pack</code></a> checks whether the given value fits in the given size;
-<a href="#pdf-string.unpack"><code>string.unpack</code></a> checks whether the read value fits in a Lua integer.
+对于选项 "<code>!<em>n</em></code>", "<code>s<em>n</em></code>", "<code>i<em>n</em></code>", "<code>I<em>n</em></code>",
+<code>n</code> 可以是 1 到 16 间的整数。
+所有的整数选项都将做溢出检查；
+<a href="#pdf-string.pack"><code>string.pack</code></a> 检查提供的值是否能用指定的字长表示；
+<a href="#pdf-string.unpack"><code>string.unpack</code></a> 检查读出的值能否置入 Lua 整数中。
 
 
 <p>
-Any format string starts as if prefixed by "<code>!1=</code>",
-that is,
-with maximum alignment of 1 (no alignment)
-and native endianness.
+任何格式串都假设有一个 "<code>!1=</code>" 前缀，
+即最大对齐为 1 （无对齐）且采用本地大小端设置。
 
 
 <p>
-Alignment works as follows:
-For each option,
-the format gets extra padding until the data starts
-at an offset that is a multiple of the minimum between the
-option size and the maximum alignment;
-this minimum must be a power of 2.
-Options "<code>c</code>" and "<code>z</code>" are not aligned;
-option "<code>s</code>" follows the alignment of its starting integer.
+对齐行为按如下规则工作：
+对每个选项，格式化时都会填充一些字节直到数据从一个特定偏移处开始，
+这个位置是该选项的大小和最大对齐数中较小的那个数的倍数；
+这个较小值必须是 2 个整数次方。
+选项 "<code>c</code>" 及 "<code>z</code>" 不做对齐处理；
+选项 "<code>s</code>" 对对齐遵循其开头的整数。
 
 
 <p>
-All padding is filled with zeros by <a href="#pdf-string.pack"><code>string.pack</code></a>
-(and ignored by <a href="#pdf-string.unpack"><code>string.unpack</code></a>).
-
+<a href="#pdf-string.pack"><code>string.pack</code></a> 用零去填充
+（<a href="#pdf-string.unpack"><code>string.unpack</code></a> 则忽略它）。
 
 
 
