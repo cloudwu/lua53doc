@@ -6927,14 +6927,13 @@ Lua 不会对二进制代码块做健壮性检查。
 
 
 
-<h2>6.3 &ndash; <a name="6.3">Modules</a></h2>
+<h2>6.3 &ndash; <a name="6.3">模块</a></h2>
 
 <p>
-The package library provides basic
-facilities for loading modules in Lua.
-It exports one function directly in the global environment:
-<a href="#pdf-require"><code>require</code></a>.
-Everything else is exported in a table <a name="pdf-package"><code>package</code></a>.
+包管理库提供了从 Lua 中加载模块的基础设施。
+只有一个导出函数直接放在全局环境中：
+<a href="#pdf-require"><code>require</code></a>。
+所有其它的部分都导出在表 <a name="pdf-package"><code>package</code></a> 中。
 
 
 <p>
@@ -6942,54 +6941,47 @@ Everything else is exported in a table <a name="pdf-package"><code>package</code
 
 
 <p>
-Loads the given module.
-The function starts by looking into the <a href="#pdf-package.loaded"><code>package.loaded</code></a> table
-to determine whether <code>modname</code> is already loaded.
-If it is, then <code>require</code> returns the value stored
-at <code>package.loaded[modname]</code>.
-Otherwise, it tries to find a <em>loader</em> for the module.
+加载一个模块。
+这个函数首先查找 <a href="#pdf-package.loaded"><code>package.loaded</code></a> 表，
+检测 <code>modname</code> 是否被加载过。
+如果被加载过，<code>require</code> 返回 <code>package.loaded[modname]</code> 中保存的值。
+否则，它试着为模块寻找 <em>加载器</em> 。
 
 
 <p>
-To find a loader,
-<code>require</code> is guided by the <a href="#pdf-package.searchers"><code>package.searchers</code></a> sequence.
-By changing this sequence,
-we can change how <code>require</code> looks for a module.
-The following explanation is based on the default configuration
-for <a href="#pdf-package.searchers"><code>package.searchers</code></a>.
+
+<code>require</code> 遵循 <a href="#pdf-package.searchers"><code>package.searchers</code></a> 序列的指引来查找加载器。
+如果改变这个序列，我们可以改变 <code>require</code> 如果查找一个模块。
+下列说明基于 <a href="#pdf-package.searchers"><code>package.searchers</code></a>
+的默认配置。
 
 
 <p>
-First <code>require</code> queries <code>package.preload[modname]</code>.
-If it has a value,
-this value (which must be a function) is the loader.
-Otherwise <code>require</code> searches for a Lua loader using the
-path stored in <a href="#pdf-package.path"><code>package.path</code></a>.
-If that also fails, it searches for a C&nbsp;loader using the
-path stored in <a href="#pdf-package.cpath"><code>package.cpath</code></a>.
-If that also fails,
-it tries an <em>all-in-one</em> loader (see <a href="#pdf-package.searchers"><code>package.searchers</code></a>).
+首先 <code>require</code> 查找 <code>package.preload[modname]</code> 。
+如果这里有一个值，这个值（必须是一个函数）就是那个加载器。
+否则 <code>require</code> 使用 Lua 加载器去查找
+<a href="#pdf-package.path"><code>package.path</code></a> 的路径。
+如果查找失败，接着使用 C 加载器去查找
+<a href="#pdf-package.cpath"><code>package.cpath</code></a> 的路径。
+如果都失败了，再尝试 <em>一体化</em> 加载器 （参见 <a href="#pdf-package.searchers"><code>package.searchers</code></a>）。
 
 
 <p>
-Once a loader is found,
-<code>require</code> calls the loader with two arguments:
-<code>modname</code> and an extra value dependent on how it got the loader.
-(If the loader came from a file,
-this extra value is the file name.)
-If the loader returns any non-nil value,
-<code>require</code> assigns the returned value to <code>package.loaded[modname]</code>.
-If the loader does not return a non-nil value and
-has not assigned any value to <code>package.loaded[modname]</code>,
-then <code>require</code> assigns <b>true</b> to this entry.
-In any case, <code>require</code> returns the
-final value of <code>package.loaded[modname]</code>.
+每次找到一个加载器，<code>require</code> 都用两个参数调用加载器：
+<code>modname</code> 和一个在获取加载器过程中得到的参数。
+（如果通过查找文件得到的加载器，这个额外参数是文件名。）
+如果加载器返回非空值，
+<code>require</code> 将这个值赋给 <code>package.loaded[modname]</code>。
+如果加载器没能返回一个非空值用于赋给 <code>package.loaded[modname]</code>，
+<code>require</code> 会在那里设入 <b>true</b> 。
+无论是什么情况，<code>require</code> 都会返回
+<code>package.loaded[modname]</code> 的最终值。
 
 
 <p>
-If there is any error loading or running the module,
-or if it cannot find any loader for the module,
-then <code>require</code> raises an error.
+如果在加载或运行模块时有错误，
+或是无非为模块找到加载器，
+<code>require</code> 都会抛出错误。
 
 
 
@@ -6999,28 +6991,24 @@ then <code>require</code> raises an error.
 
 
 <p>
-A string describing some compile-time configurations for packages.
-This string is a sequence of lines:
+一个描述有一些为包管理准备的编译期配置信息的串。
+这个字符串由一系列行构成：
 
 <ul>
 
-<li>The first line is the directory separator string.
-Default is '<code>\</code>' for Windows and '<code>/</code>' for all other systems.</li>
+<li>第一行是目录分割串。
+对于 Windows 默认是 '<code>\</code>' ，对于其它系统是 '<code>/</code>' 。</li>
 
-<li>The second line is the character that separates templates in a path.
-Default is '<code>;</code>'.</li>
+<li>第二行是用于路径中的分割符。默认值是 '<code>;</code>' 。</li>
 
-<li>The third line is the string that marks the
-substitution points in a template.
-Default is '<code>?</code>'.</li>
+<li>第三行是用于标记模板替换点的字符串。
+默认是 '<code>?</code>' 。</li>
 
-<li>The fourth line is a string that, in a path in Windows,
-is replaced by the executable's directory.
-Default is '<code>!</code>'.</li>
+<li>第四行是在 Windows 中将被替换成执行程序所在目录的路径的字符串。
+默认是 '<code>!</code>' 。</li>
 
-<li>The fifth line is a mark to ignore all text after it
-when building the <code>luaopen_</code> function name.
-Default is '<code>-</code>'.</li>
+<li>第五行是一个记号，该记号之后的所有文本将在构建 <code>luaopen_</code> 函数名时被忽略掉。
+默认是 '<code>-</code>'。</li>
 
 </ul>
 
@@ -7031,16 +7019,15 @@ Default is '<code>-</code>'.</li>
 
 
 <p>
-The path used by <a href="#pdf-require"><code>require</code></a> to search for a C&nbsp;loader.
+这个路径被 <a href="#pdf-require"><code>require</code></a> 在 C 加载器中做搜索时用到。
 
 
 <p>
-Lua initializes the C&nbsp;path <a href="#pdf-package.cpath"><code>package.cpath</code></a> in the same way
-it initializes the Lua path <a href="#pdf-package.path"><code>package.path</code></a>,
-using the environment variable <a name="pdf-LUA_CPATH_5_3"><code>LUA_CPATH_5_3</code></a>
-or the environment variable <a name="pdf-LUA_CPATH"><code>LUA_CPATH</code></a>
-or a default path defined in <code>luaconf.h</code>.
-
+Lua 用和初始化 Lua 路径 <a href="#pdf-package.path"><code>package.path</code></a>
+相同的方式初始化 C 路径 <a href="#pdf-package.cpath"><code>package.cpath</code></a> 。
+它会使用环境变量 <a name="pdf-LUA_CPATH_5_3"><code>LUA_CPATH_5_3</code></a> 或
+环境变量 <a name="pdf-LUA_CPATH"><code>LUA_CPATH</code></a> 初始化。
+要么就采用 <code>luaconf.h</code> 中的定义的默认路径。
 
 
 
@@ -7049,17 +7036,15 @@ or a default path defined in <code>luaconf.h</code>.
 
 
 <p>
-A table used by <a href="#pdf-require"><code>require</code></a> to control which
-modules are already loaded.
-When you require a module <code>modname</code> and
-<code>package.loaded[modname]</code> is not false,
-<a href="#pdf-require"><code>require</code></a> simply returns the value stored there.
+用于 <a href="#pdf-require"><code>require</code></a> 控制哪些模块已经被加载的表。
+当你请求一个 <code>modname</code> 模块，且
+<code>package.loaded[modname]</code> 不为假时，
+<a href="#pdf-require"><code>require</code></a> 简单返回储存在内的值。
 
 
 <p>
-This variable is only a reference to the real table;
-assignments to this variable do not change the
-table used by <a href="#pdf-require"><code>require</code></a>.
+这个变量仅仅是对真正那张表的引用；
+改变这个值并不会改变 <a href="#pdf-require"><code>require</code></a> 使用的表。
 
 
 
@@ -7069,38 +7054,32 @@ table used by <a href="#pdf-require"><code>require</code></a>.
 
 
 <p>
-Dynamically links the host program with the C&nbsp;library <code>libname</code>.
+让数组程序动态链接 C 库 <code>libname</code> 。
 
 
 <p>
-If <code>funcname</code> is "<code>*</code>",
-then it only links with the library,
-making the symbols exported by the library
-available to other dynamically linked libraries.
-Otherwise,
-it looks for a function <code>funcname</code> inside the library
-and returns this function as a C&nbsp;function.
-So, <code>funcname</code> must follow the <a href="#lua_CFunction"><code>lua_CFunction</code></a> prototype
-(see <a href="#lua_CFunction"><code>lua_CFunction</code></a>).
+当 <code>funcname</code> 为 "<code>*</code>"，
+它仅仅连接该库，让库中的符号都导出给其它动态链接库使用。
+否则，它查找库中的函数 <code>funcname</code> ，以 C 函数的形式返回这个函数。
+因此，<code>funcname</code> 必须遵循原型 <a href="#lua_CFunction"><code>lua_CFunction</code></a> 
+（参见 <a href="#lua_CFunction"><code>lua_CFunction</code></a>）。
 
 
 <p>
-This is a low-level function.
-It completely bypasses the package and module system.
-Unlike <a href="#pdf-require"><code>require</code></a>,
-it does not perform any path searching and
-does not automatically adds extensions.
-<code>libname</code> must be the complete file name of the C&nbsp;library,
-including if necessary a path and an extension.
-<code>funcname</code> must be the exact name exported by the C&nbsp;library
-(which may depend on the C&nbsp;compiler and linker used).
+这是一个低阶函数。
+它完全绕过了包模块系统。
+和 <a href="#pdf-require"><code>require</code></a> 不同，
+它不会做任何路径查询，也不会自动加扩展名。
+<code>libname</code> 必须是一个 C 库需要的完整的文件名，如果有必要，需要提供路径和扩展名。
+<code>funcname</code> 必须是 C 库需要的准确名字
+（这取决于使用的 C 编译器和链接器）。
 
 
 <p>
-This function is not supported by Standard&nbsp;C.
-As such, it is only available on some platforms
-(Windows, Linux, Mac OS X, Solaris, BSD,
-plus other Unix systems that support the <code>dlfcn</code> standard).
+这个函数在标准 C 中不支持。
+因此，它只在部分平台有效
+（ Windows ，Linux ，Mac OS X, Solaris, BSD, 加上支持
+<code>dlfcn</code> 标准的 Unix 系统）。
 
 
 
@@ -7110,17 +7089,14 @@ plus other Unix systems that support the <code>dlfcn</code> standard).
 
 
 <p>
-The path used by <a href="#pdf-require"><code>require</code></a> to search for a Lua loader.
+这个路径被 <a href="#pdf-require"><code>require</code></a> 在 Lua 加载器中做搜索时用到。
 
 
 <p>
-At start-up, Lua initializes this variable with
-the value of the environment variable <a name="pdf-LUA_PATH_5_3"><code>LUA_PATH_5_3</code></a> or
-the environment variable <a name="pdf-LUA_PATH"><code>LUA_PATH</code></a> or
-with a default path defined in <code>luaconf.h</code>,
-if those environment variables are not defined.
-Any "<code>;;</code>" in the value of the environment variable
-is replaced by the default path.
+在启动时，Lua 用环境变量 <a name="pdf-LUA_PATH_5_3"><code>LUA_PATH_5_3</code></a>
+或环境变量 <a name="pdf-LUA_PATH"><code>LUA_PATH</code></a> 来初始化这个变量。
+或采用 <code>luaconf.h</code> 中的默认路径。
+环境变量中出现的所有 "<code>;;</code>" 都会被替换成默认路径。
 
 
 
@@ -7130,14 +7106,13 @@ is replaced by the default path.
 
 
 <p>
-A table to store loaders for specific modules
-(see <a href="#pdf-require"><code>require</code></a>).
+保存有一些特殊模块的加载器
+（参见 <a href="#pdf-require"><code>require</code></a>）。
 
 
 <p>
-This variable is only a reference to the real table;
-assignments to this variable do not change the
-table used by <a href="#pdf-require"><code>require</code></a>.
+这个变量仅仅是对真正那张表的引用；
+改变这个值并不会改变 <a href="#pdf-require"><code>require</code></a> 使用的表。
 
 
 
@@ -7147,84 +7122,73 @@ table used by <a href="#pdf-require"><code>require</code></a>.
 
 
 <p>
-A table used by <a href="#pdf-require"><code>require</code></a> to control how to load modules.
+用于 <a href="#pdf-require"><code>require</code></a> 控制如何加载模块的表。
 
 
 <p>
-Each entry in this table is a <em>searcher function</em>.
-When looking for a module,
-<a href="#pdf-require"><code>require</code></a> calls each of these searchers in ascending order,
-with the module name (the argument given to <a href="#pdf-require"><code>require</code></a>) as its
-sole parameter.
-The function can return another function (the module <em>loader</em>)
-plus an extra value that will be passed to that loader,
-or a string explaining why it did not find that module
-(or <b>nil</b> if it has nothing to say).
+这张表内的每一项都是一个 <em>查找器函数</em>。
+当查找一个模块时，
+<a href="#pdf-require"><code>require</code></a> 按次序调用这些查找器，
+并传入模块名（<a href="#pdf-require"><code>require</code></a> 的参数）作为唯一的一个参数。
+此函数可以返回另一个函数（模块的 <em>加载器</em>）加上另一个将传递给这个加载器的参数。
+或是返回一个描述为何没有找到这个模块的字符串
+（或是返回 <b>nil</b> 什么也不想说）。
 
 
 <p>
-Lua initializes this table with four searcher functions.
+Lua 用四个查找器函数初始化这张表。
 
 
 <p>
-The first searcher simply looks for a loader in the
-<a href="#pdf-package.preload"><code>package.preload</code></a> table.
+第一个查找器就是简单的在 <a href="#pdf-package.preload"><code>package.preload</code></a> 表中查找加载器。
 
 
 <p>
-The second searcher looks for a loader as a Lua library,
-using the path stored at <a href="#pdf-package.path"><code>package.path</code></a>.
-The search is done as described in function <a href="#pdf-package.searchpath"><code>package.searchpath</code></a>.
+第二个查找器用于查找 Lua 库的加载库。
+它使用储存在 <a href="#pdf-package.path"><code>package.path</code></a> 中的路径来做查找工作。
+查找过程和函数 <a href="#pdf-package.searchpath"><code>package.searchpath</code></a> 描述的一致。
 
 
 <p>
-The third searcher looks for a loader as a C&nbsp;library,
-using the path given by the variable <a href="#pdf-package.cpath"><code>package.cpath</code></a>.
-Again,
-the search is done as described in function <a href="#pdf-package.searchpath"><code>package.searchpath</code></a>.
-For instance,
-if the C&nbsp;path is the string
+第三个查找器用于查找 C 库的加载库。
+它使用储存在 <a href="#pdf-package.path"><code>package.cpath</code></a> 中的路径来做查找工作。
+同样，
+查找过程和函数 <a href="#pdf-package.searchpath"><code>package.searchpath</code></a> 描述的一致。
+例如，如果 C 路径是这样一个字符串
 
 <pre>
      "./?.so;./?.dll;/usr/local/?/init.so"
 </pre><p>
-the searcher for module <code>foo</code>
-will try to open the files <code>./foo.so</code>, <code>./foo.dll</code>,
-and <code>/usr/local/foo/init.so</code>, in that order.
-Once it finds a C&nbsp;library,
-this searcher first uses a dynamic link facility to link the
-application with the library.
-Then it tries to find a C&nbsp;function inside the library to
-be used as the loader.
-The name of this C&nbsp;function is the string "<code>luaopen_</code>"
-concatenated with a copy of the module name where each dot
-is replaced by an underscore.
-Moreover, if the module name has a hyphen,
-its suffix after (and including) the first hyphen is removed.
-For instance, if the module name is <code>a.b.c-v2.1</code>,
-the function name will be <code>luaopen_a_b_c</code>.
+查找器查找模块 <code>foo</code> 
+会依次尝试打开文件 <code>./foo.so</code>，<code>./foo.dll</code>，
+以及 <code>/usr/local/foo/init.so</code>。
+一旦它找到一个 C 库，
+查找器首先使用动态链接机制连接该库。
+然后尝试在该库中找到可以用作加载器的 C 函数。
+这个 C 函数的名字是 "<code>luaopen_</code>" 紧接模块名的字符串，
+其中字符串中所有的下划线都会被替换成点。
+此外，如果模块名中有横线，
+横线后面的部分（包括横线）都被去掉。
+例如，如果模块名为 <code>a.b.c-v2.1</code>，
+函数名就是 <code>luaopen_a_b_c</code>。
 
 
 <p>
-The fourth searcher tries an <em>all-in-one loader</em>.
-It searches the C&nbsp;path for a library for
-the root name of the given module.
-For instance, when requiring <code>a.b.c</code>,
-it will search for a C&nbsp;library for <code>a</code>.
-If found, it looks into it for an open function for
-the submodule;
-in our example, that would be <code>luaopen_a_b_c</code>.
-With this facility, a package can pack several C&nbsp;submodules
-into one single library,
-with each submodule keeping its original open function.
+第四个搜索器是　<em>一体化加载器</em>。
+它从 C 路径中查找指定模块的根名字。
+例如，当请求 <code>a.b.c</code>　时，
+它将查找 <code>a</code> 这个 C 库。
+如果找得到，它会在里面找子模块的加载函数。
+在我们的例子中，就是找　<code>luaopen_a_b_c</code>。
+利用这个机制，可以把若干 C 子模块打包进单个库。
+每个子模块都可以有原本的加载函数名。
 
 
 <p>
-All searchers except the first one (preload) return as the extra value
-the file name where the module was found,
-as returned by <a href="#pdf-package.searchpath"><code>package.searchpath</code></a>.
-The first searcher returns no extra value.
-
+除了第一个（预加载）搜索器外，每个搜索器都会返回
+它找到的模块的文件名。
+这和 <a href="#pdf-package.searchpath"><code>package.searchpath</code></a> 的返回值一样。
+第一个搜索器没有返回值。
 
 
 
@@ -7233,40 +7197,33 @@ The first searcher returns no extra value.
 
 
 <p>
-Searches for the given <code>name</code> in the given <code>path</code>.
+在指定 <code>path</code> 中搜索指定的 <code>name</code> 。
 
 
 <p>
-A path is a string containing a sequence of
-<em>templates</em> separated by semicolons.
-For each template,
-the function replaces each interrogation mark (if any)
-in the template with a copy of <code>name</code>
-wherein all occurrences of <code>sep</code>
-(a dot, by default)
-were replaced by <code>rep</code>
-(the system's directory separator, by default),
-and then tries to open the resulting file name.
+路径是一个包含有一系列以分号分割的 <em>模板</em> 构成的字符串。
+对于每个模板，都会用 <code>name</code> 替换其中的每个问号（如果有的话）。
+且将其中的 <code>sep</code> （默认是点）替换为  <code>rep</code>
+（默认是系统的目录分割符）。
+然后尝试打开这个文件名。
 
 
 <p>
-For instance, if the path is the string
+例如，如果路径是字符串
 
 <pre>
      "./?.lua;./?.lc;/usr/local/?/init.lua"
 </pre><p>
-the search for the name <code>foo.a</code>
-will try to open the files
-<code>./foo/a.lua</code>, <code>./foo/a.lc</code>, and
-<code>/usr/local/foo/a/init.lua</code>, in that order.
+搜索 <code>foo.a</code>　这个名字将
+依次尝试打开文件
+<code>./foo/a.lua</code>　， <code>./foo/a.lc</code>　，以及
+<code>/usr/local/foo/a/init.lua</code>。
 
 
 <p>
-Returns the resulting name of the first file that it can
-open in read mode (after closing the file),
-or <b>nil</b> plus an error message if none succeeds.
-(This error message lists all file names it tried to open.)
-
+返回第一个可以用读模式打开（并马上关闭该文件）的文件的名字。
+如果不存在这样的文件，返回 <b>nil</b> 加上错误消息。
+（这条错误消息列出了所有尝试打开的文件名。）
 
 
 
