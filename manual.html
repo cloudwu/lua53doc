@@ -2383,7 +2383,7 @@ API 中的函数若需要传入栈索引，这个索引必须是
 而不需要指定一个栈位置的函数，
 可以用一个可接受的索引去调用它们。
 <em>可接受索引</em> 不仅可以是任何包括伪索引在内的有效索引，
-还可以是任何超过栈顶但落下为栈分配出来的空间内的正索引。
+还可以是任何超过栈顶但落在为栈分配出来的空间内的正索引。
 （注意 0 永远都不是一个可接受索引。）
 除非另有说明，API 里的函数都接受可接受索引。
 
@@ -5536,7 +5536,7 @@ Lua 把这些事件定义为以下常量：
 （比如是零结尾的字符串数组）
 中查找这个字符串。
 返回匹配到的字符串在数组中的索引号。
-如果参数不是字符串，或是字符串在数组中匹配到到，都将抛出错误。
+如果参数不是字符串，或是字符串在数组中匹配不到，都将抛出错误。
 
 
 <p>
@@ -6185,7 +6185,7 @@ Lua 把这些事件定义为以下常量：
 文件句柄实现为一个完全用户数据，
 其元表被称为 <code>LUA_FILEHANDLE</code>
 （<code>LUA_FILEHANDLE</code> 是一个代表真正元表的名字的宏）。
-这张元表右标准输入输出库（参见 <a href="#luaL_newmetatable"><code>luaL_newmetatable</code></a>）创建。
+这张元表由标准输入输出库（参见 <a href="#luaL_newmetatable"><code>luaL_newmetatable</code></a>）创建。
 
 
 <p>
@@ -6227,7 +6227,7 @@ Lua 把这些事件定义为以下常量：
 
 
 <p>
-如果该值有一个带 <code>"__tostring"</code> 域的原表，
+如果该值有一个带 <code>"__tostring"</code> 域的元表，
 <code>luaL_tolstring</code> 会以该值为参数去调用对应的元方法，
 并将其返回值作为结果。
 
@@ -6301,93 +6301,88 @@ Lua 把这些事件定义为以下常量：
 
 
 
-<h1>6 &ndash; <a name="6">Standard Libraries</a></h1>
+<h1>6 &ndash; <a name="6">标准库</a></h1>
 
 <p>
-The standard Lua libraries provide useful functions
-that are implemented directly through the C&nbsp;API.
-Some of these functions provide essential services to the language
-(e.g., <a href="#pdf-type"><code>type</code></a> and <a href="#pdf-getmetatable"><code>getmetatable</code></a>);
-others provide access to "outside" services (e.g., I/O);
-and others could be implemented in Lua itself,
-but are quite useful or have critical performance requirements that
-deserve an implementation in C (e.g., <a href="#pdf-table.sort"><code>table.sort</code></a>).
-
+标准库提供了一些有用的函数,
+它们都是直接用 C API 实现的。
+其中一些函数提供了原本语言就有的服务
+（例如，<a href="#pdf-type"><code>type</code></a> 与 <a href="#pdf-getmetatable"><code>getmetatable</code></a>）；
+另一些提供和“外部”打交道的服务（例如 I/O ）；
+还有些本可以用 Lua 本身来实现，但在 C 中实现可以满足关键点上的性能需求
+（例如 <a href="#pdf-table.sort"><code>table.sort</code></a>）。
 
 <p>
-All libraries are implemented through the official C&nbsp;API
-and are provided as separate C&nbsp;modules.
-Currently, Lua has the following standard libraries:
+所有的库都是直接用 C API 实现的，并以分离的 C 模块形式提供。
+目前，Lua 有下列标准库：
 
 <ul>
 
-<li>basic library (<a href="#6.1">&sect;6.1</a>);</li>
+<li>基础库 (<a href="#6.1">&sect;6.1</a>);</li>
 
-<li>coroutine library (<a href="#6.2">&sect;6.2</a>);</li>
+<li>协程库 (<a href="#6.2">&sect;6.2</a>);</li>
 
-<li>package library (<a href="#6.3">&sect;6.3</a>);</li>
+<li>包管理库 (<a href="#6.3">&sect;6.3</a>);</li>
 
-<li>string manipulation (<a href="#6.4">&sect;6.4</a>);</li>
+<li>字符串控制 (<a href="#6.4">&sect;6.4</a>);</li>
 
-<li>basic UTF-8 support (<a href="#6.5">&sect;6.5</a>);</li>
+<li>基础 UTF-8 支持 (<a href="#6.5">&sect;6.5</a>);</li>
 
-<li>table manipulation (<a href="#6.6">&sect;6.6</a>);</li>
+<li>表控制 (<a href="#6.6">&sect;6.6</a>);</li>
 
-<li>mathematical functions (<a href="#6.7">&sect;6.7</a>) (sin, log, etc.);</li>
+<li>数学函数 (<a href="#6.7">&sect;6.7</a>) (sin ，log 等);</li>
 
-<li>input and output (<a href="#6.8">&sect;6.8</a>);</li>
+<li>输入输出 (<a href="#6.8">&sect;6.8</a>);</li>
 
-<li>operating system facilities (<a href="#6.9">&sect;6.9</a>);</li>
+<li>操作系统设施 (<a href="#6.9">&sect;6.9</a>);</li>
 
-<li>debug facilities (<a href="#6.10">&sect;6.10</a>).</li>
+<li>调试设施 (<a href="#6.10">&sect;6.10</a>).</li>
 
 </ul><p>
-Except for the basic and the package libraries,
-each library provides all its functions as fields of a global table
-or as methods of its objects.
+除了基础库和包管理库，
+其它库都把自己的函数放在一张全局表的域中，
+或是以对象方法的形式提供。
 
 
 <p>
-To have access to these libraries,
-the C&nbsp;host program should call the <a href="#luaL_openlibs"><code>luaL_openlibs</code></a> function,
-which opens all standard libraries.
-Alternatively,
-the host program can open them individually by using
-<a href="#luaL_requiref"><code>luaL_requiref</code></a> to call
-<a name="pdf-luaopen_base"><code>luaopen_base</code></a> (for the basic library),
-<a name="pdf-luaopen_package"><code>luaopen_package</code></a> (for the package library),
-<a name="pdf-luaopen_coroutine"><code>luaopen_coroutine</code></a> (for the coroutine library),
-<a name="pdf-luaopen_string"><code>luaopen_string</code></a> (for the string library),
-<a name="pdf-luaopen_utf8"><code>luaopen_utf8</code></a> (for the UTF8 library),
-<a name="pdf-luaopen_table"><code>luaopen_table</code></a> (for the table library),
-<a name="pdf-luaopen_math"><code>luaopen_math</code></a> (for the mathematical library),
-<a name="pdf-luaopen_io"><code>luaopen_io</code></a> (for the I/O library),
-<a name="pdf-luaopen_os"><code>luaopen_os</code></a> (for the operating system library),
-and <a name="pdf-luaopen_debug"><code>luaopen_debug</code></a> (for the debug library).
-These functions are declared in <a name="pdf-lualib.h"><code>lualib.h</code></a>.
+要使用这些库，
+C 的宿主程序需要先调用一下
+<a href="#luaL_openlibs"><code>luaL_openlibs</code></a> 这个函数，
+这样就能打开所有的标准库。
+或者宿主程序也可以用
+<a href="#luaL_requiref"><code>luaL_requiref</code></a> 分别打开这些库：
+<a name="pdf-luaopen_base"><code>luaopen_base</code></a> （基础库），
+<a name="pdf-luaopen_package"><code>luaopen_package</code></a> （包管理库），
+<a name="pdf-luaopen_coroutine"><code>luaopen_coroutine</code></a> （协程库），
+<a name="pdf-luaopen_string"><code>luaopen_string</code></a> （字符串库），
+<a name="pdf-luaopen_utf8"><code>luaopen_utf8</code></a> （UTF8 库），
+<a name="pdf-luaopen_table"><code>luaopen_table</code></a> （表处理库），
+<a name="pdf-luaopen_math"><code>luaopen_math</code></a> （数学库），
+<a name="pdf-luaopen_io"><code>luaopen_io</code></a> （I/O 库），
+<a name="pdf-luaopen_os"><code>luaopen_os</code></a> （操作系统库），
+<a name="pdf-luaopen_debug"><code>luaopen_debug</code></a> （调试库）。
+这些函数都定义在 <a name="pdf-lualib.h"><code>lualib.h</code></a> 中。
 
 
 
-<h2>6.1 &ndash; <a name="6.1">Basic Functions</a></h2>
+<h2>6.1 &ndash; <a name="6.1">基础函数</a></h2>
 
 <p>
-The basic library provides core functions to Lua.
-If you do not include this library in your application,
-you should check carefully whether you need to provide
-implementations for some of its facilities.
-
+基础库提供了 Lua 核心函数。
+如果你不将这个库包含在你的程序中，
+你就需要小心检查程序是否需要自己提供其中一些特性的实现。
 
 <p>
 <hr><h3><a name="pdf-assert"><code>assert (v [, message])</code></a></h3>
 
 
 <p>
-Calls <a href="#pdf-error"><code>error</code></a> if
-the value of its argument <code>v</code> is false (i.e., <b>nil</b> or <b>false</b>);
-otherwise, returns all its arguments.
-In case of error,
-<code>message</code> is the error object;
-when absent, it defaults to "<code>assertion failed!</code>"
+如果其参数 <code>v</code> 的值为假（<b>nil</b> 或 <b>false</b>），
+它就调用 <a href="#pdf-error"><code>error</code></a>；
+否则，返回所有的参数。
+在错误情况时，
+<code>message</code> 指那个错误对象；
+如果不提供这个参数，参数默认为 "<code>assertion failed!</code>" 。
 
 
 
@@ -6397,60 +6392,55 @@ when absent, it defaults to "<code>assertion failed!</code>"
 
 
 <p>
-This function is a generic interface to the garbage collector.
-It performs different functions according to its first argument, <code>opt</code>:
+这个函数是垃圾收集器的通用接口。
+通过参数 <code>opt</code> 它提供了一组不同的功能：
 
 <ul>
 
 <li><b>"<code>collect</code>": </b>
-performs a full garbage-collection cycle.
-This is the default option.
+做一次完整的垃圾收集循环。
+这是默认选项。
 </li>
 
 <li><b>"<code>stop</code>": </b>
-stops automatic execution of the garbage collector.
-The collector will run only when explicitly invoked,
-until a call to restart it.
+停止垃圾收集器的运行。
+在调用重启前，收集器只会因显式的调用运行。
 </li>
 
 <li><b>"<code>restart</code>": </b>
-restarts automatic execution of the garbage collector.
+重启垃圾收集器的自动运行。
 </li>
 
 <li><b>"<code>count</code>": </b>
-returns the total memory in use by Lua in Kbytes.
-The value has a fractional part,
-so that it multiplied by 1024
-gives the exact number of bytes in use by Lua
-(except for overflows).
+以 K 字节数为单位返回 Lua 使用的总内存数。
+这个值有小数部分，所以只需要乘上 1024 就能得到
+Lua 使用的准确字节数（除非溢出）。
 </li>
 
 <li><b>"<code>step</code>": </b>
-performs a garbage-collection step.
-The step "size" is controlled by <code>arg</code>.
-With a zero value,
-the collector will perform one basic (indivisible) step.
-For non-zero values,
-the collector will perform as if that amount of memory
-(in KBytes) had been allocated by Lua.
-Returns <b>true</b> if the step finished a collection cycle.
+单步运行垃圾收集器。
+步长“大小”由 <code>arg</code> 控制。
+传入 0 时，收集器步进（不可分割的）一步。
+传入非 0 值，
+收集器收集相当于 Lua 分配这些多（K 字节）内存的工作。
+如果收集器结束一个循环将返回 <b>true</b> 。
 </li>
 
 <li><b>"<code>setpause</code>": </b>
-sets <code>arg</code> as the new value for the <em>pause</em> of
-the collector (see <a href="#2.5">&sect;2.5</a>).
-Returns the previous value for <em>pause</em>.
+将 <code>arg</code> 设为收集器的 <em>间歇率</em>
+（参见 <a href="#2.5">&sect;2.5</a>）。
+返回 <em>间歇率</em> 的前一个值。
 </li>
 
 <li><b>"<code>setstepmul</code>": </b>
-sets <code>arg</code> as the new value for the <em>step multiplier</em> of
-the collector (see <a href="#2.5">&sect;2.5</a>).
-Returns the previous value for <em>step</em>.
+将 <code>arg</code> 设为收集器的 <em>步进倍率</em>
+（参见 <a href="#2.5">&sect;2.5</a>）。
+返回 <em>步进倍率</em> 的前一个值。
 </li>
 
 <li><b>"<code>isrunning</code>": </b>
-returns a boolean that tells whether the collector is running
-(i.e., not stopped).
+返回表示收集器是否在工作的布尔值
+（即未被停止）。
 </li>
 
 </ul>
@@ -6459,44 +6449,38 @@ returns a boolean that tells whether the collector is running
 
 <p>
 <hr><h3><a name="pdf-dofile"><code>dofile ([filename])</code></a></h3>
-Opens the named file and executes its contents as a Lua chunk.
-When called without arguments,
-<code>dofile</code> executes the contents of the standard input (<code>stdin</code>).
-Returns all values returned by the chunk.
-In case of errors, <code>dofile</code> propagates the error
-to its caller (that is, <code>dofile</code> does not run in protected mode).
+打开该名字的文件，并执行文件中的 Lua 代码块。
+不带参数调用时， <code>dofile</code> 执行标准输入的内容（<code>stdin</code>）。
+返回该代码块的所有返回值。
+对于有错误的情况，<code>dofile</code> 将错误反馈给调用者
+（即，<code>dofile</code> 没有运行在保护模式下）。
 
 
 
 
 <p>
 <hr><h3><a name="pdf-error"><code>error (message [, level])</code></a></h3>
-Terminates the last protected function called
-and returns <code>message</code> as the error object.
-Function <code>error</code> never returns.
+中止上一次保护函数调用，
+将错误对象 <code>message</code> 返回。
+返回 <code>error</code> 永远不会返回。
 
 
 <p>
-Usually, <code>error</code> adds some information about the error position
-at the beginning of the message, if the message is a string.
-The <code>level</code> argument specifies how to get the error position.
-With level&nbsp;1 (the default), the error position is where the
-<code>error</code> function was called.
-Level&nbsp;2 points the error to where the function
-that called <code>error</code> was called; and so on.
-Passing a level&nbsp;0 avoids the addition of error position information
-to the message.
+当 message 是一个字符串时，通常 <code>error</code> 会把一些有关出错位置的信息附加在消息的前头。
+<code>level</code> 参数知名了怎样获得出错位置。
+对于 level 1 （默认值），出错位置指 <code>error</code> 函数调用的位置。
+Level 2 将出错位置指向调用 <code>error</code>的函数的函数；以此类推。
+传入 level 0 可以避免在消息前添加出错位置信息。
 
 
 
 
 <p>
 <hr><h3><a name="pdf-_G"><code>_G</code></a></h3>
-A global variable (not a function) that
-holds the global environment (see <a href="#2.2">&sect;2.2</a>).
-Lua itself does not use this variable;
-changing its value does not affect any environment,
-nor vice versa.
+一个全局变量（非函数），
+内部储存有全局环境（参见 <a href="#2.2">&sect;2.2</a>）。
+Lua 自己不使用这个变量；
+改变这个变量的值不会对任何环境造成影响，反之亦然。
 
 
 
@@ -6506,12 +6490,9 @@ nor vice versa.
 
 
 <p>
-If <code>object</code> does not have a metatable, returns <b>nil</b>.
-Otherwise,
-if the object's metatable has a <code>"__metatable"</code> field,
-returns the associated value.
-Otherwise, returns the metatable of the given object.
-
+如果 <code>object</code> 不包含元表，返回 <b>nil</b> 。
+否则，如果在该对象的元表中有 <code>"__metatable"</code> 域时返回其关联值，
+没有时返回该对象的元表。
 
 
 
@@ -6520,16 +6501,13 @@ Otherwise, returns the metatable of the given object.
 
 
 <p>
-Returns three values (an iterator function, the table <code>t</code>, and 0)
-so that the construction
+返回三个值（迭代函数、表 <code>t</code> 以及 0 ），
+如此，以下代码
 
 <pre>
      for i,v in ipairs(t) do <em>body</em> end
 </pre><p>
-will iterate over the key&ndash;value pairs
-(<code>1,t[1]</code>), (<code>2,t[2]</code>), ...,
-up to the first nil value.
-
+将迭代键值对（<code>1,t[1]</code>) ，(<code>2,t[2]</code>)， ... ，直到第一个空值。
 
 
 
@@ -6538,62 +6516,53 @@ up to the first nil value.
 
 
 <p>
-Loads a chunk.
+加载一个代码块。
 
 
 <p>
-If <code>chunk</code> is a string, the chunk is this string.
-If <code>chunk</code> is a function,
-<code>load</code> calls it repeatedly to get the chunk pieces.
-Each call to <code>chunk</code> must return a string that concatenates
-with previous results.
-A return of an empty string, <b>nil</b>, or no value signals the end of the chunk.
+如果 <code>chunk</code> 是一个字符串，代码块指这个字符串。
+如果 <code>chunk</code> 是一个函数，
+<code>load</code> 不断得调用它获取代码块的片断。
+每次对 <code>chunk</code> 的调用都必须返回一个字符串紧紧连接在上次调用的返回串之后。
+当返回空串、<b>nil</b>、或是不返回值时，都表示代码块结束。
 
 
 <p>
-If there are no syntactic errors,
-returns the compiled chunk as a function;
-otherwise, returns <b>nil</b> plus the error message.
+如果没有语法错误，
+则以函数形式返回编译好的代码块；
+否则，返回 <b>nil</b> 加上错误消息。
 
 
 <p>
-If the resulting function has upvalues,
-the first upvalue is set to the value of <code>env</code>,
-if that parameter is given,
-or to the value of the global environment.
-Other upvalues are initialized with <b>nil</b>.
-(When you load a main chunk,
-the resulting function will always have exactly one upvalue,
-the <code>_ENV</code> variable (see <a href="#2.2">&sect;2.2</a>).
-However,
-when you load a binary chunk created from a function (see <a href="#pdf-string.dump"><code>string.dump</code></a>),
-the resulting function can have an arbitrary number of upvalues.)
-All upvalues are fresh, that is,
-they are not shared with any other function.
+如果结果函数有上值，
+<code>env</code> 被设为第一个上值。
+若不提供此参数，将全局环境替代它。
+所有其它上值初始化为 <b>nil</b>。
+（当你加载主代码块时候，结果函数一定有且仅有一个上值 <code>_ENV</code> 
+（参见 <a href="#2.2">&sect;2.2</a>））。
+然而，如果你加载一个用函数（参见 <a href="#pdf-string.dump"><code>string.dump</code></a>，
+结果函数可以有任意数量的上值）
+创建出来的二进制代码块时，所有的上值都是新创建出来的。
+也就是说它们不会和别的任何函数共享。
 
 
 <p>
-<code>chunkname</code> is used as the name of the chunk for error messages
-and debug information (see <a href="#4.9">&sect;4.9</a>).
-When absent,
-it defaults to <code>chunk</code>, if <code>chunk</code> is a string,
-or to "<code>=(load)</code>" otherwise.
+<code>chunkname</code> 在错误消息和调试消息中（参见 <a href="#4.9">&sect;4.9</a>），用于代码块的名字。
+如果不提供此参数，它默认为字符串<code>chunk</code> 。
+<code>chunk</code> 不是字符串时，则为 "<code>=(load)</code>" 。
 
 
 <p>
-The string <code>mode</code> controls whether the chunk can be text or binary
-(that is, a precompiled chunk).
-It may be the string "<code>b</code>" (only binary chunks),
-"<code>t</code>" (only text chunks),
-or "<code>bt</code>" (both binary and text).
-The default is "<code>bt</code>".
+字符串 <code>mode</code> 用于控制代码块是文本还是二进制（即预编译代码块）。
+它可以是字符串 "<code>b</code>" （只能是二进制代码块），
+"<code>t</code>" （只能是文本代码块），
+或 "<code>bt</code>" （可以是二进制也可以是文本）。
+默认值为 "<code>bt</code>"。
 
 
 <p>
-Lua does not check the consistency of binary chunks.
-Maliciously crafted binary chunks can crash
-the interpreter.
-
+Lua 不会对二进制代码块做健壮性检查。
+恶意构造一个二进制块有可能把解释器弄崩溃。
 
 
 
@@ -6602,10 +6571,8 @@ the interpreter.
 
 
 <p>
-Similar to <a href="#pdf-load"><code>load</code></a>,
-but gets the chunk from file <code>filename</code>
-or from the standard input,
-if no file name is given.
+和 <a href="#pdf-load"><code>load</code></a> 类似，
+不过是从文件 <code>filename</code> 或标准输入（如果文件名未提供）中获取代码块。
 
 
 
@@ -6615,36 +6582,28 @@ if no file name is given.
 
 
 <p>
-Allows a program to traverse all fields of a table.
-Its first argument is a table and its second argument
-is an index in this table.
-<code>next</code> returns the next index of the table
-and its associated value.
-When called with <b>nil</b> as its second argument,
-<code>next</code> returns an initial index
-and its associated value.
-When called with the last index,
-or with <b>nil</b> in an empty table,
-<code>next</code> returns <b>nil</b>.
-If the second argument is absent, then it is interpreted as <b>nil</b>.
-In particular,
-you can use <code>next(t)</code> to check whether a table is empty.
+运行程序来遍历表中的所有域。
+第一个参数是要遍历的表，第二个参数是表中的某个键。
+<code>next</code> 返回该键的下一个键及其关联的值。
+如果用 <b>nil</b> 作为第二个参俗话调用 <code>next</code>
+将返回初始键及其关联值。
+当以最后一个键去调用，或是以 <b>nil</b> 调用一张空表时，
+<code>next</code> 返回 <b>nil</b>。
+如果不提供第二个参数，将认为它就是 <b>nil</b>。
+特别指出，你可以用 <code>next(t)</code> 来判断一张表是否是空的。
 
 
 <p>
-The order in which the indices are enumerated is not specified,
-<em>even for numeric indices</em>.
-(To traverse a table in numeric order,
-use a numerical <b>for</b>.)
+索引在遍历过程中的次序无定义，
+<em>即使是数字索引也是这样</em>。
+（如果想按数字次序遍历表，可以使用数字形式的 <b>for</b> 。）
 
 
 <p>
-The behavior of <code>next</code> is undefined if,
-during the traversal,
-you assign any value to a non-existent field in the table.
-You may however modify existing fields.
-In particular, you may clear existing fields.
-
+当在遍历过程中你给表中并不存在的域赋值，
+<code>next</code> 的行为是未定义的。
+然而你可以去修改那些已存在的域。
+特别指出，你可以清除一些已存在的域。
 
 
 
@@ -6653,25 +6612,23 @@ In particular, you may clear existing fields.
 
 
 <p>
-If <code>t</code> has a metamethod <code>__pairs</code>,
-calls it with <code>t</code> as argument and returns the first three
-results from the call.
+如果 <code>t</code> 有元方法 <code>__pairs</code>，
+以 <code>t</code> 为参数调用它，并返回其返回的前三个值。
 
 
 <p>
-Otherwise,
-returns three values: the <a href="#pdf-next"><code>next</code></a> function, the table <code>t</code>, and <b>nil</b>,
-so that the construction
+否则，返回三个值：<a href="#pdf-next"><code>next</code></a> 函数，
+表 <code>t</code>，以及 <b>nil</b>。
+因此以下代码
 
 <pre>
      for k,v in pairs(t) do <em>body</em> end
 </pre><p>
-will iterate over all key&ndash;value pairs of table <code>t</code>.
+能迭代表 <code>t</code> 中的所有键值对。
 
 
 <p>
-See function <a href="#pdf-next"><code>next</code></a> for the caveats of modifying
-the table during its traversal.
+参见函数 <a href="#pdf-next"><code>next</code></a> 中关于迭代过程中修改表的风险。
 
 
 
@@ -6681,74 +6638,65 @@ the table during its traversal.
 
 
 <p>
-Calls function <code>f</code> with
-the given arguments in <em>protected mode</em>.
-This means that any error inside&nbsp;<code>f</code> is not propagated;
-instead, <code>pcall</code> catches the error
-and returns a status code.
-Its first result is the status code (a boolean),
-which is true if the call succeeds without errors.
-In such case, <code>pcall</code> also returns all results from the call,
-after this first result.
-In case of any error, <code>pcall</code> returns <b>false</b> plus the error message.
+传入参数，以 <em>保护模式</em> 调用函数 <code>f</code> 。
+这意味着 <code>f</code> 中的任何错误不会抛出；
+取而代之的是，<code>pcall</code> 会将错误捕获到，并返回一个状态码。
+第一个返回值是状态码（一个布尔量），
+当没有错误时，其为真。
+此时，<code>pcall</code> 同样会在状态码后返回所有调用的结果。
+在有错误时，<code>pcall</code> 返回 <b>false</b> 加错误消息。
 
 
 
 
 <p>
 <hr><h3><a name="pdf-print"><code>print (&middot;&middot;&middot;)</code></a></h3>
-Receives any number of arguments
-and prints their values to <code>stdout</code>,
-using the <a href="#pdf-tostring"><code>tostring</code></a> function to convert each argument to a string.
-<code>print</code> is not intended for formatted output,
-but only as a quick way to show a value,
-for instance for debugging.
-For complete control over the output,
-use <a href="#pdf-string.format"><code>string.format</code></a> and <a href="#pdf-io.write"><code>io.write</code></a>.
+接收任意数量的参数，并将它们的值打印到 <code>stdout</code>。
+它用用 <a href="#pdf-tostring"><code>tostring</code></a> 函数将每个参数都转换为字符串。
+<code>print</code> 不用于做格式化输出。仅作为看一下某个值的快捷方式。
+多用于调试。
+完整的对输出的控制，请使用 <a href="#pdf-string.format"><code>string.format</code></a> 以及 <a href="#pdf-io.write"><code>io.write</code></a>。
 
 
 
 
 <p>
 <hr><h3><a name="pdf-rawequal"><code>rawequal (v1, v2)</code></a></h3>
-Checks whether <code>v1</code> is equal to <code>v2</code>,
-without invoking any metamethod.
-Returns a boolean.
-
+在不触发任何元方法的情况下
+检查 <code>v1</code> 是否和 <code>v2</code> 相等。
+返回一个布尔两。
 
 
 
 <p>
 <hr><h3><a name="pdf-rawget"><code>rawget (table, index)</code></a></h3>
-Gets the real value of <code>table[index]</code>,
-without invoking any metamethod.
-<code>table</code> must be a table;
-<code>index</code> may be any value.
+在不触发任何元方法的情况下
+获取 <code>table[index]</code> 的值。
+<code>table</code> 必须是一张表；
+<code>index</code> 可以是任何值。
 
 
 
 
 <p>
 <hr><h3><a name="pdf-rawlen"><code>rawlen (v)</code></a></h3>
-Returns the length of the object <code>v</code>,
-which must be a table or a string,
-without invoking any metamethod.
-Returns an integer.
-
-
+在不触发任何元方法的情况下
+返回对象 <code>v</code> 的长度。
+<code>v</code> 可以是表或字符串。
+它返回一个整数。
 
 
 <p>
 <hr><h3><a name="pdf-rawset"><code>rawset (table, index, value)</code></a></h3>
-Sets the real value of <code>table[index]</code> to <code>value</code>,
-without invoking any metamethod.
-<code>table</code> must be a table,
-<code>index</code> any value different from <b>nil</b> and NaN,
-and <code>value</code> any Lua value.
+在不触发任何元方法的情况下
+将 <code>table[index]</code> 设为 <code>value</code>。
+<code>table</code> 必须是一张表，
+<code>index</code> 可以是 <b>nil</b> 与 NaN 之外的任何值。
+<code>value</code> 可以是任何 Lua 值。
 
 
 <p>
-This function returns <code>table</code>.
+这个函数返回 <code>table</code>。
 
 
 
@@ -6758,11 +6706,11 @@ This function returns <code>table</code>.
 
 
 <p>
-If <code>index</code> is a number,
-returns all arguments after argument number <code>index</code>;
-a negative number indexes from the end (-1 is the last argument).
-Otherwise, <code>index</code> must be the string <code>"#"</code>,
-and <code>select</code> returns the total number of extra arguments it received.
+如果 <code>index</code> 是个数字，
+那么返回参数中第 <code>index</code> 个之后的部分；
+负的数字会从后向前索引（-1 指最后一个参数）。
+否则，<code>index</code> 必须是字符串 <code>"#"</code>，
+此时 <code>select</code> 返回参数的个数。
 
 
 
@@ -6772,16 +6720,15 @@ and <code>select</code> returns the total number of extra arguments it received.
 
 
 <p>
-Sets the metatable for the given table.
-(You cannot change the metatable of other types from Lua, only from&nbsp;C.)
-If <code>metatable</code> is <b>nil</b>,
-removes the metatable of the given table.
-If the original metatable has a <code>"__metatable"</code> field,
-raises an error.
+给指定表设置元表。
+（你不能在 Lua 中改变其它类型值的元表，那些只能在 C 里做。）
+如果 <code>metatable</code> 是 <b>nil</b>，
+将指定表的元表移除。
+如果原来那张元表有 <code>"__metatable"</code> 域，抛出一个错误。
 
 
 <p>
-This function returns <code>table</code>.
+这个函数返回 <code>table</code>。
 
 
 
@@ -6791,74 +6738,66 @@ This function returns <code>table</code>.
 
 
 <p>
-When called with no <code>base</code>,
-<code>tonumber</code> tries to convert its argument to a number.
-If the argument is already a number or
-a string convertible to a number,
-then <code>tonumber</code> returns this number;
-otherwise, it returns <b>nil</b>.
+如果调用的时候没有 <code>base</code>，
+<code>tonumber</code> 尝试把参数转换为一个数字。
+如果参数已经是一个数字，或是一个可以转换为数字的字符串，
+<code>tonumber</code> 就返回这个数字；
+否则返回 <b>nil</b>。
 
 
 <p>
-The conversion of strings can result in integers or floats,
-according to the lexical conventions of Lua (see <a href="#3.1">&sect;3.1</a>).
-(The string may have leading and trailing spaces and a sign.)
+字符串的转换结果可能是整数也可能是浮点数，
+这取决于 Lua 的转换文法（参见 <a href="#3.1">&sect;3.1</a>）。
+（字符串可以有前置和后置的空格，可以带符号。）
 
 
 <p>
-When called with <code>base</code>,
-then <code>e</code> must be a string to be interpreted as
-an integer numeral in that base.
-The base may be any integer between 2 and 36, inclusive.
-In bases above&nbsp;10, the letter '<code>A</code>' (in either upper or lower case)
-represents&nbsp;10, '<code>B</code>' represents&nbsp;11, and so forth,
-with '<code>Z</code>' representing 35.
-If the string <code>e</code> is not a valid numeral in the given base,
-the function returns <b>nil</b>.
+当传入 <code>base</code> 调用它时，
+<code>e</code> 必须是一个以该进制表示的整数字符串。
+进制可以是 2 到 36 （包含 2 和 36）之间的任何整数。
+大于 10 进制时，字母 '<code>A</code>' （大小写均可）表示 10 ，
+'<code>B</code>' 表示 11，依次到 '<code>Z</code>' 表示 35 。
+如果字符串 <code>e</code> 不是该进制下的合法数字，
+函数返回 <b>nil</b>。
 
 
 
 
 <p>
 <hr><h3><a name="pdf-tostring"><code>tostring (v)</code></a></h3>
-Receives a value of any type and
-converts it to a string in a human-readable format.
-Floats always produce strings with some
-floating-point indication (either a decimal dot or an exponent).
-(For complete control of how numbers are converted,
-use <a href="#pdf-string.format"><code>string.format</code></a>.)
+可以接收任何类型，它将其转换为人可阅读的字符串形式。
+浮点数总被转换为小数点分割的形式（一定有小数点，没有指数）。
+（如果想完全控制数字如何被转换，可以使用
+<a href="#pdf-string.format"><code>string.format</code></a>。）
 
 
 <p>
-If the metatable of <code>v</code> has a <code>"__tostring"</code> field,
-then <code>tostring</code> calls the corresponding value
-with <code>v</code> as argument,
-and uses the result of the call as its result.
-
+如果 <code>v</code> 有 <code>"__tostring"</code> 域的元表，
+<code>tostring</code> 会以 <code>v</code> 为参数调用它。
+并用它的结果作为返回值。
 
 
 
 <p>
 <hr><h3><a name="pdf-type"><code>type (v)</code></a></h3>
-Returns the type of its only argument, coded as a string.
-The possible results of this function are
-"<code>nil</code>" (a string, not the value <b>nil</b>),
-"<code>number</code>",
-"<code>string</code>",
-"<code>boolean</code>",
-"<code>table</code>",
-"<code>function</code>",
-"<code>thread</code>",
-and "<code>userdata</code>".
+将参数的类型编码为一个字符串返回。
+函数可能的返回值有
+"<code>nil</code>" （一个字符串，而不是 <b>nil</b> 值），
+"<code>number</code>"，
+"<code>string</code>"，
+"<code>boolean</code>"，
+"<code>table</code>"，
+"<code>function</code>"，
+"<code>thread</code>"，
+"<code>userdata</code>"。
 
 
 
 
 <p>
 <hr><h3><a name="pdf-_VERSION"><code>_VERSION</code></a></h3>
-A global variable (not a function) that
-holds a string containing the current interpreter version.
-The current value of this variable is "<code>Lua 5.3</code>".
+一个包含有当前解释器版本号的全局变量（并非函数）。
+当前这个变量的值为 "<code>Lua 5.3</code>"。
 
 
 
@@ -6868,8 +6807,8 @@ The current value of this variable is "<code>Lua 5.3</code>".
 
 
 <p>
-This function is similar to <a href="#pdf-pcall"><code>pcall</code></a>,
-except that it sets a new message handler <code>msgh</code>.
+这个函数和 <a href="#pdf-pcall"><code>pcall</code></a> 类似。
+不过它可以额外设置一个消息处理器 <code>msgh</code>。
 
 
 
@@ -6877,12 +6816,12 @@ except that it sets a new message handler <code>msgh</code>.
 
 
 
-<h2>6.2 &ndash; <a name="6.2">Coroutine Manipulation</a></h2>
+<h2>6.2 &ndash; <a name="6.2">协程管理</a></h2>
 
 <p>
-The operations related to coroutines comprise a sub-library of
-the basic library and come inside the table <a name="pdf-coroutine"><code>coroutine</code></a>.
-See <a href="#2.6">&sect;2.6</a> for a general description of coroutines.
+关于协程的操作作为基础库的一个子库，
+被放在一个独立表 <a name="pdf-coroutine"><code>coroutine</code></a> 中。
+协程的介绍参见 <a href="#2.6">&sect;2.6</a> 。
 
 
 <p>
@@ -6890,11 +6829,9 @@ See <a href="#2.6">&sect;2.6</a> for a general description of coroutines.
 
 
 <p>
-Creates a new coroutine, with body <code>f</code>.
-<code>f</code> must be a Lua function.
-Returns this new coroutine,
-an object with type <code>"thread"</code>.
-
+创建一个主体函数为 <code>f</code> 的新协程。
+<code>f</code> 必须是一个 Lua 的函数。
+返回这个新协程，它是一个类型为 <code>"thread"</code> 的对象。
 
 
 
@@ -6903,12 +6840,11 @@ an object with type <code>"thread"</code>.
 
 
 <p>
-Returns true when the running coroutine can yield.
+如果正在运行的协程可以让出，则返回真。
 
 
 <p>
-A running coroutine is yieldable if it is not the main thread and
-it is not inside a non-yieldable C function.
+不在主线程中或不在一个无法让出的 C 函数中时，当前协程是可让出的。
 
 
 
@@ -6918,24 +6854,20 @@ it is not inside a non-yieldable C function.
 
 
 <p>
-Starts or continues the execution of coroutine <code>co</code>.
-The first time you resume a coroutine,
-it starts running its body.
-The values <code>val1</code>, ... are passed
-as the arguments to the body function.
-If the coroutine has yielded,
-<code>resume</code> restarts it;
-the values <code>val1</code>, ... are passed
-as the results from the yield.
+开始或继续协程 <code>co</code> 的运行。
+当你第一次延续一个协程，它会从主体函数处开始运行。
+<code>val1</code>, ... 这些值会以参数形式传入主体函数。
+如果该协程被让出，<code>resume</code> 会重新启动它；
+<code>val1</code>, ... 这些参数会作为让出点的返回值。
 
 
 <p>
-If the coroutine runs without any errors,
-<code>resume</code> returns <b>true</b> plus any values passed to <code>yield</code>
-(when the coroutine yields) or any values returned by the body function
-(when the coroutine terminates).
-If there is any error,
-<code>resume</code> returns <b>false</b> plus the error message.
+如果协程运行起来没有错误，
+<code>resume</code> 返回 <b>true</b> 加上传给 <code>yield</code> 的所有值
+（当协程让出），
+或是主体函数的所有返回值（当协程中止）。
+如果有任何错误发生，
+<code>resume</code> 返回 <b>false</b> 加错误消息。
 
 
 
@@ -6945,8 +6877,8 @@ If there is any error,
 
 
 <p>
-Returns the running coroutine plus a boolean,
-true when the running coroutine is the main one.
+返回当前正在运行的协程加一个布尔量。
+如果当前运行的协程是主线程，其为真。
 
 
 
@@ -6956,15 +6888,11 @@ true when the running coroutine is the main one.
 
 
 <p>
-Returns the status of coroutine <code>co</code>, as a string:
-<code>"running"</code>,
-if the coroutine is running (that is, it called <code>status</code>);
-<code>"suspended"</code>, if the coroutine is suspended in a call to <code>yield</code>,
-or if it has not started running yet;
-<code>"normal"</code> if the coroutine is active but not running
-(that is, it has resumed another coroutine);
-and <code>"dead"</code> if the coroutine has finished its body function,
-or if it has stopped with an error.
+以字符串形式返回协程 <code>co</code> 的状态：
+当协程正在运行（它就是调用 <code>status</code> 的那个） ，返回 <code>"running"</code>；
+如果协程调用 <code>yield</code> 挂起或是还没有开始运行，返回 <code>"suspended"</code>；
+如果协程是活动的，都并不在运行（即它正在延续其它协程），返回 <code>"normal"</code>；
+如果协程运行完主体函数或因错误停止，返回 <code>"dead"</code>。
 
 
 
@@ -6974,14 +6902,14 @@ or if it has stopped with an error.
 
 
 <p>
-Creates a new coroutine, with body <code>f</code>.
-<code>f</code> must be a Lua function.
-Returns a function that resumes the coroutine each time it is called.
-Any arguments passed to the function behave as the
-extra arguments to <code>resume</code>.
-Returns the same values returned by <code>resume</code>,
-except the first boolean.
-In case of error, propagates the error.
+创建一个主体函数为 <code>f</code> 的新协程。
+<code>f</code> 必须是一个 Lua 的函数。
+返回一个函数，
+每次调用该函数都会延续该协程。
+传给这个函数的参数都会作为 <code>resume</code> 的额外参数。
+和 <code>resume</code> 返回相同的值，
+只是没有第一个布尔量。
+如果发生任何错误，抛出这个错误。
 
 
 
@@ -6991,23 +6919,21 @@ In case of error, propagates the error.
 
 
 <p>
-Suspends the execution of the calling coroutine.
-Any arguments to <code>yield</code> are passed as extra results to <code>resume</code>.
+挂起正在调用的协程的执行。
+传递给 <code>yield</code> 的参数都会转为 <code>resume</code> 的额外返回值。
 
 
 
 
 
 
-
-<h2>6.3 &ndash; <a name="6.3">Modules</a></h2>
+<h2>6.3 &ndash; <a name="6.3">模块</a></h2>
 
 <p>
-The package library provides basic
-facilities for loading modules in Lua.
-It exports one function directly in the global environment:
-<a href="#pdf-require"><code>require</code></a>.
-Everything else is exported in a table <a name="pdf-package"><code>package</code></a>.
+包管理库提供了从 Lua 中加载模块的基础设施。
+只有一个导出函数直接放在全局环境中：
+<a href="#pdf-require"><code>require</code></a>。
+所有其它的部分都导出在表 <a name="pdf-package"><code>package</code></a> 中。
 
 
 <p>
@@ -7015,54 +6941,47 @@ Everything else is exported in a table <a name="pdf-package"><code>package</code
 
 
 <p>
-Loads the given module.
-The function starts by looking into the <a href="#pdf-package.loaded"><code>package.loaded</code></a> table
-to determine whether <code>modname</code> is already loaded.
-If it is, then <code>require</code> returns the value stored
-at <code>package.loaded[modname]</code>.
-Otherwise, it tries to find a <em>loader</em> for the module.
+加载一个模块。
+这个函数首先查找 <a href="#pdf-package.loaded"><code>package.loaded</code></a> 表，
+检测 <code>modname</code> 是否被加载过。
+如果被加载过，<code>require</code> 返回 <code>package.loaded[modname]</code> 中保存的值。
+否则，它试着为模块寻找 <em>加载器</em> 。
 
 
 <p>
-To find a loader,
-<code>require</code> is guided by the <a href="#pdf-package.searchers"><code>package.searchers</code></a> sequence.
-By changing this sequence,
-we can change how <code>require</code> looks for a module.
-The following explanation is based on the default configuration
-for <a href="#pdf-package.searchers"><code>package.searchers</code></a>.
+
+<code>require</code> 遵循 <a href="#pdf-package.searchers"><code>package.searchers</code></a> 序列的指引来查找加载器。
+如果改变这个序列，我们可以改变 <code>require</code> 如果查找一个模块。
+下列说明基于 <a href="#pdf-package.searchers"><code>package.searchers</code></a>
+的默认配置。
 
 
 <p>
-First <code>require</code> queries <code>package.preload[modname]</code>.
-If it has a value,
-this value (which must be a function) is the loader.
-Otherwise <code>require</code> searches for a Lua loader using the
-path stored in <a href="#pdf-package.path"><code>package.path</code></a>.
-If that also fails, it searches for a C&nbsp;loader using the
-path stored in <a href="#pdf-package.cpath"><code>package.cpath</code></a>.
-If that also fails,
-it tries an <em>all-in-one</em> loader (see <a href="#pdf-package.searchers"><code>package.searchers</code></a>).
+首先 <code>require</code> 查找 <code>package.preload[modname]</code> 。
+如果这里有一个值，这个值（必须是一个函数）就是那个加载器。
+否则 <code>require</code> 使用 Lua 加载器去查找
+<a href="#pdf-package.path"><code>package.path</code></a> 的路径。
+如果查找失败，接着使用 C 加载器去查找
+<a href="#pdf-package.cpath"><code>package.cpath</code></a> 的路径。
+如果都失败了，再尝试 <em>一体化</em> 加载器 （参见 <a href="#pdf-package.searchers"><code>package.searchers</code></a>）。
 
 
 <p>
-Once a loader is found,
-<code>require</code> calls the loader with two arguments:
-<code>modname</code> and an extra value dependent on how it got the loader.
-(If the loader came from a file,
-this extra value is the file name.)
-If the loader returns any non-nil value,
-<code>require</code> assigns the returned value to <code>package.loaded[modname]</code>.
-If the loader does not return a non-nil value and
-has not assigned any value to <code>package.loaded[modname]</code>,
-then <code>require</code> assigns <b>true</b> to this entry.
-In any case, <code>require</code> returns the
-final value of <code>package.loaded[modname]</code>.
+每次找到一个加载器，<code>require</code> 都用两个参数调用加载器：
+<code>modname</code> 和一个在获取加载器过程中得到的参数。
+（如果通过查找文件得到的加载器，这个额外参数是文件名。）
+如果加载器返回非空值，
+<code>require</code> 将这个值赋给 <code>package.loaded[modname]</code>。
+如果加载器没能返回一个非空值用于赋给 <code>package.loaded[modname]</code>，
+<code>require</code> 会在那里设入 <b>true</b> 。
+无论是什么情况，<code>require</code> 都会返回
+<code>package.loaded[modname]</code> 的最终值。
 
 
 <p>
-If there is any error loading or running the module,
-or if it cannot find any loader for the module,
-then <code>require</code> raises an error.
+如果在加载或运行模块时有错误，
+或是无非为模块找到加载器，
+<code>require</code> 都会抛出错误。
 
 
 
@@ -7072,28 +6991,24 @@ then <code>require</code> raises an error.
 
 
 <p>
-A string describing some compile-time configurations for packages.
-This string is a sequence of lines:
+一个描述有一些为包管理准备的编译期配置信息的串。
+这个字符串由一系列行构成：
 
 <ul>
 
-<li>The first line is the directory separator string.
-Default is '<code>\</code>' for Windows and '<code>/</code>' for all other systems.</li>
+<li>第一行是目录分割串。
+对于 Windows 默认是 '<code>\</code>' ，对于其它系统是 '<code>/</code>' 。</li>
 
-<li>The second line is the character that separates templates in a path.
-Default is '<code>;</code>'.</li>
+<li>第二行是用于路径中的分割符。默认值是 '<code>;</code>' 。</li>
 
-<li>The third line is the string that marks the
-substitution points in a template.
-Default is '<code>?</code>'.</li>
+<li>第三行是用于标记模板替换点的字符串。
+默认是 '<code>?</code>' 。</li>
 
-<li>The fourth line is a string that, in a path in Windows,
-is replaced by the executable's directory.
-Default is '<code>!</code>'.</li>
+<li>第四行是在 Windows 中将被替换成执行程序所在目录的路径的字符串。
+默认是 '<code>!</code>' 。</li>
 
-<li>The fifth line is a mark to ignore all text after it
-when building the <code>luaopen_</code> function name.
-Default is '<code>-</code>'.</li>
+<li>第五行是一个记号，该记号之后的所有文本将在构建 <code>luaopen_</code> 函数名时被忽略掉。
+默认是 '<code>-</code>'。</li>
 
 </ul>
 
@@ -7104,16 +7019,15 @@ Default is '<code>-</code>'.</li>
 
 
 <p>
-The path used by <a href="#pdf-require"><code>require</code></a> to search for a C&nbsp;loader.
+这个路径被 <a href="#pdf-require"><code>require</code></a> 在 C 加载器中做搜索时用到。
 
 
 <p>
-Lua initializes the C&nbsp;path <a href="#pdf-package.cpath"><code>package.cpath</code></a> in the same way
-it initializes the Lua path <a href="#pdf-package.path"><code>package.path</code></a>,
-using the environment variable <a name="pdf-LUA_CPATH_5_3"><code>LUA_CPATH_5_3</code></a>
-or the environment variable <a name="pdf-LUA_CPATH"><code>LUA_CPATH</code></a>
-or a default path defined in <code>luaconf.h</code>.
-
+Lua 用和初始化 Lua 路径 <a href="#pdf-package.path"><code>package.path</code></a>
+相同的方式初始化 C 路径 <a href="#pdf-package.cpath"><code>package.cpath</code></a> 。
+它会使用环境变量 <a name="pdf-LUA_CPATH_5_3"><code>LUA_CPATH_5_3</code></a> 或
+环境变量 <a name="pdf-LUA_CPATH"><code>LUA_CPATH</code></a> 初始化。
+要么就采用 <code>luaconf.h</code> 中的定义的默认路径。
 
 
 
@@ -7122,17 +7036,15 @@ or a default path defined in <code>luaconf.h</code>.
 
 
 <p>
-A table used by <a href="#pdf-require"><code>require</code></a> to control which
-modules are already loaded.
-When you require a module <code>modname</code> and
-<code>package.loaded[modname]</code> is not false,
-<a href="#pdf-require"><code>require</code></a> simply returns the value stored there.
+用于 <a href="#pdf-require"><code>require</code></a> 控制哪些模块已经被加载的表。
+当你请求一个 <code>modname</code> 模块，且
+<code>package.loaded[modname]</code> 不为假时，
+<a href="#pdf-require"><code>require</code></a> 简单返回储存在内的值。
 
 
 <p>
-This variable is only a reference to the real table;
-assignments to this variable do not change the
-table used by <a href="#pdf-require"><code>require</code></a>.
+这个变量仅仅是对真正那张表的引用；
+改变这个值并不会改变 <a href="#pdf-require"><code>require</code></a> 使用的表。
 
 
 
@@ -7142,38 +7054,32 @@ table used by <a href="#pdf-require"><code>require</code></a>.
 
 
 <p>
-Dynamically links the host program with the C&nbsp;library <code>libname</code>.
+让数组程序动态链接 C 库 <code>libname</code> 。
 
 
 <p>
-If <code>funcname</code> is "<code>*</code>",
-then it only links with the library,
-making the symbols exported by the library
-available to other dynamically linked libraries.
-Otherwise,
-it looks for a function <code>funcname</code> inside the library
-and returns this function as a C&nbsp;function.
-So, <code>funcname</code> must follow the <a href="#lua_CFunction"><code>lua_CFunction</code></a> prototype
-(see <a href="#lua_CFunction"><code>lua_CFunction</code></a>).
+当 <code>funcname</code> 为 "<code>*</code>"，
+它仅仅连接该库，让库中的符号都导出给其它动态链接库使用。
+否则，它查找库中的函数 <code>funcname</code> ，以 C 函数的形式返回这个函数。
+因此，<code>funcname</code> 必须遵循原型 <a href="#lua_CFunction"><code>lua_CFunction</code></a> 
+（参见 <a href="#lua_CFunction"><code>lua_CFunction</code></a>）。
 
 
 <p>
-This is a low-level function.
-It completely bypasses the package and module system.
-Unlike <a href="#pdf-require"><code>require</code></a>,
-it does not perform any path searching and
-does not automatically adds extensions.
-<code>libname</code> must be the complete file name of the C&nbsp;library,
-including if necessary a path and an extension.
-<code>funcname</code> must be the exact name exported by the C&nbsp;library
-(which may depend on the C&nbsp;compiler and linker used).
+这是一个低阶函数。
+它完全绕过了包模块系统。
+和 <a href="#pdf-require"><code>require</code></a> 不同，
+它不会做任何路径查询，也不会自动加扩展名。
+<code>libname</code> 必须是一个 C 库需要的完整的文件名，如果有必要，需要提供路径和扩展名。
+<code>funcname</code> 必须是 C 库需要的准确名字
+（这取决于使用的 C 编译器和链接器）。
 
 
 <p>
-This function is not supported by Standard&nbsp;C.
-As such, it is only available on some platforms
-(Windows, Linux, Mac OS X, Solaris, BSD,
-plus other Unix systems that support the <code>dlfcn</code> standard).
+这个函数在标准 C 中不支持。
+因此，它只在部分平台有效
+（ Windows ，Linux ，Mac OS X, Solaris, BSD, 加上支持
+<code>dlfcn</code> 标准的 Unix 系统）。
 
 
 
@@ -7183,17 +7089,14 @@ plus other Unix systems that support the <code>dlfcn</code> standard).
 
 
 <p>
-The path used by <a href="#pdf-require"><code>require</code></a> to search for a Lua loader.
+这个路径被 <a href="#pdf-require"><code>require</code></a> 在 Lua 加载器中做搜索时用到。
 
 
 <p>
-At start-up, Lua initializes this variable with
-the value of the environment variable <a name="pdf-LUA_PATH_5_3"><code>LUA_PATH_5_3</code></a> or
-the environment variable <a name="pdf-LUA_PATH"><code>LUA_PATH</code></a> or
-with a default path defined in <code>luaconf.h</code>,
-if those environment variables are not defined.
-Any "<code>;;</code>" in the value of the environment variable
-is replaced by the default path.
+在启动时，Lua 用环境变量 <a name="pdf-LUA_PATH_5_3"><code>LUA_PATH_5_3</code></a>
+或环境变量 <a name="pdf-LUA_PATH"><code>LUA_PATH</code></a> 来初始化这个变量。
+或采用 <code>luaconf.h</code> 中的默认路径。
+环境变量中出现的所有 "<code>;;</code>" 都会被替换成默认路径。
 
 
 
@@ -7203,14 +7106,13 @@ is replaced by the default path.
 
 
 <p>
-A table to store loaders for specific modules
-(see <a href="#pdf-require"><code>require</code></a>).
+保存有一些特殊模块的加载器
+（参见 <a href="#pdf-require"><code>require</code></a>）。
 
 
 <p>
-This variable is only a reference to the real table;
-assignments to this variable do not change the
-table used by <a href="#pdf-require"><code>require</code></a>.
+这个变量仅仅是对真正那张表的引用；
+改变这个值并不会改变 <a href="#pdf-require"><code>require</code></a> 使用的表。
 
 
 
@@ -7220,84 +7122,73 @@ table used by <a href="#pdf-require"><code>require</code></a>.
 
 
 <p>
-A table used by <a href="#pdf-require"><code>require</code></a> to control how to load modules.
+用于 <a href="#pdf-require"><code>require</code></a> 控制如何加载模块的表。
 
 
 <p>
-Each entry in this table is a <em>searcher function</em>.
-When looking for a module,
-<a href="#pdf-require"><code>require</code></a> calls each of these searchers in ascending order,
-with the module name (the argument given to <a href="#pdf-require"><code>require</code></a>) as its
-sole parameter.
-The function can return another function (the module <em>loader</em>)
-plus an extra value that will be passed to that loader,
-or a string explaining why it did not find that module
-(or <b>nil</b> if it has nothing to say).
+这张表内的每一项都是一个 <em>查找器函数</em>。
+当查找一个模块时，
+<a href="#pdf-require"><code>require</code></a> 按次序调用这些查找器，
+并传入模块名（<a href="#pdf-require"><code>require</code></a> 的参数）作为唯一的一个参数。
+此函数可以返回另一个函数（模块的 <em>加载器</em>）加上另一个将传递给这个加载器的参数。
+或是返回一个描述为何没有找到这个模块的字符串
+（或是返回 <b>nil</b> 什么也不想说）。
 
 
 <p>
-Lua initializes this table with four searcher functions.
+Lua 用四个查找器函数初始化这张表。
 
 
 <p>
-The first searcher simply looks for a loader in the
-<a href="#pdf-package.preload"><code>package.preload</code></a> table.
+第一个查找器就是简单的在 <a href="#pdf-package.preload"><code>package.preload</code></a> 表中查找加载器。
 
 
 <p>
-The second searcher looks for a loader as a Lua library,
-using the path stored at <a href="#pdf-package.path"><code>package.path</code></a>.
-The search is done as described in function <a href="#pdf-package.searchpath"><code>package.searchpath</code></a>.
+第二个查找器用于查找 Lua 库的加载库。
+它使用储存在 <a href="#pdf-package.path"><code>package.path</code></a> 中的路径来做查找工作。
+查找过程和函数 <a href="#pdf-package.searchpath"><code>package.searchpath</code></a> 描述的一致。
 
 
 <p>
-The third searcher looks for a loader as a C&nbsp;library,
-using the path given by the variable <a href="#pdf-package.cpath"><code>package.cpath</code></a>.
-Again,
-the search is done as described in function <a href="#pdf-package.searchpath"><code>package.searchpath</code></a>.
-For instance,
-if the C&nbsp;path is the string
+第三个查找器用于查找 C 库的加载库。
+它使用储存在 <a href="#pdf-package.path"><code>package.cpath</code></a> 中的路径来做查找工作。
+同样，
+查找过程和函数 <a href="#pdf-package.searchpath"><code>package.searchpath</code></a> 描述的一致。
+例如，如果 C 路径是这样一个字符串
 
 <pre>
      "./?.so;./?.dll;/usr/local/?/init.so"
 </pre><p>
-the searcher for module <code>foo</code>
-will try to open the files <code>./foo.so</code>, <code>./foo.dll</code>,
-and <code>/usr/local/foo/init.so</code>, in that order.
-Once it finds a C&nbsp;library,
-this searcher first uses a dynamic link facility to link the
-application with the library.
-Then it tries to find a C&nbsp;function inside the library to
-be used as the loader.
-The name of this C&nbsp;function is the string "<code>luaopen_</code>"
-concatenated with a copy of the module name where each dot
-is replaced by an underscore.
-Moreover, if the module name has a hyphen,
-its suffix after (and including) the first hyphen is removed.
-For instance, if the module name is <code>a.b.c-v2.1</code>,
-the function name will be <code>luaopen_a_b_c</code>.
+查找器查找模块 <code>foo</code> 
+会依次尝试打开文件 <code>./foo.so</code>，<code>./foo.dll</code>，
+以及 <code>/usr/local/foo/init.so</code>。
+一旦它找到一个 C 库，
+查找器首先使用动态链接机制连接该库。
+然后尝试在该库中找到可以用作加载器的 C 函数。
+这个 C 函数的名字是 "<code>luaopen_</code>" 紧接模块名的字符串，
+其中字符串中所有的下划线都会被替换成点。
+此外，如果模块名中有横线，
+横线后面的部分（包括横线）都被去掉。
+例如，如果模块名为 <code>a.b.c-v2.1</code>，
+函数名就是 <code>luaopen_a_b_c</code>。
 
 
 <p>
-The fourth searcher tries an <em>all-in-one loader</em>.
-It searches the C&nbsp;path for a library for
-the root name of the given module.
-For instance, when requiring <code>a.b.c</code>,
-it will search for a C&nbsp;library for <code>a</code>.
-If found, it looks into it for an open function for
-the submodule;
-in our example, that would be <code>luaopen_a_b_c</code>.
-With this facility, a package can pack several C&nbsp;submodules
-into one single library,
-with each submodule keeping its original open function.
+第四个搜索器是　<em>一体化加载器</em>。
+它从 C 路径中查找指定模块的根名字。
+例如，当请求 <code>a.b.c</code>　时，
+它将查找 <code>a</code> 这个 C 库。
+如果找得到，它会在里面找子模块的加载函数。
+在我们的例子中，就是找　<code>luaopen_a_b_c</code>。
+利用这个机制，可以把若干 C 子模块打包进单个库。
+每个子模块都可以有原本的加载函数名。
 
 
 <p>
-All searchers except the first one (preload) return as the extra value
-the file name where the module was found,
-as returned by <a href="#pdf-package.searchpath"><code>package.searchpath</code></a>.
-The first searcher returns no extra value.
-
+除了第一个（预加载）搜索器外，每个搜索器都会返回
+它找到的模块的文件名。
+这和 <a href="#pdf-package.searchpath"><code>package.searchpath</code></a> 的返回值一样。
+第一个搜索器没有返回值。
 
 
 
@@ -7306,40 +7197,33 @@ The first searcher returns no extra value.
 
 
 <p>
-Searches for the given <code>name</code> in the given <code>path</code>.
+在指定 <code>path</code> 中搜索指定的 <code>name</code> 。
 
 
 <p>
-A path is a string containing a sequence of
-<em>templates</em> separated by semicolons.
-For each template,
-the function replaces each interrogation mark (if any)
-in the template with a copy of <code>name</code>
-wherein all occurrences of <code>sep</code>
-(a dot, by default)
-were replaced by <code>rep</code>
-(the system's directory separator, by default),
-and then tries to open the resulting file name.
+路径是一个包含有一系列以分号分割的 <em>模板</em> 构成的字符串。
+对于每个模板，都会用 <code>name</code> 替换其中的每个问号（如果有的话）。
+且将其中的 <code>sep</code> （默认是点）替换为  <code>rep</code>
+（默认是系统的目录分割符）。
+然后尝试打开这个文件名。
 
 
 <p>
-For instance, if the path is the string
+例如，如果路径是字符串
 
 <pre>
      "./?.lua;./?.lc;/usr/local/?/init.lua"
 </pre><p>
-the search for the name <code>foo.a</code>
-will try to open the files
-<code>./foo/a.lua</code>, <code>./foo/a.lc</code>, and
-<code>/usr/local/foo/a/init.lua</code>, in that order.
+搜索 <code>foo.a</code>　这个名字将
+依次尝试打开文件
+<code>./foo/a.lua</code>　， <code>./foo/a.lc</code>　，以及
+<code>/usr/local/foo/a/init.lua</code>。
 
 
 <p>
-Returns the resulting name of the first file that it can
-open in read mode (after closing the file),
-or <b>nil</b> plus an error message if none succeeds.
-(This error message lists all file names it tried to open.)
-
+返回第一个可以用读模式打开（并马上关闭该文件）的文件的名字。
+如果不存在这样的文件，返回 <b>nil</b> 加上错误消息。
+（这条错误消息列出了所有尝试打开的文件名。）
 
 
 
