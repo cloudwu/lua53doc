@@ -7309,7 +7309,7 @@ Lua 用四个查找器函数初始化这张表。
 中关于它起始及终点位置的索引；
 否则，返回 <b>nil</b>。
 第三个可选数字参数 <code>init</code>
-指明才哪里开始搜索；
+指明从哪里开始搜索；
 默认值为 1 ，同时可以是负值。
 第四个可选参数 <code>plain</code> 为 <b>true</b> 时，
 关闭模式匹配机制。
@@ -7851,42 +7851,35 @@ Lua 中的匹配模式直接用常规的字符串来描述。
 
 
 
-<h2>6.5 &ndash; <a name="6.5">UTF-8 Support</a></h2>
+<h2>6.5 &ndash; <a name="6.5">UTF-8 支持</a></h2>
 
 <p>
-This library provides basic support for UTF-8 encoding.
-It provides all its functions inside the table <a name="pdf-utf8"><code>utf8</code></a>.
-This library does not provide any support for Unicode other
-than the handling of the encoding.
-Any operation that needs the meaning of a character,
-such as character classification, is outside its scope.
+这个库提供了对 UTF-8 编码的基础支持。
+所有的函数都放在表 <a name="pdf-utf8"><code>utf8</code></a> 中。
+此库不提供除编码处理之外的任何 Unicode 支持。
+所有需要了解字符含义的操作，比如字符分类，都不在此范畴。
 
 
 <p>
-Unless stated otherwise,
-all functions that expect a byte position as a parameter
-assume that the given position is either the start of a byte sequence
-or one plus the length of the subject string.
-As in the string library,
-negative indices count from the end of the string.
+除非另有说明，
+当一个函数需要一个字节位置的参数时，
+都假定这个位置要么从字节序列的开始计算，
+要么从字符串长度加一的位置算。
+和字符串库一样，负的索引从字符串末尾计起。
 
 
 <p>
 <hr><h3><a name="pdf-utf8.char"><code>utf8.char (&middot;&middot;&middot;)</code></a></h3>
-Receives zero or more integers,
-converts each one to its corresponding UTF-8 byte sequence
-and returns a string with the concatenation of all these sequences.
-
+接收零或多个整数，
+将每个整数转换成对应的 UTF-8 字节序列，并返回这些序列连接到一起的字符串。
 
 
 
 <p>
 <hr><h3><a name="pdf-utf8.charpattern"><code>utf8.charpattern</code></a></h3>
-The pattern (a string, not a function) "<code>[\0-\x7F\xC2-\xF4][\x80-\xBF]*</code>"
-(see <a href="#6.4.1">&sect;6.4.1</a>),
-which matches exactly one UTF-8 byte sequence,
-assuming that the subject is a valid UTF-8 string.
-
+用于精确匹配到一个 UTF-8 字节序列的模式（是一个字符串，并非函数）"<code>[\0-\x7F\xC2-\xF4][\x80-\xBF]*</code>"
+（参见 <a href="#6.4.1">&sect;6.4.1</a>）。
+它假定处理的对象是一个合法的 UTF-8 字符串。
 
 
 
@@ -7895,64 +7888,57 @@ assuming that the subject is a valid UTF-8 string.
 
 
 <p>
-Returns values so that the construction
+返回一系列的值，可以让
 
 <pre>
      for p, c in utf8.codes(s) do <em>body</em> end
 </pre><p>
-will iterate over all characters in string <code>s</code>,
-with <code>p</code> being the position (in bytes) and <code>c</code> the code point
-of each character.
-It raises an error if it meets any invalid byte sequence.
-
+迭代出字符串 <code>s</code> 中所有的字符。
+这里的 <code>p</code> 是位置（按字节数）而 <code>c</code> 是每个字符的编号。
+如果处理到一个不合法的字节序列，将抛出一个错误。
 
 
 
 <p>
 <hr><h3><a name="pdf-utf8.codepoint"><code>utf8.codepoint (s [, i [, j]])</code></a></h3>
-Returns the codepoints (as integers) from all characters in <code>s</code>
-that start between byte position <code>i</code> and <code>j</code> (both included).
-The default for <code>i</code> is 1 and for <code>j</code> is <code>i</code>.
-It raises an error if it meets any invalid byte sequence.
-
+一整数形式返回 <code>s</code> 中
+从位置 <code>i</code> 到 <code>j</code> 间（包括两端）
+所有字符的编号。
+默认的 <code>i</code> 为 1 ，默认的 <code>j</code> 为 <code>i</code>。
+如果碰上不合法的字节序列，抛出一个错误。
 
 
 
 <p>
 <hr><h3><a name="pdf-utf8.len"><code>utf8.len (s [, i [, j]])</code></a></h3>
-Returns the number of UTF-8 characters in string <code>s</code>
-that start between positions <code>i</code> and <code>j</code> (both inclusive).
-The default for <code>i</code> is 1 and for <code>j</code> is -1.
-If it finds any invalid byte sequence,
-returns a false value plus the position of the first invalid byte. 
-
+返回字符串 <code>s</code> 中
+从位置 <code>i</code> 到 <code>j</code> 间 （包括两端）
+UTF-8 字符的个数。
+默认的 <code>i</code> 为 1 ，默认的 <code>j</code> 为 -1 。
+如果它找到任何不合法的字节序列，
+返回假值加上第一个不合法字节的位置。
 
 
 
 <p>
 <hr><h3><a name="pdf-utf8.offset"><code>utf8.offset (s, n [, i])</code></a></h3>
-Returns the position (in bytes) where the encoding of the
-<code>n</code>-th character of <code>s</code>
-(counting from position <code>i</code>) starts.
-A negative <code>n</code> gets characters before position <code>i</code>.
-The default for <code>i</code> is 1 when <code>n</code> is non-negative
-and <code>#s + 1</code> otherwise,
-so that <code>utf8.offset(s, -n)</code> gets the offset of the
-<code>n</code>-th character from the end of the string.
-If the specified character is neither in the subject
-nor right after its end,
-the function returns <b>nil</b>.
+返回编码在 <code>s</code> 中的第 <code>n</code> 个字符的开始位置（按字节数）
+（从位置 <code>i</code> 处开始统计）。
+负 <code>n</code> 则取在位置 <code>i</code> 前的字符。
+当 <code>n</code> 是非负数时，默认的 <code>i</code> 是 1，
+否则默认为 <code>#s + 1</code>。
+因此，<code>utf8.offset(s, -n)</code> 取字符串的倒数第
+<code>n</code> 个字符的位置。
+如果指定的字符不在其中或在结束点之后，函数返回 <b>nil</b>。
 
 
 <p>
-As a special case,
-when <code>n</code> is 0 the function returns the start of the encoding
-of the character that contains the <code>i</code>-th byte of <code>s</code>.
+作为特例，当 <code>n</code> 等于 0 时，
+此函数返回含有 <code>s</code> 第 <code>i</code> 字节的那个字符的开始位置。
 
 
 <p>
-This function assumes that <code>s</code> is a valid UTF-8 string.
-
+这个函数假定 <code>s</code> 是一个合法的 UTF-8 字符串。
 
 
 
