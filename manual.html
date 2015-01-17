@@ -6816,12 +6816,12 @@ Lua 不会对二进制代码块做健壮性检查。
 
 
 
-<h2>6.2 &ndash; <a name="6.2">Coroutine Manipulation</a></h2>
+<h2>6.2 &ndash; <a name="6.2">协程管理</a></h2>
 
 <p>
-The operations related to coroutines comprise a sub-library of
-the basic library and come inside the table <a name="pdf-coroutine"><code>coroutine</code></a>.
-See <a href="#2.6">&sect;2.6</a> for a general description of coroutines.
+关于协程的操作作为基础库的一个子库，
+被放在一个独立表 <a name="pdf-coroutine"><code>coroutine</code></a> 中。
+协程的介绍参见 <a href="#2.6">&sect;2.6</a> 。
 
 
 <p>
@@ -6829,11 +6829,9 @@ See <a href="#2.6">&sect;2.6</a> for a general description of coroutines.
 
 
 <p>
-Creates a new coroutine, with body <code>f</code>.
-<code>f</code> must be a Lua function.
-Returns this new coroutine,
-an object with type <code>"thread"</code>.
-
+创建一个主体函数为 <code>f</code> 的新协程。
+<code>f</code> 必须是一个 Lua 的函数。
+返回这个新协程，它是一个类型为 <code>"thread"</code> 的对象。
 
 
 
@@ -6842,12 +6840,11 @@ an object with type <code>"thread"</code>.
 
 
 <p>
-Returns true when the running coroutine can yield.
+如果正在运行的协程可以让出，则返回真。
 
 
 <p>
-A running coroutine is yieldable if it is not the main thread and
-it is not inside a non-yieldable C function.
+不在主线程中或不在一个无法让出的 C 函数中时，当前协程是可让出的。
 
 
 
@@ -6857,24 +6854,20 @@ it is not inside a non-yieldable C function.
 
 
 <p>
-Starts or continues the execution of coroutine <code>co</code>.
-The first time you resume a coroutine,
-it starts running its body.
-The values <code>val1</code>, ... are passed
-as the arguments to the body function.
-If the coroutine has yielded,
-<code>resume</code> restarts it;
-the values <code>val1</code>, ... are passed
-as the results from the yield.
+开始或继续协程 <code>co</code> 的运行。
+当你第一次延续一个协程，它会从主体函数处开始运行。
+<code>val1</code>, ... 这些值会以参数形式传入主体函数。
+如果该协程被让出，<code>resume</code> 会重新启动它；
+<code>val1</code>, ... 这些参数会作为让出点的返回值。
 
 
 <p>
-If the coroutine runs without any errors,
-<code>resume</code> returns <b>true</b> plus any values passed to <code>yield</code>
-(when the coroutine yields) or any values returned by the body function
-(when the coroutine terminates).
-If there is any error,
-<code>resume</code> returns <b>false</b> plus the error message.
+如果协程运行起来没有错误，
+<code>resume</code> 返回 <b>true</b> 加上传给 <code>yield</code> 的所有值
+（当协程让出），
+或是主体函数的所有返回值（当协程中止）。
+如果有任何错误发生，
+<code>resume</code> 返回 <b>false</b> 加错误消息。
 
 
 
@@ -6884,8 +6877,8 @@ If there is any error,
 
 
 <p>
-Returns the running coroutine plus a boolean,
-true when the running coroutine is the main one.
+返回当前正在运行的协程加一个布尔量。
+如果当前运行的协程是主线程，其为真。
 
 
 
@@ -6895,15 +6888,11 @@ true when the running coroutine is the main one.
 
 
 <p>
-Returns the status of coroutine <code>co</code>, as a string:
-<code>"running"</code>,
-if the coroutine is running (that is, it called <code>status</code>);
-<code>"suspended"</code>, if the coroutine is suspended in a call to <code>yield</code>,
-or if it has not started running yet;
-<code>"normal"</code> if the coroutine is active but not running
-(that is, it has resumed another coroutine);
-and <code>"dead"</code> if the coroutine has finished its body function,
-or if it has stopped with an error.
+以字符串形式返回协程 <code>co</code> 的状态：
+当协程正在运行（它就是调用 <code>status</code> 的那个） ，返回 <code>"running"</code>；
+如果协程调用 <code>yield</code> 挂起或是还没有开始运行，返回 <code>"suspended"</code>；
+如果协程是活动的，都并不在运行（即它正在延续其它协程），返回 <code>"normal"</code>；
+如果协程运行完主体函数或因错误停止，返回 <code>"dead"</code>。
 
 
 
@@ -6913,14 +6902,14 @@ or if it has stopped with an error.
 
 
 <p>
-Creates a new coroutine, with body <code>f</code>.
-<code>f</code> must be a Lua function.
-Returns a function that resumes the coroutine each time it is called.
-Any arguments passed to the function behave as the
-extra arguments to <code>resume</code>.
-Returns the same values returned by <code>resume</code>,
-except the first boolean.
-In case of error, propagates the error.
+创建一个主体函数为 <code>f</code> 的新协程。
+<code>f</code> 必须是一个 Lua 的函数。
+返回一个函数，
+每次调用该函数都会延续该协程。
+传给这个函数的参数都会作为 <code>resume</code> 的额外参数。
+和 <code>resume</code> 返回相同的值，
+只是没有第一个布尔量。
+如果发生任何错误，抛出这个错误。
 
 
 
@@ -6930,9 +6919,8 @@ In case of error, propagates the error.
 
 
 <p>
-Suspends the execution of the calling coroutine.
-Any arguments to <code>yield</code> are passed as extra results to <code>resume</code>.
-
+挂起正在调用的协程的执行。
+传递给 <code>yield</code> 的参数都会转为 <code>resume</code> 的额外返回值。
 
 
 
