@@ -7945,19 +7945,18 @@ UTF-8 字符的个数。
 
 
 
-<h2>6.6 &ndash; <a name="6.6">Table Manipulation</a></h2>
+<h2>6.6 &ndash; <a name="6.6">表处理</a></h2>
 
 <p>
-This library provides generic functions for table manipulation.
-It provides all its functions inside the table <a name="pdf-table"><code>table</code></a>.
+这个库提供了表处理的通用函数。
+所有函数都放在表 <a name="pdf-table"><code>table</code></a> 中。
 
 
 <p>
-Remember that, whenever an operation needs the length of a table,
-the table must be a proper sequence
-or have a <code>__len</code> metamethod (see <a href="#3.4.7">&sect;3.4.7</a>).
-All functions ignore non-numeric keys
-in the tables given as arguments.
+记住，无论何时，若一个操作需要取表的长度，
+这张表必须是一个真序列，或是拥有 <code>__len</code> 元方法
+（参见 <a href="#3.4.7">&sect;3.4.7</a> ）。
+所有的函数都忽略传入参数的那张表中的非数字键。
 
 
 <p>
@@ -7965,12 +7964,12 @@ in the tables given as arguments.
 
 
 <p>
-Given a list where all elements are strings or numbers,
-returns the string <code>list[i]..sep..list[i+1] &middot;&middot;&middot; sep..list[j]</code>.
-The default value for <code>sep</code> is the empty string,
-the default for <code>i</code> is 1,
-and the default for <code>j</code> is <code>#list</code>.
-If <code>i</code> is greater than <code>j</code>, returns the empty string.
+提供一个列表，其所有元素都是字符串或数字，返回字符串
+<code>list[i]..sep..list[i+1] &middot;&middot;&middot; sep..list[j]</code>。
+<code>sep</code> 的默认值是空串，
+<code>i</code> 的默认值是 1 ，
+<code>j</code> 的默认值是 <code>#list</code> 。
+如果 <code>i</code> 比 <code>j</code> 大，返回空串。
 
 
 
@@ -7980,13 +7979,10 @@ If <code>i</code> is greater than <code>j</code>, returns the empty string.
 
 
 <p>
-Inserts element <code>value</code> at position <code>pos</code> in <code>list</code>,
-shifting up the elements
-<code>list[pos], list[pos+1], &middot;&middot;&middot;, list[#list]</code>.
-The default value for <code>pos</code> is <code>#list+1</code>,
-so that a call <code>table.insert(t,x)</code> inserts <code>x</code> at the end
-of list <code>t</code>.
-
+在 <code>list</code> 的位置 <code>pos</code> 处插入元素 <code>value</code> ，
+并后移元素 <code>list[pos], list[pos+1], &middot;&middot;&middot;, list[#list]</code> 。
+<code>pos</code> 的默认值为 <code>#list+1</code> ，
+因此调用 <code>table.insert(t,x)</code> 会将 <code>x</code> 插在列表 <code>t</code> 的末尾。
 
 
 
@@ -7995,13 +7991,12 @@ of list <code>t</code>.
 
 
 <p>
-Moves elements from table <code>a1</code> to table <code>a2</code>.
-This function performs the equivalent to the following
-multiple assignment:
-<code>a2[t],&middot;&middot;&middot; = a1[f],&middot;&middot;&middot;,a1[e]</code>.
-The default for <code>a2</code> is <code>a1</code>.
-The destination range can overlap with the source range.
-Index <code>f</code> must be positive.
+将元素从表 <code>a1</code> 移到表 <code>a2</code>。
+这个函数做了次等价于后面这个多重赋值的等价操作：
+<code>a2[t],&middot;&middot;&middot; = a1[f],&middot;&middot;&middot;,a1[e]</code>。
+<code>a2</code> 的默认值为 <code>a1</code>。
+目标区间可以和源区间重叠。
+索引 <code>f</code> 必须是正数。
 
 
 
@@ -8011,10 +8006,9 @@ Index <code>f</code> must be positive.
 
 
 <p>
-Returns a new table with all parameters stored into keys 1, 2, etc.
-and with a field "<code>n</code>" with the total number of parameters.
-Note that the resulting table may not be a sequence.
-
+返回用所有参数以键 1,2, 等填充的新表，
+并将 "<code>n</code>" 这个域设为参数的总数。
+注意这张返回的表不一定是一个序列。
 
 
 
@@ -8023,22 +8017,17 @@ Note that the resulting table may not be a sequence.
 
 
 <p>
-Removes from <code>list</code> the element at position <code>pos</code>,
-returning the value of the removed element.
-When <code>pos</code> is an integer between 1 and <code>#list</code>,
-it shifts down the elements
-<code>list[pos+1], list[pos+2], &middot;&middot;&middot;, list[#list]</code>
-and erases element <code>list[#list]</code>;
-The index <code>pos</code> can also be 0 when <code>#list</code> is 0,
-or <code>#list + 1</code>;
-in those cases, the function erases the element <code>list[pos]</code>.
+移除 <code>list</code> 中 <code>pos</code> 位置上的元素，并返回这个被移除的值。
+当 <code>pos</code> 是在 1 到 <code>#list</code> 之间的整数时，
+它向前移动元素　<code>list[pos+1], list[pos+2], &middot;&middot;&middot;, list[#list]</code>
+并删除元素 <code>list[#list]</code>；
+索引 <code>pos</code> 可以是 <code>#list + 1</code> ，或在 <code>#list</code> 为 0 时可以是 0 ；
+在这些情况下，函数删除元素 <code>list[pos]</code>。
 
 
 <p>
-The default value for <code>pos</code> is <code>#list</code>,
-so that a call <code>table.remove(l)</code> removes the last element
-of list <code>l</code>.
-
+<code>pos</code> 默认为 <code>#list</code>，
+因此调用 <code>table.remove(l)</code> 将移除表 <code>l</code> 的最后一个元素。
 
 
 
@@ -8047,21 +8036,19 @@ of list <code>l</code>.
 
 
 <p>
-Sorts list elements in a given order, <em>in-place</em>,
-from <code>list[1]</code> to <code>list[#list]</code>.
-If <code>comp</code> is given,
-then it must be a function that receives two list elements
-and returns true when the first element must come
-before the second in the final order
-(so that <code>not comp(list[i+1],list[i])</code> will be true after the sort).
-If <code>comp</code> is not given,
-then the standard Lua operator <code>&lt;</code> is used instead.
+在表内从 <code>list[1]</code> 到 <code>list[#list]</code> <em>原地</em> 
+对其间元素按指定次序排序。
+如果提供了 <code>comp</code> ，
+它必须是一个可以接收两个列表内元素为参数的函数。
+当第一个元素需要排在第二个元素之前时，返回真
+（因此 <code>not comp(list[i+1],list[i])</code> 在排序结束后将为真）。
+如果没有提供 <code>comp</code>，
+将使用标准 Lua 操作 <code>&lt;</code> 作为替代品。
 
 
 <p>
-The sort algorithm is not stable;
-that is, elements considered equal by the given order
-may have their relative positions changed by the sort.
+排序算法并不稳定；
+即当两个元素次序相等时，它们在排序后的相对位置可能会改变。
 
 
 
@@ -8071,14 +8058,13 @@ may have their relative positions changed by the sort.
 
 
 <p>
-Returns the elements from the given list.
-This function is equivalent to
+返回列表中的元素。
+这个函数等价于
 
 <pre>
      return list[i], list[i+1], &middot;&middot;&middot;, list[j]
 </pre><p>
-By default, <code>i</code> is&nbsp;1 and <code>j</code> is <code>#list</code>.
-
+<code>i</code> 默认为 1 ，<code>j</code> 默认为 <code>#list</code>。
 
 
 
