@@ -8071,26 +8071,22 @@ UTF-8 字符的个数。
 
 
 
-<h2>6.7 &ndash; <a name="6.7">Mathematical Functions</a></h2>
+<h2>6.7 &ndash; <a name="6.7">数学函数</a></h2>
 
 <p>
-This library provides basic mathematical functions.
-It provides all its functions and constants inside the table <a name="pdf-math"><code>math</code></a>.
-Functions with the annotation "<code>integer/float</code>" give
-integer results for integer arguments
-and float results for float (or mixed) arguments.
-Rounding functions
-(<a href="#pdf-math.ceil"><code>math.ceil</code></a>, <a href="#pdf-math.floor"><code>math.floor</code></a>, and <a href="#pdf-math.modf"><code>math.modf</code></a>)
-return an integer when the result fits in the range of an integer,
-or a float otherwise.
-
+这个库提供了基本的数学函数。
+所以函数都放在表 <a name="pdf-math"><code>math</code></a> 中。
+注解有 "<code>integer/float</code>" 的函数会对整数参数返回整数结果，
+对浮点（或混合）参数返回浮点结果。
+圆整函数（<a href="#pdf-math.ceil"><code>math.ceil</code></a>, <a href="#pdf-math.floor"><code>math.floor</code></a>, <a href="#pdf-math.modf"><code>math.modf</code></a>）
+在结果在整数范围内时返回整数，否则返回浮点数。
 
 <p>
 <hr><h3><a name="pdf-math.abs"><code>math.abs (x)</code></a></h3>
 
 
 <p>
-Returns the absolute value of <code>x</code>. (integer/float)
+返回 <code>x</code> 的绝对值。(integer/float)
 
 
 
@@ -8100,7 +8096,7 @@ Returns the absolute value of <code>x</code>. (integer/float)
 
 
 <p>
-Returns the arc cosine of <code>x</code> (in radians).
+返回 <code>x</code> 的反余弦值（用弧度表示）。
 
 
 
@@ -8110,8 +8106,7 @@ Returns the arc cosine of <code>x</code> (in radians).
 
 
 <p>
-Returns the arc sine of <code>x</code> (in radians).
-
+返回 <code>x</code> 的反正弦值（用弧度表示）。
 
 
 
@@ -8120,17 +8115,14 @@ Returns the arc sine of <code>x</code> (in radians).
 
 
 <p>
-
-Returns the arc tangent of <code>y/x</code> (in radians),
-but uses the signs of both parameters to find the
-quadrant of the result.
-(It also handles correctly the case of <code>x</code> being zero.)
-
+返回 <code>y/x</code> 的反正切值（用弧度表示）。
+它会使用两个参数的符号来找到结果落在哪个象限中。
+（即使 <code>x</code> 为零时，也可以正确的处理。）
 
 <p>
-The default value for <code>x</code> is 1,
-so that the call <code>math.atan(y)</code>
-returns the arc tangent of <code>y</code>.
+默认的 <code>x</code> 是 1 ，
+因此调用 <code>math.atan(y)</code> 将返回
+<code>y</code> 的反正切值。
 
 
 
@@ -8140,8 +8132,7 @@ returns the arc tangent of <code>y</code>.
 
 
 <p>
-Returns the smallest integral value larger than or equal to <code>x</code>.
-
+返回不小于 <code>x</code> 的最小整数值。
 
 
 
@@ -8150,8 +8141,7 @@ Returns the smallest integral value larger than or equal to <code>x</code>.
 
 
 <p>
-Returns the cosine of <code>x</code> (assumed to be in radians).
-
+返回 <code>x</code> 的余弦（假定参数是弧度）。
 
 
 
@@ -8160,9 +8150,7 @@ Returns the cosine of <code>x</code> (assumed to be in radians).
 
 
 <p>
-Converts the angle <code>x</code> from radians to degrees.
-
-
+将角 <code>x</code> 从弧度转换为角度。
 
 
 <p>
@@ -8170,9 +8158,8 @@ Converts the angle <code>x</code> from radians to degrees.
 
 
 <p>
-Returns the value <em>e<sup>x</sup></em>
-(where <code>e</code> is the base of natural logarithms).
-
+返回 <em>e<sup>x</sup></em> 的值
+（<code>e</code> 为自然对数的底）。
 
 
 
@@ -8181,8 +8168,7 @@ Returns the value <em>e<sup>x</sup></em>
 
 
 <p>
-Returns the largest integral value smaller than or equal to <code>x</code>.
-
+返回不大于 <code>x</code> 的最大整数值。
 
 
 
@@ -8191,8 +8177,8 @@ Returns the largest integral value smaller than or equal to <code>x</code>.
 
 
 <p>
-Returns the remainder of the division of <code>x</code> by <code>y</code>
-that rounds the quotient towards zero. (integer/float)
+返回 <code>x</code> 除以 <code>y</code>，将商向零圆整后的余数。
+(integer/float)
 
 
 
@@ -8202,10 +8188,8 @@ that rounds the quotient towards zero. (integer/float)
 
 
 <p>
-The float value <code>HUGE_VAL</code>,
-a value larger than any other numerical value.
-
-
+浮点数 <code>HUGE_VAL</code>，
+这个数比任何数字值都大。
 
 
 <p>
@@ -8213,11 +8197,9 @@ a value larger than any other numerical value.
 
 
 <p>
-Returns the logarithm of <code>x</code> in the given base.
-The default for <code>base</code> is <em>e</em>
-(so that the function returns the natural logarithm of <code>x</code>).
-
-
+返回以指定底的 <code>x</code> 的对数。
+默认的 <code>base</code> 是 <em>e</em>
+（因此次函数返回 <code>x</code> 的自然对数）。
 
 
 <p>
@@ -8225,15 +8207,16 @@ The default for <code>base</code> is <em>e</em>
 
 
 <p>
-Returns the argument with the maximum value,
-according to the Lua operator <code>&lt;</code>. (integer/float)
+返回参数中最大的值，
+大小由 Lua 操作 <code>&lt;</code> 决定。
+(integer/float)
 
 
 
 
 <p>
 <hr><h3><a name="pdf-math.maxinteger"><code>math.maxinteger</code></a></h3>
-An integer with the maximum value for an integer.
+最大值的整数。
 
 
 
@@ -8243,16 +8226,15 @@ An integer with the maximum value for an integer.
 
 
 <p>
-Returns the argument with the minimum value,
-according to the Lua operator <code>&lt;</code>. (integer/float)
-
+返回参数中最小的值，
+大小由 Lua 操作 <code>&lt;</code> 决定。
+(integer/float)
 
 
 
 <p>
 <hr><h3><a name="pdf-math.mininteger"><code>math.mininteger</code></a></h3>
-An integer with the minimum value for an integer.
-
+最小值的整数。
 
 
 
@@ -8261,9 +8243,8 @@ An integer with the minimum value for an integer.
 
 
 <p>
-Returns the integral part of <code>x</code> and the fractional part of <code>x</code>.
-Its second result is always a float.
-
+返回 <code>x</code> 的整数部分和小数部分。
+第二个参数一定是浮点数。
 
 
 
@@ -8272,7 +8253,7 @@ Its second result is always a float.
 
 
 <p>
-The value of <em>&pi;</em>.
+<em>&pi;</em> 的值。
 
 
 
@@ -8282,8 +8263,7 @@ The value of <em>&pi;</em>.
 
 
 <p>
-Converts the angle <code>x</code> from degrees to radians.
-
+将角 <code>x</code> 从角度转换为弧度。
 
 
 
@@ -8292,21 +8272,18 @@ Converts the angle <code>x</code> from degrees to radians.
 
 
 <p>
-When called without arguments,
-returns a pseudo-random float with uniform distribution
-in the range  <em>[0,1)</em>.  
-When called with two integers <code>m</code> and <code>n</code>,
-<code>math.random</code> returns a pseudo-random integer
-with uniform distribution in the range <em>[m, n]</em>.
-(The value <em>m-n</em> cannot be negative and must fit in a Lua integer.)
-The call <code>math.random(n)</code> is equivalent to <code>math.random(1,n)</code>.
+当不带参数调用时，
+返回一个 <em>[0,1)</em> 区间内一致分布的浮点伪随机数。
+当以两个整数 <code>m</code> 与 <code>n</code> 调用时，
+<code>math.random</code> 返回一个 <em>[m, n]</em> 区间
+内一致分布的整数伪随机数。
+（值 <em>m-n</em> 不能是负数，且必须在 Lua 整数的表示范围内。）
+调用 <code>math.random(n)</code> 等价于 <code>math.random(1,n)</code>。
 
 
 <p>
-This function is an interface to the underling
-pseudo-random generator function provided by C.
-No guarantees can be given for its statistical properties.
-
+这个函数是对 C 提供的位随机数函数的封装。
+对其统计属性不作担保。
 
 
 
@@ -8315,10 +8292,8 @@ No guarantees can be given for its statistical properties.
 
 
 <p>
-Sets <code>x</code> as the "seed"
-for the pseudo-random generator:
-equal seeds produce equal sequences of numbers.
-
+把 <code>x</code> 设为伪随机数发生器的“种子”：
+相同的种子产生相同的随机数列。
 
 
 
@@ -8327,8 +8302,7 @@ equal seeds produce equal sequences of numbers.
 
 
 <p>
-Returns the sine of <code>x</code> (assumed to be in radians).
-
+返回 <code>x</code> 的正弦值（假定参数是弧度）。
 
 
 
@@ -8337,9 +8311,8 @@ Returns the sine of <code>x</code> (assumed to be in radians).
 
 
 <p>
-Returns the square root of <code>x</code>.
-(You can also use the expression <code>x^0.5</code> to compute this value.)
-
+返回 <code>x</code> 的平方根。
+（你也可以使用乘方 <code>x^0.5</code> 来计算这个值。）
 
 
 
@@ -8348,7 +8321,7 @@ Returns the square root of <code>x</code>.
 
 
 <p>
-Returns the tangent of <code>x</code> (assumed to be in radians).
+返回 <code>x</code> 的正切值（假定参数是弧度）。
 
 
 
@@ -8358,9 +8331,9 @@ Returns the tangent of <code>x</code> (assumed to be in radians).
 
 
 <p>
-If the value <code>x</code> is convertible to an integer,
-returns that integer.
-Otherwise, returns <b>nil</b>.
+如果 <code>x</code> 可以转换为一个整数，
+返回该整数。
+否则返回 <b>nil</b>。
 
 
 
@@ -8370,10 +8343,9 @@ Otherwise, returns <b>nil</b>.
 
 
 <p>
-Returns "<code>integer</code>" if <code>x</code> is an integer,
-"<code>float</code>" if it is a float,
-or <b>nil</b> if <code>x</code> is not a number.
-
+如果 <code>x</code> 是整数，返回 "<code>integer</code>"，
+如果它是浮点数，返回 "<code>float</code>"，
+如果 <code>x</code> 不是数字，返回 <b>nil</b>。
 
 
 
@@ -8382,11 +8354,8 @@ or <b>nil</b> if <code>x</code> is not a number.
 
 
 <p>
-Returns a boolean,
-true if integer <code>m</code> is below integer <code>n</code> when
-they are compared as unsigned integers.
-
-
+如果整数 <code>m</code> 和 <code>n</code> 以无符号整数形式比较，
+<code>m</code> 在 <code>n</code> 之下，返回布尔真否则返回假。
 
 
 
