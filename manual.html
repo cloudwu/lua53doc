@@ -9285,162 +9285,144 @@ Lua 程序不会崩溃），
 
 
 
-<h1>7 &ndash; <a name="7">Lua Standalone</a></h1>
+<h1>7 &ndash; <a name="7">独立版 Lua</a></h1>
 
 <p>
-Although Lua has been designed as an extension language,
-to be embedded in a host C&nbsp;program,
-it is also frequently used as a standalone language.
-An interpreter for Lua as a standalone language,
-called simply <code>lua</code>,
-is provided with the standard distribution.
-The standalone interpreter includes
-all standard libraries, including the debug library.
-Its usage is:
+虽然 Lua 被设计成一门扩展式语言，用于嵌入一个宿主程序。
+但经常也会被当成独立语言使用。
+独立版的 Lua 语言解释器随标准包发布，就叫 <code>lua</code>。
+独立版解释器保留了所有的标准库及调试库。
+其命令行用法为：
 
 <pre>
      lua [options] [script [args]]
 </pre><p>
-The options are:
+选项有：
 
 <ul>
-<li><b><code>-e <em>stat</em></code>: </b> executes string <em>stat</em>;</li>
-<li><b><code>-l <em>mod</em></code>: </b> "requires" <em>mod</em>;</li>
-<li><b><code>-i</code>: </b> enters interactive mode after running <em>script</em>;</li>
-<li><b><code>-v</code>: </b> prints version information;</li>
-<li><b><code>-E</code>: </b> ignores environment variables;</li>
-<li><b><code>--</code>: </b> stops handling options;</li>
-<li><b><code>-</code>: </b> executes <code>stdin</code> as a file and stops handling options.</li>
+<li><b><code>-e <em>stat</em></code>: </b> 执行一段字符串 <em>stat</em> ；</li>
+<li><b><code>-l <em>mod</em></code>: </b> “请求模块” <em>mod</em> ；</li>
+<li><b><code>-i</code>: </b> 在运行完 <em>脚本</em> 后进入交互模式；</li>
+<li><b><code>-v</code>: </b> 打印版本信息；</li>
+<li><b><code>-E</code>: </b> 忽略环境变量；</li>
+<li><b><code>--</code>: </b> 中止对后面选项的处理；</li>
+<li><b><code>-</code>: </b> 把 <code>stdin</code> 当作一个文件运行，并中止对后面选项的处理。</li>
 </ul><p>
-After handling its options, <code>lua</code> runs the given <em>script</em>.
-When called without arguments,
-<code>lua</code> behaves as <code>lua -v -i</code>
-when the standard input (<code>stdin</code>) is a terminal,
-and as <code>lua -</code> otherwise.
+在处理完选项后，<code>lua</code> 运行指定的 <em>脚本</em>。
+如果不带参数调用，
+在标准输入（<code>stdin</code>）是终端时，<code>lua</code> 的行为和 <code>lua -v -i</code> 相同。
+否则相当于 <code>lua -</code> 。
 
 
 <p>
-When called without option <code>-E</code>, 
-the interpreter checks for an environment variable <a name="pdf-LUA_INIT_5_3"><code>LUA_INIT_5_3</code></a>
-(or <a name="pdf-LUA_INIT"><code>LUA_INIT</code></a> if the versioned name is not defined)
-before running any argument.
-If the variable content has the format <code>@<em>filename</em></code>,
-then <code>lua</code> executes the file.
-Otherwise, <code>lua</code> executes the string itself.
+如果调用时不带选项 <code>-E</code>，
+解释器会在运行任何参数前，检查环境变量 <a name="pdf-LUA_INIT_5_3"><code>LUA_INIT_5_3</code></a>
+（或在版本名未定义时，检查 <a name="pdf-LUA_INIT"><code>LUA_INIT</code></a> ）。
+如果该变量内存格式为 <code>@<em>filename</em></code>，
+<code>lua</code> 执行该文件。
+否则，<code>lua</code> 执行该字符串。
 
 
 <p>
-When called with option <code>-E</code>,
-besides ignoring <code>LUA_INIT</code>,
-Lua also ignores
-the values of <code>LUA_PATH</code> and <code>LUA_CPATH</code>,
-setting the values of
-<a href="#pdf-package.path"><code>package.path</code></a> and <a href="#pdf-package.cpath"><code>package.cpath</code></a>
-with the default paths defined in <code>luaconf.h</code>.
-
+如果调用时有选项 <code>-E</code>，
+除了忽略 <code>LUA_INIT</code> 外，
+Lua 还忽略 <code>LUA_PATH</code> 与 <code>LUA_CPATH</code> 的值。
+将 <a href="#pdf-package.path"><code>package.path</code></a> 和 <a href="#pdf-package.cpath"><code>package.cpath</code></a>
+的值设为定义在 <code>luaconf.h</code> 中的默认路径。
 
 <p>
-All options are handled in order, except <code>-i</code> and <code>-E</code>.
-For instance, an invocation like
+除 <code>-i</code> 与 <code>-E</code> 外所有的选项都按次序处理。
+例如，这样调用
 
 <pre>
      $ lua -e'a=1' -e 'print(a)' script.lua
 </pre><p>
-will first set <code>a</code> to 1, then print the value of <code>a</code>,
-and finally run the file <code>script.lua</code> with no arguments.
-(Here <code>$</code> is the shell prompt. Your prompt may be different.)
+将先把 <code>a</code> 设为 1，然后打印 <code>a</code> 的值，
+最后运行文件 <code>script.lua</code> 并不带参数。
+（这里的 <code>$</code> 是命令行提示。你的命令行提示可能不一样。）
 
 
 <p>
-Before running any code,
-<code>lua</code> collects all command-line arguments
-in a global table called <code>arg</code>.
-The script name goes to index 0,
-the first argument after the script name goes to index 1,
-and so on.
-Any arguments before the script name
-(that is, the interpreter name plus its options)
-go to negative indices.
-For instance, in the call
+在运行任何代码前，
+<code>lua</code> 会将所有命令行传入的参数放到一张全局表 <code>arg</code> 中。
+脚本的名字放在索引 0 的地方，
+脚本名后紧跟的第一个参数在索引 1 处，依次类推。
+在脚本名前面的任何参数
+（即解释器的名字以及各选项）
+放在负索引处。
+例如，调用
 
 <pre>
      $ lua -la b.lua t1 t2
 </pre><p>
-the table is like this:
+这张表是这样的：
 
 <pre>
      arg = { [-2] = "lua", [-1] = "-la",
              [0] = "b.lua",
              [1] = "t1", [2] = "t2" }
 </pre><p>
-If there is no script in the call,
-the interpreter name goes to index 0,
-followed by the other arguments.
-For instance, the call
+如果调用中没提供脚本名，
+解释器的名字就放在索引 0 处，后面接着其它参数。
+例如，调用
 
 <pre>
      $ lua -e "print(arg[1])"
 </pre><p>
-will print "<code>-e</code>".
-If there is a script,
-the script is called with parameters
-<code>arg[1]</code>, &middot;&middot;&middot;, <code>arg[#arg]</code>.
-(Like all chunks in Lua,
-the script is compiled as a vararg function.)
+将打印出 "<code>-e</code>" 。
+如果提供了脚本名，
+就以 <code>arg[1]</code>, &middot;&middot;&middot;, <code>arg[#arg]</code>
+为参数调用脚本。
+（和 Lua 所有的代码块一样，
+脚本被编译成一个可变参数函数。）
 
 
 <p>
-In interactive mode,
-Lua repeatedly prompts and waits for a line.
-After reading a line,
-Lua first try to interpret the line as an expression.
-If it succeeds, it prints its value.
-Otherwise, it interprets the line as a statement.
-If you write an incomplete statement,
-the interpreter waits for its completion
-by issuing a different prompt.
+在交互模式下，
+Lua 不断的显示提示符，并等待下一行输入。
+一旦读到一行，
+首先试着把这行解释为一个表达式。
+如果成功解释，就打印表达式的值。
+否则，将这行解释为语句。
+如果你写了一行未完成的语句，
+解释器会用一个不同的提示符来等待你写完。
 
 
 <p>
-In case of unprotected errors in the script,
-the interpreter reports the error to the standard error stream.
-If the error object is not a string but 
-has a metamethod <code>__tostring</code>,
-the interpreter calls this metamethod to produce the final message.
-Otherwise, the interpreter converts the error object to a string
-and adds a stack traceback to it.
+当脚本中出现了未保护的错误，
+解释器向标准错误流报告错误。
+如果错误对象并非一个字符串，但是却有元方法
+<code>__tostring</code> 的话，
+解释器会调用这个元方法生成最终的消息。
+否则，解释器将错误对象转换为一个字符串，并把栈回溯信息加在前面。
 
 
 <p>
-When finishing normally,
-the interpreter closes its main Lua state
-(see <a href="#lua_close"><code>lua_close</code></a>).
-The script can avoid this step by
-calling <a href="#pdf-os.exit"><code>os.exit</code></a> to terminate.
+如果正常结束运行，
+解释器会关闭主 Lua 状态机
+（参见 <a href="#lua_close"><code>lua_close</code></a>）。
+脚本可以通过调用
+<a href="#pdf-os.exit"><code>os.exit</code></a>
+来结束，以回避这个步骤。
 
 
 <p>
-To allow the use of Lua as a
-script interpreter in Unix systems,
-the standalone interpreter skips
-the first line of a chunk if it starts with <code>#</code>.
-Therefore, Lua scripts can be made into executable programs
-by using <code>chmod +x</code> and the&nbsp;<code>#!</code> form,
-as in
-
+为了让 Lua 可以用于 Unix 系统的脚本解释器。
+独立版解释器会忽略代码块的以 <code>#</code> 打头的第一行。
+因此，Lua 脚本可以通过
+<code>chmod +x</code> 以及 <code>#!</code> 形式变成一个可执行文件。
+类似这样
 <pre>
      #!/usr/local/bin/lua
 </pre><p>
-(Of course,
-the location of the Lua interpreter may be different in your machine.
-If <code>lua</code> is in your <code>PATH</code>,
-then
-
+（当然，
+Lua 解释器的位置对于你的机器来说可能不一样。
+如果 <code>lua</code> 在你的 <code>PATH</code> 中，
+写成
 <pre>
      #!/usr/bin/env lua
 </pre><p>
-is a more portable solution.)
-
+更为通用。）
 
 
 <h1>8 &ndash; <a name="8">Incompatibilities with the Previous Version</a></h1>
