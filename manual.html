@@ -9493,7 +9493,7 @@ Lua 5.2 到 Lua 5.3 最大的变化是引入了数字的整数子类型。
 
 
 
-<h2>8.2 &ndash; <a name="8.2">库的变更/a></h2>
+<h2>8.2 &ndash; <a name="8.2">库的变更</a></h2>
 <ul>
 
 <li>
@@ -9513,7 +9513,7 @@ Lua 5.2 到 Lua 5.3 最大的变化是引入了数字的整数子类型。
 </li>
 
 <li>
-<a href="#pdf-io.read"><code>io.read</code></a> 的选项名里不再用 '<code>*</code>' 打头。
+<a href="#pdf-io.read"><code>io.read</code></a> 的选项名不再用 '<code>*</code>' 打头。
 但出于兼容性考虑，Lua 会继续忽略掉这个字符。
 </li>
 
@@ -9524,11 +9524,11 @@ Lua 5.2 到 Lua 5.3 最大的变化是引入了数字的整数子类型。
 你可以用 <code>x^y</code> 替换 <code>math.pow(x,y)；
 你可以用 <code>math.atan</code> 替换 <code>math.atan2</code>，前者现在可以接收一或两个参数；
 你可以用 <code>x * 2.0^exp</code> 替换 <code>math.ldexp(x,exp)</code>。
-若要用其它操作，你可以写一个扩展库，或在 Lua 中实现它们。
+若用到其它操作，你可以写一个扩展库，或在 Lua 中实现它们。
 </li>
 
 <li>
-<a href="#pdf-require"><code>require</code></a> 在搜索 C 加载器时的处理版本名的规则有所变化。
+<a href="#pdf-require"><code>require</code></a> 在搜索 C 加载器时处理版本号的方式有所变化。
 现在，版本号应该跟在模块名后（其它大多数工具都是这样干的）。
 出于兼容性考虑，如果使用新格式找不到加载器的话，搜索器依然会尝试旧格式。
 （Lua 5.2 已经是这样处理了，但是并没有写在文档里。）
@@ -9545,7 +9545,7 @@ Lua 5.2 到 Lua 5.3 最大的变化是引入了数字的整数子类型。
 <ul>
 
 <li>
-延续函数现在现在接收原来用
+延续函数现在接收原来用
 <code>lua_getctx</code> 获取的参数，
 所以 <code>lua_getctx</code> 就去掉了。
 按需要改写你的代码。
@@ -9569,7 +9569,7 @@ Lua 5.2 到 Lua 5.3 最大的变化是引入了数字的整数子类型。
 （<code>luaL_checkint</code>， <code>luaL_optint</code>， <code>luaL_checklong</code>， <code>luaL_optlong</code>）
 废弃掉了。
 直接使用 <a href="#lua_Integer"><code>lua_Integer</code></a> 加一个类型转换就可以替代
-（或是只有有可能在你的代码中使用 <a href="#lua_Integer"><code>lua_Integer</code></a>）。
+（或是只要有可能，就在你的代码中使用 <a href="#lua_Integer"><code>lua_Integer</code></a>）。
 </li>
 
 </ul>
@@ -9584,8 +9584,8 @@ Lua 5.2 到 Lua 5.3 最大的变化是引入了数字的整数子类型。
 在扩展 BNF 中，
 {A} 表示 0 或多个 A ，
 [A] 表示一个可选的 A 。
-（操作符有限级，参见 <a href="#3.4.8">&sect;3.4.8</a>；
-对于最终符号，名字，数字，字符串字面量等，参见 <a href="#3.1">&sect;3.1</a>。）
+（操作符优先级，参见 <a href="#3.4.8">&sect;3.4.8</a>；
+对于最终符号，名字，数字，字符串字面量的解释，参见 <a href="#3.1">&sect;3.1</a>。）
 
 
 
