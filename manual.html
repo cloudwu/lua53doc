@@ -9425,84 +9425,67 @@ Lua 解释器的位置对于你的机器来说可能不一样。
 更为通用。）
 
 
-<h1>8 &ndash; <a name="8">Incompatibilities with the Previous Version</a></h1>
+<h1>8 &ndash; <a name="8">与之前版本不兼容的地方</a></h1>
 
 <p>
-Here we list the incompatibilities that you may find when moving a program
-from Lua&nbsp;5.2 to Lua&nbsp;5.3.
-You can avoid some incompatibilities by compiling Lua with
-appropriate options (see file <code>luaconf.h</code>).
-However,
-all these compatibility options will be removed in the future.
-
+这里我们列出了把程序从 Lua 5.2 迁移到 Lua 5.3 会碰到的不兼容的地方。
+你可以在编译 Lua 时定义一些恰当的选项（参见文件 <code>luaconf.h</code>），
+来回避一些不兼容性。
+然而，这些兼容选项以后会移除。
 
 <p>
-Lua versions can always change the C API in ways that
-do not imply source-code changes in a program,
-such as the numeric values for constants
-or the implementation of functions as macros.
-Therefore,
-you should not assume that binaries are compatible between
-different Lua versions.
-Always recompile clients of the Lua API when
-using a new version.
+Lua 的版本更替总是会修改一些 C API 并涉及源代码的改变。
+例如一些常量的数字值，用宏来实现一些函数。
+因此，你不能假设在不同的 Lua 版本间可以做到二进制兼容。
+当你使用新版时，一定要将使用了 Lua API 的客户程序重新编译。
 
 
 <p>
-Similarly, Lua versions can always change the internal representation
-of precompiled chunks;
-precompiled chunks are not compatible between different Lua versions.
-
+同样，Lua 版本更替还会改变预编译代码块的内部呈现方式；
+在不同的 Lua 版本间，预编译代码块不兼容。
 
 <p>
-The standard paths in the official distribution may
-change between versions.
+官方发布版的标准路径也可能随版本变化。
 
 
-
-<h2>8.1 &ndash; <a name="8.1">Changes in the Language</a></h2>
+<h2>8.1 &ndash; <a name="8.1">语言的变更</a></h2>
 <ul>
 
 <li>
-The main difference between Lua&nbsp;5.2 and Lua&nbsp;5.3 is the
-introduction of an integer subtype for numbers.
-Although this change should not affect "normal" computations,
-some computations
-(mainly those that involve some kind of overflow)
-can give different results.
+Lua 5.2 到 Lua 5.3 最大的变化是引入了数字的整数子类型。
+虽然这个变化不会影响“一般”计算，
+但一些计算
+（主要是涉及溢出的）
+会得到不同的结果。
 
 
 <p>
-You can fix these differences by forcing a number to be a float
-(in Lua&nbsp;5.2 all numbers were float),
-in particular writing constants with an ending <code>.0</code>
-or using <code>x = x + 0.0</code> to convert a variable.
-(This recommendation is only for a quick fix
-for an occasional incompatibility;
-it is not a general guideline for good programming.
-For good programming,
-use floats where you need floats
-and integers where you need integers.)
+你可以通过把数字都强制转换为浮点数来消除差异
+（在 Lua 5.2 中，所有的数字都是浮点数）。
+比如你可以将所有的常量都以 <code>.0</code> 结尾，
+或是使用 <code>x = x + 0.0</code> 来转换一个变量。
+（这条建议仅用于偶尔快速解决一些不兼容问题；
+这不是一条好的编程准则。
+好好写程序的话，你应该在需要使用浮点数的地方用浮点数，
+需要整数的地方用整数。）
 </li>
 
 <li>
-The conversion of a float to a string now adds a <code>.0</code> suffix
-to the result if it looks like an integer.
-(For instance, the float 2.0 will be printed as <code>2.0</code>,
-not as <code>2</code>.)
-You should always use an explicit format
-when you need a specific format for numbers.
+把浮点数转为字符串的地方，现在都对等于整数的浮点数加了 <code>.0</code> 后缀。
+（例如，浮点数 2.0 会被打印成 <code>2.0</code>，
+而不是 <code>2</code>。）
+如果你需要定制数字的格式，就必须显式的格式化它们。
 
 
 <p>
-(Formally this is not an incompatibility,
-because Lua does not specify how numbers are formatted as strings,
-but some programs assumed a specific format.)
+（准确说这个不是兼容性问题，
+因为 Lua 并没有规定数字如何格式化成字符串，
+但一些程序假定遵循某种特别的格式。）
 </li>
 
 <li>
-The generational mode for the garbage collector was removed.
-(It was an experimental feature in Lua&nbsp;5.2.)
+分代垃圾收集器没有了。
+（它是 Lua 5.2 中的一个试验性特性。）
 </li>
 
 </ul>
@@ -9510,54 +9493,45 @@ The generational mode for the garbage collector was removed.
 
 
 
-<h2>8.2 &ndash; <a name="8.2">Changes in the Libraries</a></h2>
+<h2>8.2 &ndash; <a name="8.2">库的变更/a></h2>
 <ul>
 
 <li>
-The <code>bit32</code> library has been deprecated.
-It is easy to require a compatible external library or,
-better yet, to replace its functions with appropriate bitwise operations.
-(Keep in mind that <code>bit32</code> operates on 32-bit integers,
-while the bitwise operators in standard Lua operate on 64-bit integers.)
+<code>bit32</code> 库废弃了。
+使用一个外部兼容库很容易，
+不过最好直接用对应的位操作符来替换它。
+（注意 <code>bit32</code> 只能针对 32 位整数运算，
+而标准 Lua 中的位操作可以用于 64 位整数。）
 </li>
 
 <li>
-The Table library now respects metamethods
-for setting and getting elements.
+表处理库现在在读写其中的元素时会考虑元方法。
 </li>
 
 <li>
-The <a href="#pdf-ipairs"><code>ipairs</code></a> iterator now respects metamethods and
-its <code>__ipairs</code> metamethod has been deprecated.
+<a href="#pdf-ipairs"><code>ipairs</code></a> 这个迭代器也会考虑元方法，而 <code>__ipairs</code> 元方法被废弃了。
 </li>
 
 <li>
-Option names in <a href="#pdf-io.read"><code>io.read</code></a> do not have a starting '<code>*</code>' anymore.
-For compatibility, Lua will continue to ignore this character.
+<a href="#pdf-io.read"><code>io.read</code></a> 的选项名里不再用 '<code>*</code>' 打头。
+但出于兼容性考虑，Lua 会继续忽略掉这个字符。
 </li>
 
 <li>
-The following functions were deprecated in the mathematical library:
-<code>atan2</code>, <code>cosh</code>, <code>sinh</code>, <code>tanh</code>, <code>pow</code>,
-<code>frexp</code>, and <code>ldexp</code>.
-You can replace <code>math.pow(x,y)</code> with <code>x^y</code>;
-you can replace <code>math.atan2</code> with <code>math.atan</code>,
-which now accepts one or two parameters;
-you can replace <code>math.ldexp(x,exp)</code> with <code>x * 2.0^exp</code>.
-For the other operations,
-you can either use an external library or
-implement them in Lua.
+数学库中的这些函数废弃了：
+<code>atan2</code>， <code>cosh</code>， <code>sinh</code>， <code>tanh</code>， <code>pow</code>，
+<code>frexp</code>， 以及 <code>ldexp</code> 。
+你可以用 <code>x^y</code> 替换 <code>math.pow(x,y)；
+你可以用 <code>math.atan</code> 替换 <code>math.atan2</code>，前者现在可以接收一或两个参数；
+你可以用 <code>x * 2.0^exp</code> 替换 <code>math.ldexp(x,exp)</code>。
+若要用其它操作，你可以写一个扩展库，或在 Lua 中实现它们。
 </li>
 
 <li>
-The searcher for C loaders used by <a href="#pdf-require"><code>require</code></a>
-changed the way it handles versioned names.
-Now, the version should come after the module name
-(as is usual in most other tools).
-For compatibility, that searcher still tries the old format
-if it cannot find an open function according to the new style.
-(Lua&nbsp;5.2 already worked that way,
-but it did not document the change.)
+<a href="#pdf-require"><code>require</code></a> 在搜索 C 加载器时的处理版本名的规则有所变化。
+现在，版本号应该跟在模块名后（其它大多数工具都是这样干的）。
+出于兼容性考虑，如果使用新格式找不到加载器的话，搜索器依然会尝试旧格式。
+（Lua 5.2 已经是这样处理了，但是并没有写在文档里。）
 </li>
 
 </ul>
@@ -9565,37 +9539,37 @@ but it did not document the change.)
 
 
 
-<h2>8.3 &ndash; <a name="8.3">Changes in the API</a></h2>
+<h2>8.3 &ndash; <a name="8.3">API 的变更</a></h2>
 
 
 <ul>
 
 <li>
-Continuation functions now receive as parameters what they needed
-to get through <code>lua_getctx</code>,
-so <code>lua_getctx</code> has been removed.
-Adapt your code accordingly.
+延续函数现在现在接收原来用
+<code>lua_getctx</code> 获取的参数，
+所以 <code>lua_getctx</code> 就去掉了。
+按需要改写你的代码。
 </li>
 
 <li>
-Function <a href="#lua_dump"><code>lua_dump</code></a> has an extra parameter, <code>strip</code>.
-Use 0 as the value of this parameter to get the old behavior.
+函数 <a href="#lua_dump"><code>lua_dump</code></a> 有了一个额外的参数 <code>strip</code>。
+如果想和之前的行为一致，这个值传 0 。
 </li>
 
 <li>
-Functions to inject/project unsigned integers
-(<code>lua_pushunsigned</code>, <code>lua_tounsigned</code>, <code>lua_tounsignedx</code>,
-<code>luaL_checkunsigned</code>, <code>luaL_optunsigned</code>)
-were deprecated.
-Use their signed equivalents with a type cast.
+用于传入传出无符号整数的函数
+（<code>lua_pushunsigned</code>， <code>lua_tounsigned</code>， <code>lua_tounsignedx</code>，
+<code>luaL_checkunsigned</code>， <code>luaL_optunsigned</code>）
+都废弃了。
+直接从有符号版做类型转换。
 </li>
 
 <li>
-Macros to project non-default integer types
-(<code>luaL_checkint</code>, <code>luaL_optint</code>, <code>luaL_checklong</code>, <code>luaL_optlong</code>)
-were deprecated.
-Use their equivalent over <a href="#lua_Integer"><code>lua_Integer</code></a> with a type cast
-(or, when possible, use <a href="#lua_Integer"><code>lua_Integer</code></a> in your code).
+处理输入非默认整数类型的宏
+（<code>luaL_checkint</code>， <code>luaL_optint</code>， <code>luaL_checklong</code>， <code>luaL_optlong</code>）
+废弃掉了。
+直接使用 <a href="#lua_Integer"><code>lua_Integer</code></a> 加一个类型转换就可以替代
+（或是只有有可能在你的代码中使用 <a href="#lua_Integer"><code>lua_Integer</code></a>）。
 </li>
 
 </ul>
@@ -9603,17 +9577,15 @@ Use their equivalent over <a href="#lua_Integer"><code>lua_Integer</code></a> wi
 
 
 
-<h1>9 &ndash; <a name="9">The Complete Syntax of Lua</a></h1>
+<h1>9 &ndash; <a name="9">Lua 的完整语法</a></h1>
 
 <p>
-Here is the complete syntax of Lua in extended BNF.
-As usual in extended BNF,
-{A} means 0 or more As,
-and [A] means an optional A.
-(For operator precedences, see <a href="#3.4.8">&sect;3.4.8</a>;
-for a description of the terminals
-Name, Numeral,
-and LiteralString, see <a href="#3.1">&sect;3.1</a>.)
+这是一份采用扩展 BNF 描述的 Lua 完整语法。
+在扩展 BNF 中，
+{A} 表示 0 或多个 A ，
+[A] 表示一个可选的 A 。
+（操作符有限级，参见 <a href="#3.4.8">&sect;3.4.8</a>；
+对于最终符号，名字，数字，字符串字面量等，参见 <a href="#3.1">&sect;3.1</a>。）
 
 
 
@@ -9693,16 +9665,11 @@ and LiteralString, see <a href="#3.1">&sect;3.1</a>.)
 
 
 
-
-
 <HR>
 <SMALL CLASS="footer">
-Last update:
-Tue Jan  6 10:10:50 BRST 2015
+最后更新时间：
+2015年1月18日19:54
 </SMALL>
-<!--
-Last change: revised for Lua 5.3.0 (final)
--->
 
 </body></html>
 
