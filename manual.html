@@ -6522,7 +6522,7 @@ Lua 自己不使用这个变量；
 <p>
 如果 <code>chunk</code> 是一个字符串，代码块指这个字符串。
 如果 <code>chunk</code> 是一个函数，
-<code>load</code> 不断得调用它获取代码块的片断。
+<code>load</code> 不断地调用它获取代码块的片断。
 每次对 <code>chunk</code> 的调用都必须返回一个字符串紧紧连接在上次调用的返回串之后。
 当返回空串、<b>nil</b>、或是不返回值时，都表示代码块结束。
 
@@ -6652,7 +6652,7 @@ Lua 不会对二进制代码块做健壮性检查。
 <p>
 <hr><h3><a name="pdf-print"><code>print (&middot;&middot;&middot;)</code></a></h3>
 接收任意数量的参数，并将它们的值打印到 <code>stdout</code>。
-它用用 <a href="#pdf-tostring"><code>tostring</code></a> 函数将每个参数都转换为字符串。
+它用 <a href="#pdf-tostring"><code>tostring</code></a> 函数将每个参数都转换为字符串。
 <code>print</code> 不用于做格式化输出。仅作为看一下某个值的快捷方式。
 多用于调试。
 完整的对输出的控制，请使用 <a href="#pdf-string.format"><code>string.format</code></a> 以及 <a href="#pdf-io.write"><code>io.write</code></a>。
@@ -6980,7 +6980,7 @@ Lua 不会对二进制代码块做健壮性检查。
 
 <p>
 如果在加载或运行模块时有错误，
-或是无非为模块找到加载器，
+或是无法为模块找到加载器，
 <code>require</code> 都会抛出错误。
 
 
@@ -7027,7 +7027,7 @@ Lua 用和初始化 Lua 路径 <a href="#pdf-package.path"><code>package.path</c
 相同的方式初始化 C 路径 <a href="#pdf-package.cpath"><code>package.cpath</code></a> 。
 它会使用环境变量 <a name="pdf-LUA_CPATH_5_3"><code>LUA_CPATH_5_3</code></a> 或
 环境变量 <a name="pdf-LUA_CPATH"><code>LUA_CPATH</code></a> 初始化。
-要么就采用 <code>luaconf.h</code> 中的定义的默认路径。
+要么就采用 <code>luaconf.h</code> 中定义的默认路径。
 
 
 
