@@ -8985,29 +8985,22 @@ I/O 函数在出错时都返回 <b>nil</b>
 
 
 
-<h2>6.10 &ndash; <a name="6.10">The Debug Library</a></h2>
+<h2>6.10 &ndash; <a name="6.10">调试库</a></h2>
 
 <p>
-This library provides
-the functionality of the debug interface (<a href="#4.9">&sect;4.9</a>) to Lua programs.
-You should exert care when using this library.
-Several of its functions
-violate basic assumptions about Lua code
-(e.g., that variables local to a function
-cannot be accessed from outside;
-that userdata metatables cannot be changed by Lua code;
-that Lua programs do not crash)
-and therefore can compromise otherwise secure code.
-Moreover, some functions in this library may be slow.
+这个库提供了 Lua 程序调试接口（<a href="#4.9">&sect;4.9</a>）的功能。
+其中一些函数违反了 Lua 代码的基本假定
+（例如，不会从函数之外访问函数的局部变量；
+用户数据的元表不会被 Lua 代码修改；
+Lua 程序不会崩溃），
+因此它们有可能危害到其它代码的安全性。
+此外，库里的一些函数可能运行的很慢。
 
 
 <p>
-All functions in this library are provided
-inside the <a name="pdf-debug"><code>debug</code></a> table.
-All functions that operate over a thread
-have an optional first argument which is the
-thread to operate over.
-The default is always the current thread.
+这个库里的所有函数都提供在表 <a name="pdf-debug"><code>debug</code></a> 内。
+所有操作线程的函数，可选的第一个参数都是针对的线程。
+默认值永远是当前线程。
 
 
 <p>
@@ -9015,19 +9008,16 @@ The default is always the current thread.
 
 
 <p>
-Enters an interactive mode with the user,
-running each string that the user enters.
-Using simple commands and other debug facilities,
-the user can inspect global and local variables,
-change their values, evaluate expressions, and so on.
-A line containing only the word <code>cont</code> finishes this function,
-so that the caller continues its execution.
+进入一个用户交互模式，运行用户输入的每个字符串。
+使用简单的命令以及其它调试设置，用户可以检阅全局变量和局部变量，
+改变变量的值，计算一些表达式，等等。
+输入一行仅包含 <code>cont</code> 的字符串将结束这个函数，
+这样调用者就可以继续向下运行。
 
 
 <p>
-Note that commands for <code>debug.debug</code> are not lexically nested
-within any function and so have no direct access to local variables.
-
+注意，<code>debug.debug</code> 输入的命令在文法上并没有内嵌到任何函数中，
+因此不能直接去访问局部变量。
 
 
 
@@ -9036,11 +9026,9 @@ within any function and so have no direct access to local variables.
 
 
 <p>
-Returns the current hook settings of the thread, as three values:
-the current hook function, the current hook mask,
-and the current hook count
-(as set by the <a href="#pdf-debug.sethook"><code>debug.sethook</code></a> function).
-
+返回三个表示线程钩子设置的值：
+当前钩子函数，当前钩子掩码，当前钩子计数
+（<a href="#pdf-debug.sethook"><code>debug.sethook</code></a> 设置的那些）。
 
 
 
@@ -9049,42 +9037,33 @@ and the current hook count
 
 
 <p>
-Returns a table with information about a function.
-You can give the function directly
-or you can give a number as the value of <code>f</code>,
-which means the function running at level <code>f</code> of the call stack
-of the given thread:
-level&nbsp;0 is the current function (<code>getinfo</code> itself);
-level&nbsp;1 is the function that called <code>getinfo</code>
-(except for tail calls, which do not count on the stack);
-and so on.
-If <code>f</code> is a number larger than the number of active functions,
-then <code>getinfo</code> returns <b>nil</b>.
+返回关于一个函数信息的表。
+你可以直接提供该函数，
+也可以用一个数字 <code>f</code> 表示该函数。
+数字 <code>f</code> 表示运行在指定线程的调用栈对应层次上的函数：
+0 层表示当前函数（<code>getinfo</code> 自身）；
+1 层表示调用 <code>getinfo</code> 的函数
+（除非是尾调用，这种情况不计入栈）；等等。
+如果 <code>f</code> 是一个比活动函数数量还大的数字，
+<code>getinfo</code> 返回 <b>nil</b>。
 
 
 <p>
-The returned table can contain all the fields returned by <a href="#lua_getinfo"><code>lua_getinfo</code></a>,
-with the string <code>what</code> describing which fields to fill in.
-The default for <code>what</code> is to get all information available,
-except the table of valid lines.
-If present,
-the option '<code>f</code>'
-adds a field named <code>func</code> with the function itself.
-If present,
-the option '<code>L</code>'
-adds a field named <code>activelines</code> with the table of
-valid lines.
+只有字符串 <code>what</code> 中有描述要填充哪些项，
+返回的表可以包含 <a href="#lua_getinfo"><code>lua_getinfo</code></a> 能返回的所有项。
+<code>what</code> 默认是返回提供的除合法行号表外的所有信息。
+对于选项 '<code>f</code>' ，会在可能的情况下，增加
+<code>func</code> 域保存函数自身。
+对于选项 '<code>L</code>' ，会在可能的情况下，增加
+<code>activelines</code> 域保存合法行号表。
 
 
 <p>
-For instance, the expression <code>debug.getinfo(1,"n").name</code> returns
-a table with a name for the current function,
-if a reasonable name can be found,
-and the expression <code>debug.getinfo(print)</code>
-returns a table with all available information
-about the <a href="#pdf-print"><code>print</code></a> function.
-
-
+例如,表达式 <code>debug.getinfo(1,"n")</code>
+返回带有当前函数名字信息的表（如果找的到名字的话），
+表达式 <code>debug.getinfo(print)</code> 
+返回关于 <a href="#pdf-print"><code>print</code></a> 函数的
+包含有所有能提供信息的表。
 
 
 <p>
@@ -9092,34 +9071,31 @@ about the <a href="#pdf-print"><code>print</code></a> function.
 
 
 <p>
-This function returns the name and the value of the local variable
-with index <code>local</code> of the function at level <code>f</code> of the stack.
-This function accesses not only explicit local variables,
-but also parameters, temporaries, etc.
+此函数返回在栈的 <code>f</code> 层处函数的索引为 <code>local</code> 的局部变量
+的名字和值。
+这个函数不仅用于访问显式定义的局部变量，也包括形参、临时变量等。
 
 
 <p>
-The first parameter or local variable has index&nbsp;1, and so on,
-following the order that they are declared in the code,
-counting only the variables that are active
-in the current scope of the function.
-Negative indices refer to vararg parameters;
--1 is the first vararg parameter.
-The function returns <b>nil</b> if there is no variable with the given index,
-and raises an error when called with a level out of range.
-(You can call <a href="#pdf-debug.getinfo"><code>debug.getinfo</code></a> to check whether the level is valid.)
+第一个形参或是定义的第一个局部变量的索引为 1 ，
+然后遵循在代码中定义次序，以次类推。
+其中只计算函数当前作用域的活动变量。
+负索引指可变参数；
+-1 指第一个可变参数。
+如果该索引处没有变量，函数返回 <b>nil</b>。
+若指定的层次越界，抛出错误。
+（你可以调用 <a href="#pdf-debug.getinfo"><code>debug.getinfo</code></a> 来检查层次是否合法。）
 
 
 <p>
-Variable names starting with '<code>(</code>' (open parenthesis) 
-represent variables with no known names
-(internal variables such as loop control variables,
-and variables from chunks saved without debug information).
+以 '<code>(</code>' （开括号）打头的变量名表示没有名字的变量
+（比如是循环控制用到的控制变量，
+或是去除了调试信息的代码块）。
 
 
 <p>
-The parameter <code>f</code> may also be a function.
-In that case, <code>getlocal</code> returns only the name of function parameters.
+参数 <code>f</code> 也可以是一个函数。
+这种情况下，<code>getlocal</code> 仅返回函数形参的名字。
 
 
 
@@ -9129,8 +9105,8 @@ In that case, <code>getlocal</code> returns only the name of function parameters
 
 
 <p>
-Returns the metatable of the given <code>value</code>
-or <b>nil</b> if it does not have a metatable.
+返回给定 <code>value</code> 的元表。
+若其没有元表则返回 <b>nil</b> 。
 
 
 
@@ -9140,7 +9116,7 @@ or <b>nil</b> if it does not have a metatable.
 
 
 <p>
-Returns the registry table (see <a href="#4.5">&sect;4.5</a>).
+返回注册表（参见 <a href="#4.5">&sect;4.5</a>）。
 
 
 
@@ -9150,16 +9126,13 @@ Returns the registry table (see <a href="#4.5">&sect;4.5</a>).
 
 
 <p>
-This function returns the name and the value of the upvalue
-with index <code>up</code> of the function <code>f</code>.
-The function returns <b>nil</b> if there is no upvalue with the given index.
+此函数返回函数 <code>f</code> 的第 <code>up</code> 个上值的名字和值。
+如果该函数没有那个上值，返回 <b>nil</b> 。
 
 
 <p>
-Variable names starting with '<code>(</code>' (open parenthesis) 
-represent variables with no known names
-(variables from chunks saved without debug information).
-
+以 '<code>(</code>' （开括号）打头的变量名表示没有名字的变量
+（去除了调试信息的代码块）。
 
 
 
@@ -9168,9 +9141,8 @@ represent variables with no known names
 
 
 <p>
-Returns the Lua value associated to <code>u</code>.
-If <code>u</code> is not a userdata,
-returns <b>nil</b>.
+返回关联在 <code>u</code> 上的 Lua 值。
+如果 <code>u</code> 并非用户数据，返回 <b>nil</b>。
 
 
 
@@ -9180,42 +9152,37 @@ returns <b>nil</b>.
 
 
 <p>
-Sets the given function as a hook.
-The string <code>mask</code> and the number <code>count</code> describe
-when the hook will be called.
-The string mask may have any combination of the following characters,
-with the given meaning:
+将一个函数作为钩子函数设入。
+字符串 <code>mask</code> 以及数字 <code>count</code> 决定了钩子将在何时调用。
+掩码是由下列字符组合成的字符串，每个字符有其含义：
 
 <ul>
-<li><b>'<code>c</code>': </b> the hook is called every time Lua calls a function;</li>
-<li><b>'<code>r</code>': </b> the hook is called every time Lua returns from a function;</li>
-<li><b>'<code>l</code>': </b> the hook is called every time Lua enters a new line of code.</li>
+<li><b>'<code>c</code>': </b> 每当 Lua 调用一个函数时，调用钩子；</li>
+<li><b>'<code>r</code>': </b> 每当 Lua 从一个函数内返回时，调用钩子；</li>
+<li><b>'<code>l</code>': </b> 每当 Lua 进入新的一行时，调用钩子。</li>
 </ul><p>
-Moreover,
-with a <code>count</code> different from zero,
-the hook is called also after every <code>count</code> instructions.
+此外，
+传入一个不为零的 <code>count</code> ，
+钩子将在每运行 <code>count</code> 条指令时调用。
 
 
 <p>
-When called without arguments,
-<a href="#pdf-debug.sethook"><code>debug.sethook</code></a> turns off the hook.
+如果不传入参数，
+<a href="#pdf-debug.sethook"><code>debug.sethook</code></a> 关闭钩子。
 
 
 <p>
-When the hook is called, its first parameter is a string
-describing the event that has triggered its call:
-<code>"call"</code> (or <code>"tail call"</code>),
-<code>"return"</code>,
-<code>"line"</code>, and <code>"count"</code>.
-For line events,
-the hook also gets the new line number as its second parameter.
-Inside a hook,
-you can call <code>getinfo</code> with level&nbsp;2 to get more information about
-the running function
-(level&nbsp;0 is the <code>getinfo</code> function,
-and level&nbsp;1 is the hook function).
-
-
+当钩子被调用时，
+第一个参数是触发这次调用的事件：
+<code>"call"</code> （或 <code>"tail call"</code>），
+<code>"return"</code>，
+<code>"line"</code>， <code>"count"</code>。
+对于行事件，
+钩子的第二个参数是新的行号。
+在钩子内，你可以调用 <code>getinfo</code> ，指定第 2 层，
+来获得正在运行的函数的详细信息
+（0 层指 <code>getinfo</code> 函数，
+1 层指钩子函数）。
 
 
 <p>
@@ -9223,19 +9190,16 @@ and level&nbsp;1 is the hook function).
 
 
 <p>
-This function assigns the value <code>value</code> to the local variable
-with index <code>local</code> of the function at level <code>level</code> of the stack.
-The function returns <b>nil</b> if there is no local
-variable with the given index,
-and raises an error when called with a <code>level</code> out of range.
-(You can call <code>getinfo</code> to check whether the level is valid.)
-Otherwise, it returns the name of the local variable.
+这个函数将 <code>value</code> 赋给
+栈上第 <code>level</code> 层函数的第 <code>local</code> 个局部变量。
+如果没有那个变量，函数返回 <b>nil</b> 。
+如果 <code>level</code> 越界，抛出一个错误。
+（你可以调用 <a href="#pdf-debug.getinfo"><code>debug.getinfo</code></a> 来检查层次是否合法。）
+否则，它返回局部变量的名字。
 
 
 <p>
-See <a href="#pdf-debug.getlocal"><code>debug.getlocal</code></a> for more information about
-variable indices and names.
-
+关于变量索引和名字，参见 <a href="#pdf-debug.getlocal"><code>debug.getlocal</code></a>。
 
 
 
@@ -9244,9 +9208,8 @@ variable indices and names.
 
 
 <p>
-Sets the metatable for the given <code>value</code> to the given <code>table</code>
-(which can be <b>nil</b>).
-Returns <code>value</code>.
+将 <code>value</code> （可以是 <b>nil</b> 设为 <code>table</code> 的元表。
+返回 <code>value</code>。
 
 
 
@@ -9256,12 +9219,10 @@ Returns <code>value</code>.
 
 
 <p>
-This function assigns the value <code>value</code> to the upvalue
-with index <code>up</code> of the function <code>f</code>.
-The function returns <b>nil</b> if there is no upvalue
-with the given index.
-Otherwise, it returns the name of the upvalue.
-
+这个函数将 <code>value</code> 设为函数 <code>f</code> 的第
+<code>up</code> 个上值。
+如果函数没有那个上值，返回 <b>nil</b>
+否则，返回该上值的名字。
 
 
 
@@ -9270,13 +9231,12 @@ Otherwise, it returns the name of the upvalue.
 
 
 <p>
-Sets the given <code>value</code> as
-the Lua value associated to the given <code>udata</code>.
-<code>udata</code> must be a full userdata.
+将 <code>value</code> 设为 <code>udata</code> 的关联值。
+<code>udata</code> 必须是一个完全用户数据。
 
 
 <p>
-Returns <code>udata</code>.
+返回 <code>udata</code>。
 
 
 
@@ -9286,15 +9246,12 @@ Returns <code>udata</code>.
 
 
 <p>
-If <code>message</code> is present but is neither a string nor <b>nil</b>,
-this function returns <code>message</code> without further processing.
-Otherwise,
-it returns a string with a traceback of the call stack.
-The optional <code>message</code> string is appended
-at the beginning of the traceback.
-An optional <code>level</code> number tells at which level
-to start the traceback
-(default is 1, the function calling <code>traceback</code>).
+如果 <code>message</code> 有，且不是字符串或 <b>nil</b>，
+函数不做任何处理直接返回 <code>message</code>。
+否则，它返回调用栈的栈回溯信息。
+字符串可选项 <code>message</code> 被添加在栈回溯信息的开头。
+数字可选项 <code>level</code> 指明从栈的哪一层开始回溯
+（默认为 1 ，即调用 <code>traceback</code> 的那里）。
 
 
 
@@ -9304,18 +9261,14 @@ to start the traceback
 
 
 <p>
-Returns a unique identifier (as a light userdata)
-for the upvalue numbered <code>n</code>
-from the given function.
+返回指定函数第 <code>n</code>
+个上值的唯一标识符（一个轻量用户数据）。
 
 
 <p>
-These unique identifiers allow a program to check whether different
-closures share upvalues.
-Lua closures that share an upvalue
-(that is, that access a same external local variable)
-will return identical ids for those upvalue indices.
-
+这个唯一表识符可以让程序检查两个不同的闭包是否共享了上值。
+若 Lua 闭包之间共享的是同一个上值
+（即指向一个外部局部变量），会返回相同的标识符。
 
 
 
@@ -9324,9 +9277,8 @@ will return identical ids for those upvalue indices.
 
 
 <p>
-Make the <code>n1</code>-th upvalue of the Lua closure <code>f1</code>
-refer to the <code>n2</code>-th upvalue of the Lua closure <code>f2</code>.
-
+让 Lua 闭包 <code>f1</code> 的第 <code>n1</code> 个上值
+引用  Lua 闭包 <code>f2</code> 的第 <code>n2</code> 个上值。
 
 
 
