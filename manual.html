@@ -8361,52 +8361,48 @@ UTF-8 字符的个数。
 
 
 
-<h2>6.8 &ndash; <a name="6.8">Input and Output Facilities</a></h2>
+<h2>6.8 &ndash; <a name="6.8">输入输出设施</a></h2>
 
 <p>
-The I/O library provides two different styles for file manipulation.
-The first one uses implicit file handles;
-that is, there are operations to set a default input file and a
-default output file,
-and all input/output operations are over these default files.
-The second style uses explicit file handles.
-
-
-<p>
-When using implicit file handles,
-all operations are supplied by table <a name="pdf-io"><code>io</code></a>.
-When using explicit file handles,
-the operation <a href="#pdf-io.open"><code>io.open</code></a> returns a file handle
-and then all operations are supplied as methods of the file handle.
+I/O 库提供了两套不同风格的文件处理接口。
+第一种风格使用隐式的文件句柄；
+它提供设置默认输入文件及默认输出文件的操作，
+所有的输入输出操作都针对这些默认文件。
+第二种风格使用显式的文件句柄。
 
 
 <p>
-The table <code>io</code> also provides
+当使用隐式文件句柄时，
+所有的操作都由表 <a name="pdf-io"><code>io</code></a> 提供。
+若使用显式文件句柄，
+<a href="#pdf-io.open"><code>io.open</code></a> 
+会返回一个文件句柄，且所有的操作都由该文件句柄的方法来提供。
+
+
+<p>
+表 <code>io</code> 中也提供了三个
+和 C 中含义相同的预定义文件句柄：
 three predefined file handles with their usual meanings from C:
-<a name="pdf-io.stdin"><code>io.stdin</code></a>, <a name="pdf-io.stdout"><code>io.stdout</code></a>, and <a name="pdf-io.stderr"><code>io.stderr</code></a>.
-The I/O library never closes these files.
+<a name="pdf-io.stdin"><code>io.stdin</code></a>， <a name="pdf-io.stdout"><code>io.stdout</code></a>， 以及 <a name="pdf-io.stderr"><code>io.stderr</code></a>。
+I/O 库永远不会关闭这些文件。
 
 
 <p>
-Unless otherwise stated,
-all I/O functions return <b>nil</b> on failure
-(plus an error message as a second result and
-a system-dependent error code as a third result)
-and some value different from <b>nil</b> on success.
-On non-POSIX systems,
-the computation of the error message and error code
-in case of errors
-may be not thread safe,
-because they rely on the global C variable <code>errno</code>.
-
+除非另有说明，
+I/O 函数在出错时都返回 <b>nil</b>
+（第二个返回值为错误消息，第三个返回值为系统相关的错误码）。
+成功时返回与 <b>nil</b> 不同的值。
+在非 POSIX 系统上，
+根据错误码取出错误消息的过程可能并非线程安全的，
+因为这使用了 C 的全局变量 <code>errno</code> 。
 
 <p>
 <hr><h3><a name="pdf-io.close"><code>io.close ([file])</code></a></h3>
 
 
 <p>
-Equivalent to <code>file:close()</code>.
-Without a <code>file</code>, closes the default output file.
+等价于 <code>file:close()</code>。
+不给出 <code>file</code> 时将关闭默认输出文件。
 
 
 
@@ -8416,7 +8412,7 @@ Without a <code>file</code>, closes the default output file.
 
 
 <p>
-Equivalent to <code>io.output():flush()</code>.
+等价于 <code>io.output():flush()</code>。
 
 
 
@@ -8426,18 +8422,15 @@ Equivalent to <code>io.output():flush()</code>.
 
 
 <p>
-When called with a file name, it opens the named file (in text mode),
-and sets its handle as the default input file.
-When called with a file handle,
-it simply sets this file handle as the default input file.
-When called without parameters,
-it returns the current default input file.
+用文件名调用它时，（以文本模式）来打开该名字的文件，
+并将文件句柄设为默认输入文件。
+如果用文件句柄去调用它，
+就简单的将该句柄设为默认输入文件。
+如果调用时不传参数，它返回当前的默认输入文件。
 
 
 <p>
-In case of errors this function raises the error,
-instead of returning an error code.
-
+在出错的情况下，函数抛出错误而不是返回错误码。
 
 
 
@@ -8446,24 +8439,22 @@ instead of returning an error code.
 
 
 <p>
-Opens the given file name in read mode
-and returns an iterator function that
-works like <code>file:lines(&middot;&middot;&middot;)</code> over the opened file.
-When the iterator function detects the end of file,
-it returns no values (to finish the loop) and automatically closes the file.
+以读模式打开指定的文件名并返回一个迭代函数。
+此迭代函数的工作方式和用一个已打开的文件去调用
+<code>file:lines(&middot;&middot;&middot;)</code> 得到的迭代器相同。
+当迭代函数检测到文件结束，
+它不返回值（让循环结束）并自动关闭文件。
 
 
 <p>
-The call <code>io.lines()</code> (with no file name) is equivalent
-to <code>io.input():lines("*l")</code>;
-that is, it iterates over the lines of the default input file.
-In this case it does not close the file when the loop ends.
+调用 <code>io.lines()</code> （不传文件名）
+等价于 <code>io.input():lines("*l")</code>；
+即，它将按行迭代标准输入文件。
+在此情况下，循环结束后它不会关闭文件。
 
 
 <p>
-In case of errors this function raises the error,
-instead of returning an error code.
-
+在出错的情况下，函数抛出错误而不是返回错误码。
 
 
 
@@ -8472,27 +8463,24 @@ instead of returning an error code.
 
 
 <p>
-This function opens a file,
-in the mode specified in the string <code>mode</code>.
-It returns a new file handle,
-or, in case of errors, <b>nil</b> plus an error message.
+这个函数用字符串 <code>mode</code> 指定的模式打开一个文件。
+返回新的文件句柄。
+当出错时，返回 <b>nil</b> 加错误消息。
 
 
 <p>
-The <code>mode</code> string can be any of the following:
+<code>mode</code> 字符串可以是下列任意值：
 
 <ul>
-<li><b>"<code>r</code>": </b> read mode (the default);</li>
-<li><b>"<code>w</code>": </b> write mode;</li>
-<li><b>"<code>a</code>": </b> append mode;</li>
-<li><b>"<code>r+</code>": </b> update mode, all previous data is preserved;</li>
-<li><b>"<code>w+</code>": </b> update mode, all previous data is erased;</li>
-<li><b>"<code>a+</code>": </b> append update mode, previous data is preserved,
-  writing is only allowed at the end of file.</li>
+<li><b>"<code>r</code>": </b> 读模式（默认）；</li>
+<li><b>"<code>w</code>": </b> 写模式；</li>
+<li><b>"<code>a</code>": </b> 追加模式；</li>
+<li><b>"<code>r+</code>": </b> 更新模式，所有之前的数据都保留；</li>
+<li><b>"<code>w+</code>": </b> 更新模式，所有之前的数据都删除；</li>
+<li><b>"<code>a+</code>": </b> 追加更新模式，所有之前的数据都保留，只允许在文件尾部做写入。</li>
 </ul><p>
-The <code>mode</code> string can also have a '<code>b</code>' at the end,
-which is needed in some systems to open the file in binary mode.
-
+<code>mode</code> 字符串可以在最后加一个 '<code>b</code>' ，
+这会在某些系统上以二进制方式打开文件。
 
 
 
@@ -8501,7 +8489,8 @@ which is needed in some systems to open the file in binary mode.
 
 
 <p>
-Similar to <a href="#pdf-io.input"><code>io.input</code></a>, but operates over the default output file.
+类似于 <a href="#pdf-io.input"><code>io.input</code></a>。
+不过都针对默认输出文件操作。
 
 
 
@@ -8511,16 +8500,14 @@ Similar to <a href="#pdf-io.input"><code>io.input</code></a>, but operates over 
 
 
 <p>
-This function is system dependent and is not available
-on all platforms.
-
+这个函数和系统有关，不是所有的平台都提供。
 
 <p>
-Starts program <code>prog</code> in a separated process and returns
-a file handle that you can use to read data from this program
-(if <code>mode</code> is <code>"r"</code>, the default)
-or to write data to this program
-(if <code>mode</code> is <code>"w"</code>).
+用一个分离进程开启程序 <code>prog</code>，
+返回的文件句柄可用于从这个程序中读取数据
+（如果 <code>mode</code> 为 <code>"r"</code>，这是默认值）
+或是向这个程序写入输入（当
+<code>mode</code> 为 <code>"w"</code> 时）。
 
 
 
@@ -8530,8 +8517,7 @@ or to write data to this program
 
 
 <p>
-Equivalent to <code>io.input():read(&middot;&middot;&middot;)</code>.
-
+等价于 <code>io.input():read(&middot;&middot;&middot;)</code>。
 
 
 
@@ -8540,10 +8526,8 @@ Equivalent to <code>io.input():read(&middot;&middot;&middot;)</code>.
 
 
 <p>
-Returns a handle for a temporary file.
-This file is opened in update mode
-and it is automatically removed when the program ends.
-
+返回一个临时文件的句柄。
+这个文件以更新模式打开，在程序结束时会自动删除。
 
 
 
@@ -8552,11 +8536,10 @@ and it is automatically removed when the program ends.
 
 
 <p>
-Checks whether <code>obj</code> is a valid file handle.
-Returns the string <code>"file"</code> if <code>obj</code> is an open file handle,
-<code>"closed file"</code> if <code>obj</code> is a closed file handle,
-or <b>nil</b> if <code>obj</code> is not a file handle.
-
+检查 <code>obj</code> 是否是合法的文件句柄。
+如果 <code>obj</code> 它是一个打开的文件句柄，返回字符串 <code>"file"</code>。
+如果 <code>obj</code> 是一个关闭的文件句柄，返回字符串 <code>"closed file"</code>。
+如果 <code>obj</code> 不是文件句柄，返回 <b>nil</b> 。
 
 
 
@@ -8565,8 +8548,7 @@ or <b>nil</b> if <code>obj</code> is not a file handle.
 
 
 <p>
-Equivalent to <code>io.output():write(&middot;&middot;&middot;)</code>.
-
+等价于 <code>io.output():write(&middot;&middot;&middot;)</code>。
 
 
 
@@ -8575,17 +8557,15 @@ Equivalent to <code>io.output():write(&middot;&middot;&middot;)</code>.
 
 
 <p>
-Closes <code>file</code>.
-Note that files are automatically closed when
-their handles are garbage collected,
-but that takes an unpredictable amount of time to happen.
-
+关闭 <code>file</code>。
+注意，文件在句柄被垃圾回收时会自动关闭，
+但是多久以后发生，时间不可预期的。
 
 <p>
-When closing a file handle created with <a href="#pdf-io.popen"><code>io.popen</code></a>,
-<a href="#pdf-file:close"><code>file:close</code></a> returns the same values
-returned by <a href="#pdf-os.execute"><code>os.execute</code></a>.
-
+当关闭用 <a href="#pdf-io.popen"><code>io.popen</code></a> 创建出来的文件句柄时，
+<a href="#pdf-file:close"><code>file:close</code></a>
+返回 <a href="#pdf-os.execute"><code>os.execute</code></a>
+会返回的一样的值。
 
 
 
@@ -8594,7 +8574,7 @@ returned by <a href="#pdf-os.execute"><code>os.execute</code></a>.
 
 
 <p>
-Saves any written data to <code>file</code>.
+将写入的数据保存到 <code>file</code> 中。
 
 
 
@@ -8604,26 +8584,21 @@ Saves any written data to <code>file</code>.
 
 
 <p>
-Returns an iterator function that,
-each time it is called,
-reads the file according to the given formats.
-When no format is given,
-uses "<code>l</code>" as a default.
-As an example, the construction
+返回一个迭代器函数，
+每次调用迭代器时，都从文件中按指定格式读数据。
+如果没有指定格式，使用默认值 "<code>l</code>" 。
+看一个例子
 
 <pre>
      for c in file:lines(1) do <em>body</em> end
 </pre><p>
-will iterate over all characters of the file,
-starting at the current position.
-Unlike <a href="#pdf-io.lines"><code>io.lines</code></a>, this function does not close the file
-when the loop ends.
+会从文件当前位置开始，中不断读出字符。
+和 <a href="#pdf-io.lines"><code>io.lines</code></a> 不同，
+这个函数在循环结束后不会关闭文件。
 
 
 <p>
-In case of errors this function raises the error,
-instead of returning an error code.
-
+在出错的情况下，函数抛出错误而不是返回错误码。
 
 
 
@@ -8632,65 +8607,59 @@ instead of returning an error code.
 
 
 <p>
-Reads the file <code>file</code>,
-according to the given formats, which specify what to read.
-For each format,
-the function returns a string or a number with the characters read,
-or <b>nil</b> if it cannot read data with the specified format.
-(In this latter case,
-the function does not read subsequent formats.)
-When called without formats,
-it uses a default format that reads the next line
-(see below).
+读文件 <code>file</code>，
+指定的格式决定了要读什么。
+对于每种格式，函数返回读出的字符对应的字符串或数字。
+若不能以该格式对应读出数据则返回 <b>nil</b>。
+（对于最后这种情况，
+函数不会读出后续的格式。）
+当调用时不传格式，它会使用默认格式读下一行（见下面描述）。
 
 
 <p>
-The available formats are
+提供的格式有
 
 <ul>
 
 <li><b>"<code>n</code>": </b>
-reads a numeral and returns it as a float or an integer,
-following the lexical conventions of Lua.
-(The numeral may have leading spaces and a sign.)
-This format always reads the longest input sequence that
-is a valid prefix for a number;
-if that prefix does not form a valid number
-(e.g., an empty string, "<code>0x</code>", or "<code>3.4e-</code>"),
-it is discarded and the function returns <b>nil</b>.
+读取一个数字，根据 Lua 的转换文法，可能返回浮点数或整数。
+（数字可以有前置或后置的空格，以及符号。）
+只要能构成合法的数字，这个格式总是去读尽量长的串；
+如果读出来的前缀无法构成合法的数字
+（比如空串，"<code>0x</code>" 或 "<code>3.4e-</code>"），
+就中止函数运行，返回 <b>nil</b>。
 </li>
 
 <li><b>"<code>i</code>": </b>
-reads an integral number and returns it as an integer.
+读取一个整数，返回整数值。
 </li>
 
 <li><b>"<code>a</code>": </b>
-reads the whole file, starting at the current position.
-On end of file, it returns the empty string.
+从当前位置开始读取整个文件。
+如果已在文件末尾，返回空串。
 </li>
 
 <li><b>"<code>l</code>": </b>
-reads the next line skipping the end of line,
-returning <b>nil</b> on end of file.
-This is the default format.
+读取一行并忽略行结束标记。
+当在文件末尾时，返回 <b>nil</b>
+这是默认格式。
 </li>
 
 <li><b>"<code>L</code>": </b>
-reads the next line keeping the end-of-line character (if present),
-returning <b>nil</b> on end of file.
+读取一行并保留行结束标记（如果有的话），
+当在文件末尾时，返回 <b>nil</b>。
 </li>
 
 <li><b><em>number</em>: </b>
-reads a string with up to this number of bytes,
-returning <b>nil</b> on end of file.
-If <code>number</code> is zero,
-it reads nothing and returns an empty string,
-or <b>nil</b> on end of file.
+读取一个不超过这个数量字节数的字符串。
+当在文件末尾时，返回 <b>nil</b>。
+如果 <code>number</code> 为零，
+它什么也不读，返回一个空串。
+当在文件末尾时，返回 <b>nil</b>。
 </li>
 
 </ul><p>
-The formats "<code>l</code>" and "<code>L</code>" should be used only for text files.
-
+格式 "<code>l</code>" 和 "<code>L</code>" 只能用于文本文件。
 
 
 
@@ -8699,32 +8668,26 @@ The formats "<code>l</code>" and "<code>L</code>" should be used only for text f
 
 
 <p>
-Sets and gets the file position,
-measured from the beginning of the file,
-to the position given by <code>offset</code> plus a base
-specified by the string <code>whence</code>, as follows:
+设置及获取基于文件开头处计算出的位置。
+设置的位置由 <code>offset</code> 和
+<code>whence</code> 字符串 <code>whence</code>
+制定的基点决定。基点可以是：
 
 <ul>
-<li><b>"<code>set</code>": </b> base is position 0 (beginning of the file);</li>
-<li><b>"<code>cur</code>": </b> base is current position;</li>
-<li><b>"<code>end</code>": </b> base is end of file;</li>
+<li><b>"<code>set</code>": </b> 基点为 0 （文件开头）；</li>
+<li><b>"<code>cur</code>": </b> 基点为当前位置了；</li>
+<li><b>"<code>end</code>": </b> 基点为文件尾；</li>
 </ul><p>
-In case of success, <code>seek</code> returns the final file position,
-measured in bytes from the beginning of the file.
-If <code>seek</code> fails, it returns <b>nil</b>,
-plus a string describing the error.
+当 <code>seek</code> 成功时，返回最终从文件开头计算起的文件的位置。
+当 <code>seek</code> 失败时，返回 <b>nil</b> 加上一个错误描述字符串。
 
 
 <p>
-The default value for <code>whence</code> is <code>"cur"</code>,
-and for <code>offset</code> is 0.
-Therefore, the call <code>file:seek()</code> returns the current
-file position, without changing it;
-the call <code>file:seek("set")</code> sets the position to the
-beginning of the file (and returns 0);
-and the call <code>file:seek("end")</code> sets the position to the
-end of the file, and returns its size.
-
+<code>whence</code> 的默认值是 <code>"cur"</code>，
+<code>offset</code> 默认为 0 。
+因此，调用 <code>file:seek()</code> 可以返回文件当前位置，并不改变它；
+调用 <code>file:seek("set")</code> 将位置设为文件开头（并返回 0）；
+调用 <code>file:seek("end")</code> 将位置设到文件末尾，并返回文件大小。
 
 
 
@@ -8733,31 +8696,31 @@ end of the file, and returns its size.
 
 
 <p>
-Sets the buffering mode for an output file.
-There are three available modes:
+设置输出文件的缓冲模式。
+有三种模式：
 
 <ul>
 
 <li><b>"<code>no</code>": </b>
-no buffering; the result of any output operation appears immediately.
+不缓冲；输出操作立刻生效。
 </li>
 
 <li><b>"<code>full</code>": </b>
-full buffering; output operation is performed only
-when the buffer is full or when
-you explicitly <code>flush</code> the file (see <a href="#pdf-io.flush"><code>io.flush</code></a>).
+完全缓冲；只有在缓存满或当你显式的对文件调用
+<code>flush</code>（参见 <a href="#pdf-io.flush"><code>io.flush</code></a>）
+时才真正做输出操作。
 </li>
 
 <li><b>"<code>line</code>": </b>
-line buffering; output is buffered until a newline is output
-or there is any input from some special files
-(such as a terminal device).
+行缓冲；
+输出将到每次换行前，
+对于某些特殊文件（例如终端设备）缓冲到任何输入前。
 </li>
 
 </ul><p>
-For the last two cases, <code>size</code>
-specifies the size of the buffer, in bytes.
-The default is an appropriate size.
+对于后两种情况，<code>size</code> 以字节数为单位
+指定缓冲区大小。
+默认会有一个恰当的大小。
 
 
 
@@ -8767,13 +8730,13 @@ The default is an appropriate size.
 
 
 <p>
-Writes the value of each of its arguments to <code>file</code>.
-The arguments must be strings or numbers.
+将参数的值逐个写入 <code>file</code>。
+参数必须是字符串或数字。
 
 
 <p>
-In case of success, this function returns <code>file</code>.
-Otherwise it returns <b>nil</b> plus a string describing the error.
+成功时，函数返回 <code>file</code>。
+否则返回 <b>nil</b> 加错误描述字符串。
 
 
 
