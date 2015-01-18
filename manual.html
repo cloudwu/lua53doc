@@ -8744,10 +8744,10 @@ I/O 函数在出错时都返回 <b>nil</b>
 
 
 
-<h2>6.9 &ndash; <a name="6.9">Operating System Facilities</a></h2>
+<h2>6.9 &ndash; <a name="6.9">操作系统设施</a></h2>
 
 <p>
-This library is implemented through table <a name="pdf-os"><code>os</code></a>.
+这个库都通过表 <a name="pdf-os"><code>os</code></a> 实现。
 
 
 <p>
@@ -8755,9 +8755,7 @@ This library is implemented through table <a name="pdf-os"><code>os</code></a>.
 
 
 <p>
-Returns an approximation of the amount in seconds of CPU time
-used by the program.
-
+返回程序使用的按秒计 CPU 时间的近似值。
 
 
 
@@ -8766,50 +8764,48 @@ used by the program.
 
 
 <p>
-Returns a string or a table containing date and time,
-formatted according to the given string <code>format</code>.
+返回一个包含日期及时刻的字符串或表。
+格式化方法取决于所给字符串 <code>format</code>。
 
 
 <p>
-If the <code>time</code> argument is present,
-this is the time to be formatted
-(see the <a href="#pdf-os.time"><code>os.time</code></a> function for a description of this value).
-Otherwise, <code>date</code> formats the current time.
+如果提供了 <code>time</code> 参数，
+格式化这个时间
+（这个值的含义参见 <a href="#pdf-os.time"><code>os.time</code></a> 函数）。
+否则，<code>date</code> 格式化当前时间。
 
 
 <p>
-If <code>format</code> starts with '<code>!</code>',
-then the date is formatted in Coordinated Universal Time.
-After this optional character,
-if <code>format</code> is the string "<code>*t</code>",
-then <code>date</code> returns a table with the following fields:
-<code>year</code> (four digits), <code>month</code> (1&ndash;12), <code>day</code> (1&ndash;31),
-<code>hour</code> (0&ndash;23), <code>min</code> (0&ndash;59), <code>sec</code> (0&ndash;61),
-<code>wday</code> (weekday, Sunday is&nbsp;1),
-<code>yday</code> (day of the year),
-and <code>isdst</code> (daylight saving flag, a boolean).
-This last field may be absent
-if the information is not available.
+如果 <code>format</code> 以 '<code>!</code>' 打头，
+日期以协调世界时格式化。
+在这个可选字符项之后，
+如果 <code>format</code> 为字符串 "<code>*t</code>"，
+<code>date</code> 返回有后续域的表：
+<code>year</code> （四位数字），<code>month</code> （1&ndash;12），<code>day</code> （1&ndash;31），
+<code>hour</code> （0&ndash;23），<code>min</code> （0&ndash;59），<code>sec</code> （0&ndash;61），
+<code>wday</code> （星期几，星期天为 1 ），
+<code>yday</code> （当年的第几天），
+以及 <code>isdst</code> （夏令时标记，一个布尔量）。
+对于最后一个域，如果该信息不提供的话就不存在。
 
 
 <p>
-If <code>format</code> is not "<code>*t</code>",
-then <code>date</code> returns the date as a string,
-formatted according to the same rules as the ISO&nbsp;C function <code>strftime</code>.
+如果 <code>format</code> 并非 "<code>*t</code>"，
+<code>date</code> 以字符串形式返回，
+格式化方法遵循 ISO C 函数 <code>strftime</code> 的规则。
 
 
 <p>
-When called without arguments,
-<code>date</code> returns a reasonable date and time representation that depends on
-the host system and on the current locale
-(that is, <code>os.date()</code> is equivalent to <code>os.date("%c")</code>).
+如果不传参数调用，
+<code>date</code> 返回一个合理的日期时间串，
+格式取决于宿主程序以及当前的区域设置
+（即，<code>os.date()</code> 等价于 <code>os.date("%c")</code>）。
 
 
 <p>
-On non-POSIX systems,
-this function may be not thread safe
-because of its reliance on C&nbsp;function <code>gmtime</code> and C&nbsp;function <code>localtime</code>.
-
+在非 POSIX 系统上，
+由于这个函数依赖 C 函数 <code>gmtime</code> 和 <code>localtime</code>，
+它可能并非线程安全的。
 
 
 
@@ -8818,12 +8814,10 @@ because of its reliance on C&nbsp;function <code>gmtime</code> and C&nbsp;functi
 
 
 <p>
-Returns the difference, in seconds,
-from time <code>t1</code> to time <code>t2</code>
-(where the times are values returned by <a href="#pdf-os.time"><code>os.time</code></a>).
-In POSIX, Windows, and some other systems,
-this value is exactly <code>t2</code><em>-</em><code>t1</code>.
-
+返回以秒计算的时刻 <code>t1</code> 到 <code>t2</code> 的差值。
+（这里的时刻是由 <a href="#pdf-os.time"><code>os.time</code></a> 返回的值）。
+在 POSIX，Windows，和其它一些系统中，这个值就等于
+<code>t2</code><em>-</em><code>t1</code>。
 
 
 
@@ -8832,33 +8826,28 @@ this value is exactly <code>t2</code><em>-</em><code>t1</code>.
 
 
 <p>
-This function is equivalent to the ISO&nbsp;C function <code>system</code>.
-It passes <code>command</code> to be executed by an operating system shell.
-Its first result is <b>true</b>
-if the command terminated successfully,
-or <b>nil</b> otherwise.
-After this first result
-the function returns a string plus a number,
-as follows:
-
+这个函数等价于 ISO C 函数 <code>system</code>。
+它调用系统解释器执行 <code>command</code>。
+如果命令成功运行完毕，第一个返回值就是 <b>true</b>，
+否则是 <b>nil</b> otherwise。
+在第一个返回值之后，函数返回一个字符串加一个数字。如下：
 <ul>
 
 <li><b>"<code>exit</code>": </b>
-the command terminated normally;
-the following number is the exit status of the command.
+命令正常结束；
+接下来的数字是命令的退出状态码。
 </li>
 
 <li><b>"<code>signal</code>": </b>
-the command was terminated by a signal;
-the following number is the signal that terminated the command.
+命令被引号打断；
+接下来的数字是打断该命令的信号。
 </li>
 
 </ul>
 
 <p>
-When called without a <code>command</code>,
-<code>os.execute</code> returns a boolean that is true if a shell is available.
-
+如果不带参数调用，
+<code>os.execute</code> 在系统解释器存在的时候返回真。
 
 
 
@@ -8867,20 +8856,19 @@ When called without a <code>command</code>,
 
 
 <p>
-Calls the ISO&nbsp;C function <code>exit</code> to terminate the host program.
-If <code>code</code> is <b>true</b>,
-the returned status is <code>EXIT_SUCCESS</code>;
-if <code>code</code> is <b>false</b>,
-the returned status is <code>EXIT_FAILURE</code>;
-if <code>code</code> is a number,
-the returned status is this number.
-The default value for <code>code</code> is <b>true</b>.
+调用 ISO C 函数 <code>exit</code> 终止宿主程序。
+如果 <code>code</code> 为 <b>true</b>，
+返回的状态码是 <code>EXIT_SUCCESS</code>；
+如果 <code>code</code> 为 <b>false</b>，
+返回的状态码是 <code>EXIT_FAILURE</code>；
+如果 <code>code</code> 是一个数字，
+返回的状态码就是这个数字。
+<code>code</code> 的默认值为 <b>true</b>。
 
 
 <p>
-If the optional second argument <code>close</code> is true,
-closes the Lua state before exiting.
-
+如果第二个可选参数 <code>close</code> 为真，
+在退出前关闭 Lua 状态机。
 
 
 
@@ -8889,8 +8877,8 @@ closes the Lua state before exiting.
 
 
 <p>
-Returns the value of the process environment variable <code>varname</code>,
-or <b>nil</b> if the variable is not defined.
+返回进程环境变量 <code>varname</code> 的值，
+如果该变量未定义，返回 <b>nil</b> 。
 
 
 
@@ -8900,11 +8888,9 @@ or <b>nil</b> if the variable is not defined.
 
 
 <p>
-Deletes the file (or empty directory, on POSIX systems)
-with the given name.
-If this function fails, it returns <b>nil</b>,
-plus a string describing the error and the error code.
-
+删除指定名字的文件（在 POSIX 系统上可以是一个空目录）
+如果函数失败，返回 <b>nil</b>
+加一个错误描述串及出错码。
 
 
 
@@ -8913,10 +8899,9 @@ plus a string describing the error and the error code.
 
 
 <p>
-Renames file or directory named <code>oldname</code> to <code>newname</code>.
-If this function fails, it returns <b>nil</b>,
-plus a string describing the error and the error code.
-
+将名字为 <code>oldname</code> 的文件或目录更名为 <code>newname</code>。
+如果函数失败，返回 <b>nil</b>
+加一个错误描述串及出错码。
 
 
 
@@ -8925,33 +8910,31 @@ plus a string describing the error and the error code.
 
 
 <p>
-Sets the current locale of the program.
-<code>locale</code> is a system-dependent string specifying a locale;
-<code>category</code> is an optional string describing which category to change:
-<code>"all"</code>, <code>"collate"</code>, <code>"ctype"</code>,
-<code>"monetary"</code>, <code>"numeric"</code>, or <code>"time"</code>;
-the default category is <code>"all"</code>.
-The function returns the name of the new locale,
-or <b>nil</b> if the request cannot be honored.
+设置程序的当前区域。
+<code>locale</code> 是一个区域设置的系统相关字符串；
+<code>category</code> 是一个描述有改变哪个分类的可选字符串：
+<code>"all"</code>，<code>"collate"</code>， <code>"ctype"</code>，
+<code>"monetary"</code>， <code>"numeric"</code>， 或 <code>"time"</code>；
+默认的分类为 <code>"all"</code>。
+此函数返回新区域的名字。
+如果请求未被获准，返回 <b>nil</b> 。
 
 
 <p>
-If <code>locale</code> is the empty string,
-the current locale is set to an implementation-defined native locale.
-If <code>locale</code> is the string "<code>C</code>",
-the current locale is set to the standard C locale.
+当 <code>locale</code> 是一个空串，
+当前区域被设置为一个在实现中定义好的本地区域。
+当 <code>locale</code> 为字符串 "<code>C</code>"，
+当前区域被设置为标准 C 区域。
 
 
 <p>
-When called with <b>nil</b> as the first argument,
-this function only returns the name of the current locale
-for the given category.
+当第一个参数为 <b>nil</b> 时，
+此函数仅返回当前区域指定分类的名字。
 
 
 <p>
-This function may be not thread safe
-because of its reliance on C&nbsp;function <code>setlocale</code>.
-
+由于这个函数依赖 C 函数 <code>setlocale</code>，
+它可能并非线程安全的。
 
 
 
@@ -8960,26 +8943,23 @@ because of its reliance on C&nbsp;function <code>setlocale</code>.
 
 
 <p>
-Returns the current time when called without arguments,
-or a time representing the date and time specified by the given table.
-This table must have fields <code>year</code>, <code>month</code>, and <code>day</code>,
-and may have fields
-<code>hour</code> (default is 12),
-<code>min</code> (default is 0),
-<code>sec</code> (default is 0),
-and <code>isdst</code> (default is <b>nil</b>).
-For a description of these fields, see the <a href="#pdf-os.date"><code>os.date</code></a> function.
+当不传参数时，返回当前时刻。
+如果传入一张表，就返回由这张表表示的时刻。
+这张表必须包含域 <code>year</code>，<code>month</code>，及 <code>day</code>；
+可以包含有　<code>hour</code> （默认为 12 ），
+<code>min</code> （默认为 0），
+<code>sec</code> （默认为 0），以及 <code>isdst</code> （默认为 <b>nil</b>）。
+关于这些域的详细描述，参见 <a href="#pdf-os.date"><code>os.date</code></a> 函数。
 
 
 <p>
-The returned value is a number, whose meaning depends on your system.
-In POSIX, Windows, and some other systems,
-this number counts the number
-of seconds since some given start time (the "epoch").
-In other systems, the meaning is not specified,
-and the number returned by <code>time</code> can be used only as an argument to
-<a href="#pdf-os.date"><code>os.date</code></a> and <a href="#pdf-os.difftime"><code>os.difftime</code></a>.
-
+返回值是一个含义由你的系统决定的数字。
+在 POSIX，Windows，和其它一些系统中，
+这个数字统计了从指定时间（"epoch"）开始经历的秒数。
+对于另外的系统，其含义未定义，
+你只能把 <code>time</code> 的返回数字用于
+<a href="#pdf-os.date"><code>os.date</code></a> 和 <a href="#pdf-os.difftime"><code>os.difftime</code></a>
+的参数。
 
 
 
@@ -8988,29 +8968,19 @@ and the number returned by <code>time</code> can be used only as an argument to
 
 
 <p>
-Returns a string with a file name that can
-be used for a temporary file.
-The file must be explicitly opened before its use
-and explicitly removed when no longer needed.
-
+返回一个可用于临时文件的文件名字符串。
+这个文件在使用前必须显式打开，不再使用时需要显式删除。
 
 <p>
-On POSIX systems,
-this function also creates a file with that name,
-to avoid security risks.
-(Someone else might create the file with wrong permissions
-in the time between getting the name and creating the file.)
-You still have to open the file to use it
-and to remove it (even if you do not use it).
-
+在 POSIX 系统上，
+这个函数会以此文件名创建一个文件以回避安全风险。
+（别人可能未经允许在获取到这个文件名到创建该文件之间的时刻创建此文件。）
+你依旧需要在使用它的时候先打开，并最后删除（即使你没使用到）。
 
 <p>
-When possible,
-you may prefer to use <a href="#pdf-io.tmpfile"><code>io.tmpfile</code></a>,
-which automatically removes the file when the program ends.
-
-
-
+只有有可能，你更应该使用
+<a href="#pdf-io.tmpfile"><code>io.tmpfile</code></a>，
+因为该文件可以在程序结束时自动删除。
 
 
 
