@@ -304,7 +304,7 @@ Lua 本身只会产生字符串类型的错误对象，
 <h2>2.4 &ndash; <a name="2.4">元表及元方法</a></h2>
 
 <p>
-Lua 中的每个值都可以用一个 <em>元表</em>。
+Lua 中的每个值都可以有一个 <em>元表</em>。
 这个 <em>元表</em> 就是一个普通的 Lua 表，
 它用于定义原始值在特定操作下的行为。
 如果你想改变一个值在特定操作下的行为，你可以在它的元表中设置对应域。
@@ -327,7 +327,7 @@ Lua 会检查该值的元表中的 "<code>__add</code>" 域下的函数。
 
 <p>
 使用 <a href="#pdf-setmetatable"><code>setmetatable</code></a> 
-来替换一张表的元表。在 Lua 中，你不可以改变其它类型的值的元表
+来替换一张表的元表。在 Lua 中，你不可以改变表以外其它类型的值的元表
 （除非你使用调试库（参见<a href="#6.10">&sect;6.10</a>））；
 若想改变这些非表类型的值的元表，请使用 C API。
 
@@ -9205,7 +9205,7 @@ Lua 程序不会崩溃），
 
 
 <p>
-将 <code>value</code> （可以是 <b>nil</b>） 设为 <code>table</code> 的元表。
+将 <code>value</code> （可以是 <b>nil</b>）的元表设为 <code>table</code> 。
 返回 <code>value</code>。
 
 
