@@ -5,6 +5,7 @@ h3 code {
 
 pre, code {
 	font-size: 12pt ;
+	font-family: Verdana, Geneva, sans-serif !important;
 }
 
 span.apii {
