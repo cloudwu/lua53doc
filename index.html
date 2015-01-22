@@ -31,7 +31,7 @@ tt, kbd, code {
 <HR>
 <H1>
 <A HREF="http://www.lua.org/"><IMG SRC="logo.gif" ALT="Lua" BORDER=0></A>
-Lua 5.3.0 欢迎你
+Lua 5.3 欢迎你
 </H1>
 
 <P>
@@ -56,15 +56,15 @@ Lua 是一门强大、快速、轻量的嵌入式脚本语言。它由巴西里�
 开发。
 Lua 是一个
 <A HREF="#license">自由软件</A>，
-它在全世界范围内广泛用于很多产品和项目。
+广泛应用于世界上无数产品和项目。
 
 <P>
 Lua 的
 <A HREF="http://www.lua.org/">官方网站</A>
-上有关于 Lua 的完整信息，
-其中包括
+上提供了关于 Lua 的完整信息，
+包括
 <A HREF="http://www.lua.org/about.html">综合概要</A>
-以及最新版的
+和最新的
 <A HREF="http://www.lua.org/docs.html">文档</A>，
 需要注意的是
 <A HREF="http://www.lua.org/manual/5.3/">参考手册</A> 可能和
@@ -73,73 +73,69 @@ Lua 的
 <H2><A NAME="install">安装 Lua</A></H2>
 
 <P>
-Lua 是以
+Lua 以
 <A HREF="http://www.lua.org/ftp/">源代码</A>
-的形式发布的。
-在使用前，你需要自己构建它。
-构建 Lua 非常简单，因为 Lua 是用纯粹的 ANSI C 实现的，在所有有 ANSI C 编译器的平台都可以直接编译。
-同时，Lua 还可以直接以 C++ 形式编译。
+的形式发布，使用之前，你需要构建它。
+构建 Lua 非常简单，因为 Lua 是用纯粹的 ANSI C 实现的，在所有具备 ANSI C 编译器的平台都可以直接编译。
+同时，Lua 也可以直接以 C++ 形式编译。
 下面介绍了类 Unix 平台上的构建流程，另有
 <A HREF="#other">其它系统构建介绍</A>
 与
 <A HREF="#customization">配置选项</A> 以作参考。
 
 <P>
-如果你没有时间或兴趣自己编译 Lua ，
+如果你没有时间或兴趣自己编译 Lua，
 可以从
-<A HREF="http://lua-users.org/wiki/LuaBinaries">LuaBinaries</A> 获取编译后的二进制文件，
+<A HREF="http://lua-users.org/wiki/LuaBinaries">LuaBinaries</A> 获取编译后的二进制文件
 或者从
 <A HREF="http://luadist.org/">LuaDist</A> 这里获取 Lua 的多平台发布版（自带电池）。
 
 <H3>构建 Lua</H3>
 
 <P>
-对于大多数类 Unix 平台，只需要输入 "<KBD>make</KBD>" 加上合适的平台名即可。细节如下：
+在大多数类 Unix 平台上，输入 "<KBD>make</KBD>" 加上合适的平台名即可。步骤如下：
 
 <OL>
 <LI>
-打开一个控制台窗口，切换到名为 <TT>lua-5.3.0</TT> 的目录下。
-这里有一个 <TT>Makefile</TT> 文件内含构建及安装流程。
+打开一个控制台窗口，切换到 <TT>lua-5.3.0</TT> 目录。
+目录下的 <TT>Makefile</TT> 文件内包含了构建与安装流程。
 <P>
 <LI>
-  运行 "<KBD>make</KBD>" 看看你的平台是否列在其中。
+  运行 "<KBD>make</KBD>" 并查看你的平台是否列在其中。
   当前支持的平台有：
 <P>
 <P CLASS="display">
    aix bsd c89 freebsd generic linux macosx mingw posix solaris
 </P>
 <P>
-  如果你的平台列在其中，那么只需要运行 "<KBD>make xxx</KBD>"，这里的 xxx
-  指你的平台名。
+  如果你的平台在其中，运行 "<KBD>make xxx</KBD>" 即可，xxx 代表你的平台名。
 <P>
-  如果你的平台不在这个列表内，那么先试一下最接近的那个，然后再按 posix generic c89 这个次序依次尝试。
+  如果你的平台不在其中，先尝试最相近的平台，再按 posix generic c89 顺序依次尝试。
 <P>
 <LI>
-编译流程要花一会儿功夫，最终在 <TT>src</TT> 目录产生三个文件：
+编译过程很短，最终在 <TT>src</TT> 目录下生成三个文件：
 lua (解释器),
-luac (编译器),
-以及 liblua.a (静态库) 。
+luac (编译器)和 liblua.a (静态库) 。
 <P>
 <LI>
-  你可以运行 "<KBD>make test</KBD>" 检查一下构建是否成功，
-  它会运行解释器打印出版本号。
+  构建完成后，可以运行 "<KBD>make test</KBD>" 来检查是否成功。
+  它会运行解释器并打印版本号。
 </OL>
 <P>
-如果你是 Linux 系统，出现了编译错误的话，请确认你有安装
-<TT>readline</TT> 开发包。
-如果还是有链接错误，可以试一下
+如果你是 Linux 系统并出现了编译错误，请确认你是否安装了
+<TT>readline</TT> （也可能叫 <TT>libreadline-dev</TT> 或者 <TT>readline-devel</TT>）开发包。
+之后，如果还有链接错误，尝试
 "<KBD>make linux MYLIBS=-ltermcap</KBD>" 。
 
 <H3>安装 Lua</H3>
 <P>
-  一旦你构建完毕，可能希望把 Lua 安装到系统默认位置。
-  那么，执行 "<KBD>make install</KBD>" 就可以了。
+  一旦你构建完毕，可能希望把 Lua 安装到系统默认位置，
+  那么执行 "<KBD>make install</KBD>" 即可。
   系统默认位置以及如何安装都定义在 <TT>Makefile</TT> 中。
   这个过程可能需要有相关的权限。
 
 <P>
-  运行 "<KBD>make xxx install</KBD>" 可以构建和安装一步到位，
-  这里的 xxx 指你的平台名。
+  运行 "<KBD>make xxx install</KBD>" 可以构建和安装一步到位，xxx 指你的平台名。
 
 <P>
   如果你想把 Lua 安装在本地，运行 "<KBD>make local</KBD>"。
@@ -148,7 +144,7 @@ luac (编译器),
   子目录，并将下列文件安装在其中。
 
   如果你想安装到本地其它目录，
-  运行 "<KBD>make install INSTALL_TOP=xxx</KBD>"，这里的 xxx 指你选择的目录。
+  运行 "<KBD>make install INSTALL_TOP=xxx</KBD>"，xxx 指你选择的目录。
   由于安装过程中会切换到 <TT>src</TT> 以及 <TT>doc</TT> 目录进行，
   所以当 <TT>INSTALL_TOP</TT> 不是绝对路径时务必小心。
 
