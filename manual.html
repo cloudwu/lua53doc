@@ -749,34 +749,35 @@ Lua 将调用所有被标记了需要触发终结器对象的终结过程，
 <h2>2.6 &ndash; <a name="2.6">协程</a></h2>
 
 <p>
-Lua 支持协程，同时它也被称为 <em>协同式多线程</em>。
-Lua 为每个协程提供一个独立的运行序。
-然而和多线程系统中的线程不同，
-协程仅在显式地调用一个让出函数时才挂起当前的执行状态。
+Lua 支持协程，也叫 <em>协同式多线程</em>。
+一个协程在 Lua 中代表了一段独立的执行线程。
+然而，与多线程系统中的线程的区别在于，
+协程仅在显式调用一个让出（yield）函数时才挂起当前的执行。
 
 
 <p>
-通过调用
+调用函数
 <a href="#pdf-coroutine.create"><code>coroutine.create</code></a>
 可创建一个协程。
-它唯一的参数是一个函数，这个函数将作为这个协程的主函数。
-<code>create</code> 函数仅仅创建出这个协程然后返回它的句柄
-（一个类型为 <em>thread</em> 的对象）；
-它并不运行该协程。
+其唯一的参数是该协程的主函数。
+<code>create</code> 函数只负责新建一个协程并返回其句柄
+（一个 <em>thread</em> 类型的对象）；
+而不会启动该协程。
 
 
 <p>
-通过调用
+调用
 <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a>
-可执行一个协程。
+函数执行一个协程。
 第一次调用
 <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a>
 时，第一个参数应传入
 <a href="#pdf-coroutine.create"><code>coroutine.create</code></a>
-返回的线程对象，这样协程就会从其主函数的第一行开始执行。
+返回的线程对象，然后协程从其主函数的第一行开始执行。
+传递给
 <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a>
-后面的参数将作为主函数的参数传入。
-协程将一直运行到它结束或 <em>让出</em>。
+的其他参数将作为协程主函数的参数传入。
+协程启动之后，将一直运行到它终止或 <em>让出</em>。
 
 
 <p>
@@ -793,40 +794,38 @@ Lua 为每个协程提供一个独立的运行序。
 
 
 <p>
-让出协程的执行通过调用
-<a href="#pdf-coroutine.yield"><code>coroutine.yield</code></a> 完成。
-当协程让出，
-即使让出发生在内嵌函数调用中
-（即不在主函数，但在主函数直接或间接调用的函数内部），
-之前对该协程调用的 <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a> 会立刻返回。
-在让出的情况下，
-<a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a> 依旧返回 <b>true</b>，
-接下来的返回值是传给
-<a href="#pdf-coroutine.yield"><code>coroutine.yield</code></a> 的那些参数。
-当下一次你延续同一个协程时，
-协程会接在让出点继续运行。
-调用 <a href="#pdf-coroutine.yield"><code>coroutine.yield</code></a>
-的让出点会返回传给
+通过调用
+<a href="#pdf-coroutine.yield"><code>coroutine.yield</code></a> 使协程暂停执行，让出执行权。
+协程让出时，对应的最近 <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a> 
+函数会立刻返回，即使该让出操作发生在内嵌函数调用中
+（即不在主函数，但在主函数直接或间接调用的函数内部）。
+在协程让出的情况下，
+<a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a> 也会返回 <b>true</b>，
+并加上传给
+<a href="#pdf-coroutine.yield"><code>coroutine.yield</code></a> 的参数。
+当下次重启同一个协程时，
+协程会接着从让出点继续执行。
+ 调用<a href="#pdf-coroutine.yield"><code>coroutine.yield</code></a>
+会返回任何传给
 <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a>
-的额外参数。
+的第一个参数之外的其他参数。
 
 
 <p>
-就像
-<a href="#pdf-coroutine.create"><code>coroutine.create</code></a> 那样，
+与
+<a href="#pdf-coroutine.create"><code>coroutine.create</code></a> 类似，
 <a href="#pdf-coroutine.wrap"><code>coroutine.wrap</code></a> 函数也会创建一个协程。
-不同的是，它不返回协程本身，而是返回一个函数。
-调用这个函数将延续这个协程。
-为这个函数提供的参数相当于
-传给 <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a> 的额外参数。
+不同之处在于，它不返回协程本身，而是返回一个函数。
+调用这个函数将启动该协程。
+传递给该函数的任何参数均当作 <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a> 的额外参数。
 <a href="#pdf-coroutine.wrap"><code>coroutine.wrap</code></a>
-的返回值是
+返回
 <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a>
-的返回值中除去第一个返回值（布尔型的错误码）剩余的部分。
+的所有返回值，除了第一个返回值（布尔型的错误码）。
 和 <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a> 不同，
 <a href="#pdf-coroutine.wrap"><code>coroutine.wrap</code></a>
 不会捕获错误；
-错误会传播给调用者。
+而是将任何错误都传播给调用者。
 
 
 <p>
