@@ -805,8 +805,8 @@ Lua 支持协程，也叫 <em>协同式多线程</em>。
 <a href="#pdf-coroutine.yield"><code>coroutine.yield</code></a> 的参数。
 当下次重启同一个协程时，
 协程会接着从让出点继续执行。
- 调用<a href="#pdf-coroutine.yield"><code>coroutine.yield</code></a>
-会返回任何传给
+ 上次的调用<a href="#pdf-coroutine.yield"><code>coroutine.yield</code></a>
+才会返回，返回值为任何传给
 <a href="#pdf-coroutine.resume"><code>coroutine.resume</code></a>
 的第一个参数之外的其他参数。
 
