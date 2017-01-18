@@ -307,19 +307,25 @@ Lua 会检查该值的元表中的 "<code>__add</code>" 域下的函数。
 
 
 <p>
-元表中的键对应着不同的 <em>事件</em> 名；
+在元表中事件的键值是一个双下划线（<code>__</code>）加事件名的字符串；
 键关联的那些值被称为 <em>元方法</em>。
-在上面那个例子中引用的事件为 <code>"add"</code> ，
-完成加操作的那个函数就是元方法。
+在上一个例子中，<code>__add</code>  就是键值，
+对应的元方法是执行加操作的函数。
 
 
 <p>
 你可以用 <a href="#pdf-getmetatable"><code>getmetatable</code></a> 函数
 来获取任何值的元表。
+Lua 使用直接访问的方式从元表中查询元方法（参见<a href="#pdf-rawget"><code>rawget</code></a>）。
+所以，从对象 <code>o</code> 中获取事件 <code>ev</code> 的元方法等价于下面的代码：
+
+<pre>
+     rawget(getmetatable(<em>o</em>) or {}, "__<em>ev</em>")
+</pre>
 
 
 <p>
-使用 <a href="#pdf-setmetatable"><code>setmetatable</code></a> 
+你可以使用 <a href="#pdf-setmetatable"><code>setmetatable</code></a> 
 来替换一张表的元表。在 Lua 中，你不可以改变表以外其它类型的值的元表
 （除非你使用调试库（参见<a href="#6.10">&sect;6.10</a>））；
 若想改变这些非表类型的值的元表，请使用 C API。
@@ -344,19 +350,6 @@ Lua 会检查该值的元表中的 "<code>__add</code>" 域下的函数。
 
 
 <p>
-接下来会给出一张元表可以控制的事件的完整列表。
-每个操作都用对应的事件名来区分。
-每个事件的键名用加有 '<code>__</code>' 前缀的字符串来表示；
-例如 "add" 操作的键名为字符串 "<code>__add</code>"。
-注意、Lua 从元表中直接获取元方法；
-访问元表中的元方法永远不会触发另一次元方法。
-下面的代码模拟了 Lua 从一个对象 <code>obj</code> 中获取一个元方法的过程：
-
-<pre>
-     rawget(getmetatable(obj) or {}, "__" .. event_name)
-</pre>
-
-<p>
 对于一元操作符（取负、求长度、位反），
 元方法调用的时候，第二个参数是个哑元，其值等于第一个参数。
 这样处理仅仅是为了简化 Lua 的内部实现
@@ -364,10 +357,16 @@ Lua 会检查该值的元表中的 "<code>__add</code>" 域下的函数。
 这个行为有可能在将来的版本中移除。
 （使用这个额外参数的行为都是不确定的。）
 
+<p>
+接下来是元表可以控制的事件的详细列表。
+每个操作都用对应的事件名来区分。
+每个事件的键名用加有 '<code>__</code>' 前缀的字符串来表示；
+例如 "add" 操作的键名为字符串 "<code>__add</code>"。
+
 
 <ul>
 
-<li><b>"add": </b>
+<li><b><code>__add</code>: </b>
 <code>+</code> 操作。
 
 如果任何不是数字的值（包括不能转换为数字的字符串）做加法，
@@ -381,49 +380,49 @@ Lua 就会接着检查第二个操作数。
 如果找不到元方法，将抛出一个错误。
 </li>
 
-<li><b>"sub": </b>
+<li><b><code>__sub</code>: </b>
 <code>-</code> 操作。
 
 行为和 "add" 操作类似。
 </li>
 
-<li><b>"mul": </b>
+<li><b><code>__mul</code>: </b>
 <code>*</code> 操作。
 
 行为和 "add" 操作类似。
 </li>
 
-<li><b>"div": </b>
+<li><b><code>__div</code>: </b>
 <code>/</code> 操作。
 
 行为和 "add" 操作类似。
 </li>
 
-<li><b>"mod": </b>
+<li><b><code>__mod</code>: </b>
 <code>%</code> 操作。
 
 行为和 "add" 操作类似。
 </li>
 
-<li><b>"pow": </b>
+<li><b><code>__pow</code>: </b>
 <code>^</code> （次方）操作。
 
 行为和 "add" 操作类似。
 </li>
 
-<li><b>"unm": </b>
+<li><b><code>__unm</code>: </b>
 <code>-</code> （取负）操作。
 
 行为和 "add" 操作类似。
 </li>
 
-<li><b>"idiv": </b>
+<li><b><code>__idiv</code>: </b>
 <code>//</code> （向下取整除法）操作。
 
 行为和 "add" 操作类似。
 </li>
 
-<li><b>"band": </b>
+<li><b><code>__band</code>: </b>
 <code>&amp;</code> （按位与）操作。
 
 行为和 "add" 操作类似，
@@ -431,37 +430,37 @@ Lua 就会接着检查第二个操作数。
 （参见 <a href="#3.4.3">&sect;3.4.3</a>）尝试取元方法。
 </li>
 
-<li><b>"bor": </b>
+<li><b><code>__bor</code>: </b>
 <code>|</code> （按位或）操作。
 
 行为和 "band" 操作类似。
 </li>
 
-<li><b>"bxor": </b>
+<li><b><code>__bxor</code>: </b>
 <code>~</code> （按位异或）操作。
 
 行为和 "band" 操作类似。
 </li>
 
-<li><b>"bnot": </b>
+<li><b><code>__bnot</code>: </b>
 <code>~</code> （按位非）操作。
 
 行为和 "band" 操作类似。
 </li>
 
-<li><b>"shl": </b>
+<li><b><code>__shl</code>: </b>
 <code>&lt;&lt;</code> （左移）操作。
 
 行为和 "band" 操作类似。
 </li>
 
-<li><b>"shr": </b>
+<li><b><code>__shr</code>: </b>
 <code>&gt;&gt;</code> （右移）操作。
 
 行为和 "band" 操作类似。
 </li>
 
-<li><b>"concat": </b>
+<li><b><code>__concat</code>: </b>
 <code>..</code> （连接）操作。
 
 行为和 "add" 操作类似，
@@ -469,7 +468,7 @@ Lua 就会接着检查第二个操作数。
 也不是数字（数字总能转换为对应的字符串）的情况下尝试元方法。
 </li>
 
-<li><b>"len": </b>
+<li><b><code>__len</code>: </b>
 <code>#</code> （取长度）操作。
 
 如果对象不是字符串，Lua 会尝试它的元方法。
@@ -480,7 +479,7 @@ Lua 使用表的取长度操作（参见 <a href="#3.4.7">&sect;3.4.7</a>）。
 其它情况，均抛出错误。
 </li>
 
-<li><b>"eq": </b>
+<li><b><code>__eq</code>: </b>
 <code>==</code> （等于）操作。
 
 和 "add" 操作行为类似，
@@ -489,7 +488,7 @@ Lua 使用表的取长度操作（参见 <a href="#3.4.7">&sect;3.4.7</a>）。
 调用的结果总会被转换为布尔量。
 </li>
 
-<li><b>"lt": </b>
+<li><b><code>__lt</code>: </b>
 <code>&lt;</code> （小于）操作。
 
 和 "add" 操作行为类似，
@@ -497,7 +496,7 @@ Lua 使用表的取长度操作（参见 <a href="#3.4.7">&sect;3.4.7</a>）。
 调用的结果总会被转换为布尔量。
 </li>
 
-<li><b>"le": </b>
+<li><b><code>__le</code>: </b>
 <code>&lt;=</code> （小于等于）操作。
 
 和其它操作不同，
@@ -508,7 +507,7 @@ Lua 使用表的取长度操作（参见 <a href="#3.4.7">&sect;3.4.7</a>）。
 而其它比较操作符类似，其结果会被转换为布尔量。
 </li>
 
-<li><b>"index": </b>
+<li><b><code>__index</code>: </b>
 索引 <code>table[key]</code>。
 
 当 <code>table</code> 不是表或是表 <code>table</code> 中不存在
@@ -524,7 +523,7 @@ Lua 使用表的取长度操作（参见 <a href="#3.4.7">&sect;3.4.7</a>）。
 所以这次索引有可能引发另一次元方法。）
 </li>
 
-<li><b>"newindex": </b>
+<li><b><code>__newindex</code>: </b>
 索引赋值 <code>table[key] = value</code> 。
 
 和索引事件类似，它发生在
@@ -550,7 +549,7 @@ Lua 就不再做最初的赋值操作。
 来做赋值。）
 </li>
 
-<li><b>"call": </b>
+<li><b><code>__call</code>: </b>
 函数调用操作 <code>func(args)</code>。
 
 当 Lua 尝试调用一个非函数的值的时候会触发这个事件
