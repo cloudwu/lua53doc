@@ -5,7 +5,7 @@ h3 code {
 
 pre, code {
 	font-size: 12pt ;
-	font-family: Verdana, Geneva, sans-serif !important;
+	font-family: Consolas,"Liberation Mono",Menlo,Courier,monospace;
 }
 
 span.apii {
