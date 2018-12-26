@@ -6880,7 +6880,7 @@ Lua 不会对二进制代码块做健壮性检查。
 以字符串形式返回协程 <code>co</code> 的状态：
 当协程正在运行（它就是调用 <code>status</code> 的那个） ，返回 <code>"running"</code>；
 如果协程调用 <code>yield</code> 挂起或是还没有开始运行，返回 <code>"suspended"</code>；
-如果协程是活动的，都并不在运行（即它正在延续其它协程），返回 <code>"normal"</code>；
+如果协程是活动的，但并不在运行（即它正在延续其它协程），返回 <code>"normal"</code>；
 如果协程运行完主体函数或因错误停止，返回 <code>"dead"</code>。
 
 
