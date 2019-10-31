@@ -9505,7 +9505,7 @@ Lua 5.2 到 Lua 5.3 最大的变化是引入了数字的整数子类型。
 数学库中的这些函数废弃了：
 <code>atan2</code>， <code>cosh</code>， <code>sinh</code>， <code>tanh</code>， <code>pow</code>，
 <code>frexp</code>， 以及 <code>ldexp</code> 。
-你可以用 <code>x^y</code> 替换 <code>math.pow(x,y)；
+你可以用 <code>x^y</code> 替换 <code>math.pow(x,y)</code>；
 你可以用 <code>math.atan</code> 替换 <code>math.atan2</code>，前者现在可以接收一或两个参数；
 你可以用 <code>x * 2.0^exp</code> 替换 <code>math.ldexp(x,exp)</code>。
 若用到其它操作，你可以写一个扩展库，或在 Lua 中实现它们。
