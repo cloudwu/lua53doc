@@ -4467,7 +4467,7 @@ Lua 库是完全可重入的：
 如果 <code>len</code> 不为 <code>NULL</code> ，
 它还把字符串长度设到 <code>*len</code> 中。
 这个 Lua 值必须是一个字符串或是一个数字； 
-否则返回返回 <code>NULL</code> 。
+否则返回 <code>NULL</code> 。
 如果值是一个数字， <code>lua_tolstring</code>
 还会 <em>把堆栈中的那个值的实际类型转换为一个字符串</em>。
 （当遍历一张表的时候，
